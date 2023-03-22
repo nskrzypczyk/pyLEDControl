@@ -2,7 +2,7 @@ import sys
 import time
 from RGBMatrixEmulator import RGBMatrix, RGBMatrixOptions
 
-class RGB_Emulator():
+class RgbEmulator():
     def __init__(self) -> None:
         self.mode:callable = None
 
@@ -23,7 +23,7 @@ class RGB_Emulator():
                 sys.exit(0)
 
 if __name__ == "__main__":
-    matrix = RGB_Emulator()
+    matrix = RgbEmulator()
     def pixel(matrix:RGBMatrix):
         matrix.SetPixel(1,1,10,20,30)
     matrix.mode=pixel

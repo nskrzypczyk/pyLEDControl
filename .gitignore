@@ -128,3 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .vscode/PythonImportHelper*.json
+emulator_config.json
