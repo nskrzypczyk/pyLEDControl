@@ -10,6 +10,7 @@ I needed a clock for my office room, so here I am.
   - [ ] Learn how to TDD in Python (just btw)
 - [x] Setting up test system using [RGBMatrixEmulator](https://github.com/ty-porter/RGBMatrixEmulator)
 - [ ] Create the controller
+- [x] Set up flask server
 - [ ] Create the API
 - [ ] Create a Web-Frontend using React or Angular (or anything else...?)
 - [ ] Get a real Matrix
