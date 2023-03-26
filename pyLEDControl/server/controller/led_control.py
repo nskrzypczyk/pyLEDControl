@@ -1,8 +1,8 @@
 from flask import Blueprint
 
-ledControl = Blueprint("ledControl", __name__)
+led_control = Blueprint("led_control", __name__)
 
 
-@ledControl.get("/")
+@led_control.get("/")
 def index():
     return "Welcome to pyLEDControl!"
