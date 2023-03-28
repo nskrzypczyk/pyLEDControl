@@ -15,8 +15,8 @@ class RgbEmulator():
         options = RGBMatrixOptions()
         options.pixel_size = 16
         options.pixel_style = "round"
-        options.rows = settings.MATRIX_EMULATION.HEIGHT
-        options.cols = settings.MATRIX_EMULATION.WIDTH
+        options.rows = settings.MATRIX_EMULATION.HEIGHT.value
+        options.cols = settings.MATRIX_EMULATION.WIDTH.value
         matrix = RGBMatrix(options=options)
         while 1:
             try:

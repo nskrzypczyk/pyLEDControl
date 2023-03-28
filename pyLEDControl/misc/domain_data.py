@@ -1,6 +1,6 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class ExecutionMode(Enum):
+class ExecutionMode(IntEnum):
     REAL = 0
     EMULATED = 1
