@@ -3,11 +3,12 @@ import sys
 import time
 from RGBMatrixEmulator import RGBMatrix, RGBMatrixOptions
 from misc.logging import Log
+from control.effects.abstract_effect import AbstractEffect
 
 
 class RgbEmulator():
     def __init__(self) -> None:
-        self.mode: callable = None
+        self.effect: AbstractEffect = None
         self.log: Log = Log("RgbEmulator")
 
     def run(self):
@@ -20,9 +21,10 @@ class RgbEmulator():
         while 1:
             try:
                 matrix.Clear()
-                if self.mode != None:
-                    self.mode(matrix)
-                time.sleep(1)
+                if self.effect != None:
+                    self.effect.run(matrix)
+                else:
+                    time.sleep(1)
             except KeyboardInterrupt:
                 self.log.debug("Terminating")
 
