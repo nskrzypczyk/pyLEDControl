@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from misc.logging import Log
-from server.server import run_server
 from multiprocessing import Process
 import time
 from server.server import Server
