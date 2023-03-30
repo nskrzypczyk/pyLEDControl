@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from misc.logging import Log
-from multiprocessing import Process
+from multiprocessing import Value, Manager
 import time
 from server.server import Server
 from control.led_controller import LedController
@@ -13,7 +13,7 @@ def main():
     log = Log(__name__)
     log.debug("Starting the application")
 
-    led_service = LedService(True)
+    shared_mem: Value = Manager().Value(typecode="c", value=LedService())
 
     server_proc = Server(service=led_service)
     server_proc.start()

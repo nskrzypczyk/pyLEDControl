@@ -7,7 +7,7 @@ import time
 
 class RandomDot(AbstractEffect):
     def build(self) -> AbstractEffect:
-        self.log = Log("Plain_Clock")
+        self.log = Log(__class__.__name__)
         self.log.debug("Building the effect")
         return self
 

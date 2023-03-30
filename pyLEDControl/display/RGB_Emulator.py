@@ -12,10 +12,18 @@ class RgbEmulator():
         self.log: Log = Log("RgbEmulator")
 
     def loop(self, matrix, led_service: LedService):
+        proc: Process
         while 1:
             try:
                 if led_service.effect != None:
-                    led_service.effect.run(matrix)
+                    time.sleep(1)
+                elif led_service.effect_changed:
+                    self.log.debug("Effect has changed. Restarting process")
+                    proc.terminate()
+                    led_service.effect_changed = False
+                    proc = Process(
+                        target=led_service.effect.run, args=[matrix])
+                    proc.start()
                 else:
                     time.sleep(1)
             except KeyboardInterrupt:
@@ -28,7 +36,7 @@ class RgbEmulator():
         options.rows = settings.MATRIX_EMULATION.HEIGHT.value
         options.cols = settings.MATRIX_EMULATION.WIDTH.value
         matrix = RGBMatrix(options=options)
-        self.loop(led_service)
+        self.loop(matrix, led_service)
 
 
 if __name__ == "__main__":

@@ -11,22 +11,33 @@ class LedService():
     Both, flask and the LedController use the same instance of this class to exchange information since they are in seperate subprocesses. This class acts as a shared object between these two.
     """
 
+    __instance = None
+
+    @staticmethod
+    def instance():
+        if LedService.__instance == None:
+            LedService()
+        return LedService.__instance
+
     def __init__(self, init_with_default_effect=False) -> None:
-        self.log = Log(__class__.__name__)
-        self._observers = []
-        self._effect: AbstractEffect = RandomDot(
-        ).build() if init_with_default_effect else None
-        self.effect_changed = False
+
+        if LedService.__instance != None:
+            raise Exception(f"{__class__.__name__} already has an instance!")
+        else:
+            LedService.__instance = self
+            self.effect_dict = {
+                "RandomDot": RandomDot
+            }
+            self.log = Log(__class__.__name__)
+            self._effect: AbstractEffect = None
+            self.effect_changed = False
 
     @property
-    def effect(self):
+    def effect(self) -> AbstractEffect:
         return self._effect
 
-    @effect.setter
-    def effect(self, val):
-        self._effect = val
+    @ effect.setter
+    def effect(self, val: AbstractEffect):
+        self._effect = val()
+        self._effect.build()
         self.effect_changed = True
-
-    def bind(self, callback):
-        self.log.debug("Binding function")
-        self._observers.append(callback)

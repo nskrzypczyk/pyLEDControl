@@ -18,7 +18,7 @@ class LedController():
         return proc
 
     def start_rgb_matrix(self) -> Process:
-        # FIXME: Implement
+        # FIXME: Implement when parts arrive!
         raise NotImplementedError("Method is yet to be implemented")
 
     def start(self) -> Process:
