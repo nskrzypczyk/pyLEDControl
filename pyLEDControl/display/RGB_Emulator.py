@@ -15,16 +15,19 @@ class RgbEmulator():
         proc: Process
         while 1:
             try:
-                if led_service.effect != None:
+                print(led_service.value.effect)
+                if led_service.value.effect == None:
+                    self.log.debug("No effect in use! Skipping")
                     time.sleep(1)
-                elif led_service.effect_changed:
+                elif led_service.value.effect_changed:
                     self.log.debug("Effect has changed. Restarting process")
                     proc.terminate()
-                    led_service.effect_changed = False
+                    led_service.value.effect_changed = False
                     proc = Process(
-                        target=led_service.effect.run, args=[matrix])
+                        target=led_service.value.effect.run, args=[matrix])
                     proc.start()
                 else:
+                    self.log.debug("Effect is the same")
                     time.sleep(1)
             except KeyboardInterrupt:
                 self.log.debug("Terminating")

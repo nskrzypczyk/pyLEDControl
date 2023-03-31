@@ -23,7 +23,7 @@ class Server(Process):
         @app.post("/effect/<effect>")
         def change_effect(effect: str):
             self.log.info("Received Effect: "+effect)
-            self.led_service.effect = self.led_service.effect_dict[effect]
+            self.led_service.value.effect = self.led_service.value.effect_dict[effect]
             return "Success"
 
         self.log.debug("Starting flask server")

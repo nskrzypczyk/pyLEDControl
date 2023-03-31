@@ -1,6 +1,7 @@
 import logging
 import settings
 from pathlib import Path
+import pickle as pkl
 
 
 class Log(logging.Logger):

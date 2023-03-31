@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from control.effects.abstract_effect import AbstractEffect
 from control.effects.random_dot import RandomDot
-from misc.logging import Log
 
 
 class LedService():
@@ -28,15 +27,17 @@ class LedService():
             self.effect_dict = {
                 "RandomDot": RandomDot
             }
-            self.log = Log(__class__.__name__)
             self._effect: AbstractEffect = None
             self.effect_changed = False
+
+    def val(self):
+        return self
 
     @property
     def effect(self) -> AbstractEffect:
         return self._effect
 
-    @ effect.setter
+    @effect.setter
     def effect(self, val: AbstractEffect):
         self._effect = val()
         self._effect.build()
