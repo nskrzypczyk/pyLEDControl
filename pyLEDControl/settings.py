@@ -9,5 +9,5 @@ MODE = ExecutionMode.EMULATED
 
 
 class MATRIX_EMULATION(Enum):
-    HEIGHT = 64
-    WIDTH = 64
+    HEIGHT: int = 64
+    WIDTH: int = 64
