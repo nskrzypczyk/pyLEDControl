@@ -17,10 +17,15 @@ class Wave(AbstractEffect):
             for col in range(width):
                 for row in range(height):
                     offset_canvas.SetPixel(col, row, 255, 255, 255)
-                # offset_canvas = matrix.SwapOnVSync(offset_canvas)
                 if col > 0:
                     for row in range(height):
-                        offset_canvas.SetPixel(col-1, row, 0, 0, 0)
+                        offset_canvas.SetPixel(col-1, row, 128, 128, 128)
+                if col > 1:
+                    for row in range(height):
+                        offset_canvas.SetPixel(col-2, row, 50, 50, 50)
+                if col > 2:
+                    for row in range(height):
+                        offset_canvas.SetPixel(col-3, row, 0, 0, 0)
                 offset_canvas = matrix.SwapOnVSync(offset_canvas)
             matrix.Clear()
 
