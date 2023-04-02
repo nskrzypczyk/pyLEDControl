@@ -2,9 +2,9 @@ from misc.logging import Log
 import settings
 from misc.domain_data import ExecutionMode
 from display.RGB_Emulator import RgbEmulator
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 from control.effects.random_dot import RandomDot
-from pyLEDControl.control.effect_message import EffectMessage
+from control.effect_message import EffectMessage
 
 
 class LedController():
@@ -13,7 +13,7 @@ class LedController():
     def start_emulator(self) -> Process:
         self.log.debug("Starting the Emulator")
         self.matrix = RgbEmulator()
-        proc = Process(target=self.matrix.run, args=[self.led_service])
+        proc = Process(target=self.matrix.run, args=[self.queue])
         proc.start()
         return proc
 
@@ -27,7 +27,7 @@ class LedController():
         else:
             return self.start_rgb_matrix()
 
-    def __init__(self, service: EffectMessage) -> Process:
+    def __init__(self, queue: Queue) -> Process:
         self.log = Log(__class__.__name__)
         self.log.debug(f"Initializing {__class__.__name__}")
-        self.led_service = service
+        self.queue = queue

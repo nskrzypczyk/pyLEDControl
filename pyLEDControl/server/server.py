@@ -23,7 +23,7 @@ class Server(Process):
         @app.post("/effect/<effect>")
         def change_effect(effect: str):
             self.log.info("Received Effect: "+effect)
-            message = EffectMessage().set_effect(effect).set_effect_changed(True)
+            message = EffectMessage().set_effect(effect)
             self.queue.put(message)
             return jsonify({"status": "success"})
 

@@ -1,45 +1,48 @@
+from control.effects.abstract_effect import AbstractEffect
 import settings
 import sys
 import time
 from RGBMatrixEmulator import RGBMatrix, RGBMatrixOptions
 from misc.logging import Log
-from pyLEDControl.control.effect_message import EffectMessage
-from multiprocessing import Process
+from control.effect_message import EffectMessage
+from multiprocessing import Process, Queue
 
 
 class RgbEmulator():
     def __init__(self) -> None:
         self.log: Log = Log("RgbEmulator")
 
-    def loop(self, matrix, led_service: EffectMessage):
-        proc: Process
+    def loop(self, matrix, queue: Queue):
+        proc: Process = None
+        current_effect: AbstractEffect = None
         while 1:
             try:
-                print(led_service.effect)
-                if led_service.effect == None:
-                    self.log.debug("No effect in use! Skipping")
-                    time.sleep(1)
-                elif led_service.effect_changed:
-                    self.log.debug("Effect has changed. Restarting process")
-                    proc.terminate()
-                    led_service.effect_changed = False
-                    proc = Process(
-                        target=led_service.effect.run, args=[matrix])
-                    proc.start()
+                if queue.empty():
+                    self.log.debug("Queue is empty")
                 else:
-                    self.log.debug("Effect is the same")
-                    time.sleep(1)
+                    message: EffectMessage = queue.get(block=False)
+                    print(message)
+                    if message.effect != current_effect:
+                        self.log.debug(
+                            "Effect has changed. Restarting process")
+                        if proc:
+                            proc.terminate()
+                        proc = Process(
+                            target=message.effect.run, args=[matrix])
+                        proc.start()
+                        current_effect = message.effect
+                time.sleep(1)
             except KeyboardInterrupt:
                 self.log.debug("Terminating")
 
-    def run(self, led_service: EffectMessage):
+    def run(self, queue: Queue):
         options = RGBMatrixOptions()
         options.pixel_size = 16
         options.pixel_style = "round"
         options.rows = settings.MATRIX_EMULATION.HEIGHT.value
         options.cols = settings.MATRIX_EMULATION.WIDTH.value
         matrix = RGBMatrix(options=options)
-        self.loop(matrix, led_service)
+        self.loop(matrix, queue)
 
 
 if __name__ == "__main__":

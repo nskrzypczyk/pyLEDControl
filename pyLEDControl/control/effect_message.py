@@ -11,15 +11,10 @@ class EffectMessage():
         "RandomDot": RandomDot
     }
     effect: AbstractEffect
-    effect_changed: bool
 
     def set_effect(self, effect: AbstractEffect | str) -> EffectMessage:
         if isinstance(effect, str):
             self.effect = EffectMessage.effect_dict[effect]
         else:
             self.effect = effect
-        return self
-
-    def set_effect_changed(self, changed: bool) -> EffectMessage:
-        self.effect_changed = changed
         return self

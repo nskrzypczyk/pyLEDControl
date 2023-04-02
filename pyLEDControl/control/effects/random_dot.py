@@ -6,13 +6,9 @@ import time
 
 
 class RandomDot(AbstractEffect):
-    def build(self) -> AbstractEffect:
-        self.log = Log(__class__.__name__)
-        self.log.debug("Building the effect")
-        return self
-
-    def run(self, matrix: RGBMatrix):
-        self.log.debug("Updating matrix")
-        matrix.SetPixel(random.randint(0, 63), random.randint(
-            0, 63), random.randint(0, 128), random.randint(0, 128), random.randint(0, 128))
-        time.sleep(1)
+    @staticmethod
+    def run(matrix: RGBMatrix):
+        while True:
+            matrix.SetPixel(random.randint(0, 63), random.randint(
+                0, 63), random.randint(0, 128), random.randint(0, 128), random.randint(0, 128))
+            time.sleep(0.0001)

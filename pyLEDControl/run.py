@@ -7,7 +7,7 @@ from multiprocessing import Value, Manager, Queue
 import time
 from server.server import Server
 from control.led_controller import LedController
-from pyLEDControl.control.effect_message import EffectMessage
+from control.effect_message import EffectMessage
 from misc.data_manager import DataManager
 
 
@@ -18,7 +18,7 @@ def main():
     queue = Queue()
     server_proc = Server(queue=queue)
     server_proc.start()
-    led_controller = LedController(service=led_service)
+    led_controller = LedController(queue=queue)
     led_controller_proc = led_controller.start()
 
     try:
