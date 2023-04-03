@@ -1,4 +1,5 @@
 import logging
+from logging.handlers import RotatingFileHandler
 import settings
 from pathlib import Path
 import pickle as pkl
@@ -15,7 +16,8 @@ class Log(logging.Logger):
             '%(asctime)s %(levelname)s %(name)s : %(message)s')
         Path(log_path).mkdir(parents=True, exist_ok=True)
 
-        handler = logging.FileHandler(f"logs/{name}.log")
+        handler = RotatingFileHandler(
+            filename=f"logs/{name}.log", maxBytes=500*1024)
         handler.setLevel(level)
         handler.setFormatter(formatter)
         self.addHandler(handler)
