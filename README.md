@@ -9,9 +9,10 @@ I needed a clock for my office room, so here I am.
   - [x] Set up `logging`
   - [ ] Learn how to TDD in Python (just btw)
 - [x] Setting up test system using [RGBMatrixEmulator](https://github.com/ty-porter/RGBMatrixEmulator)
-- [ ] Create the controller
+- [x] Create the controller
 - [x] Set up flask server
-- [ ] Create the API
+- [x] Create the API
+  - [ ] Extend the API => Allow options for each effect individually
 - [ ] Create a Web-Frontend using React or Angular (or anything else...?)
 - [ ] Get a real Matrix
 - [ ] Wire everything up using a Raspi 3
