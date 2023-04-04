@@ -1,4 +1,5 @@
 from control.effects.abstract_effect import AbstractEffect
+from control.adapter.emulated_matrix import EmulatedMatrix
 import settings
 import sys
 import time
@@ -41,7 +42,7 @@ class RgbEmulator():
         options.pixel_style = "circle"
         options.rows = settings.MATRIX_EMULATION.HEIGHT.value
         options.cols = settings.MATRIX_EMULATION.WIDTH.value
-        matrix = RGBMatrix(options=options)
+        matrix = EmulatedMatrix(options=options)
         self.loop(matrix, queue)
 
 

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from RGBMatrixEmulator import RGBMatrix
 from control.effects.abstract_effect import AbstractEffect
+from control.adapter.abstract_matrix import AbstractMatrix
 import settings
 
 # TODO: Abstract options so that they can be specified for each effect
@@ -9,7 +10,7 @@ import settings
 
 class Wave(AbstractEffect):
     @staticmethod
-    def default(matrix: RGBMatrix):
+    def default(matrix: AbstractMatrix):
         width: int = settings.MATRIX_EMULATION.WIDTH.value
         height: int = settings.MATRIX_EMULATION.HEIGHT.value
         offset_canvas = matrix.CreateFrameCanvas()
@@ -30,7 +31,7 @@ class Wave(AbstractEffect):
             matrix.Clear()
 
     @staticmethod
-    def run(matrix: RGBMatrix, mode="default"):
+    def run(matrix: AbstractMatrix, mode="default"):
         matrix.Clear()
         if mode == "default":
             Wave.default(matrix)
