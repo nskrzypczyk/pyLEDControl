@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 from control.effects.abstract_effect import AbstractEffect
-from control.effects import RandomDot, Wave
-from dataclasses import dataclass
+from control.effects import RandomDot, Wave, RainbowWave
 
 
 class EffectMessage():
     effect_dict = {
         "RandomDot": RandomDot,
-        "Wave": Wave
+        "Wave": Wave,
+        "RainbowWave": RainbowWave
     }
     effect: AbstractEffect
 

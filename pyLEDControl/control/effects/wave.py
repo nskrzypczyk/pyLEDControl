@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from RGBMatrixEmulator import RGBMatrix
 from control.effects.abstract_effect import AbstractEffect
 from control.adapter.abstract_matrix import AbstractMatrix
 import settings
