@@ -37,12 +37,7 @@ class RgbEmulator():
                 self.log.debug("Terminating")
 
     def run(self, queue: Queue):
-        options = RGBMatrixOptions()
-        options.pixel_size = 8
-        options.pixel_style = "circle"
-        options.rows = settings.MATRIX_EMULATION.HEIGHT.value
-        options.cols = settings.MATRIX_EMULATION.WIDTH.value
-        matrix = EmulatedMatrix(options=options)
+        matrix = EmulatedMatrix(options=settings.rgb_options)
         self.loop(matrix, queue)
 
 
