@@ -15,7 +15,7 @@ class MATRIX_EMULATION(Enum):
 
 
 rgb_options = RGBMatrixOptions()
-rgb_options.pixel_size = 8
-rgb_options.pixel_style = "circle"
+rgb_options.pixel_size = 16
+rgb_options.pixel_style = "square"
 rgb_options.rows = MATRIX_EMULATION.HEIGHT.value
 rgb_options.cols = MATRIX_EMULATION.WIDTH.value
