@@ -14,7 +14,7 @@ I needed a clock for my office room, so here I am.
 - [x] Create the API
   - [ ] Extend the API => Allow options for each effect individually
 - [ ] Create a Web-Frontend using React or Angular (or anything else...?)
-- [ ] Get a real Matrix
-- [ ] Wire everything up using a Raspi 3
+- [x] Get a real Matrix
+- [x] Wire everything up using a Raspi 3
 - [ ] DEMO
 - [ ] Profit

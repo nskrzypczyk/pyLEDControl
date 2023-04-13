@@ -1,1 +1,2 @@
-
+Flask==2.2.3
+RGBMatrixEmulator==0.8.3
