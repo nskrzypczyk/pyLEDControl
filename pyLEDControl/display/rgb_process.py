@@ -1,6 +1,5 @@
 import time
 import settings
-import psutil
 from control.effects.abstract_effect import AbstractEffect
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.adapter.real_matrix import RealMatrix
@@ -11,7 +10,7 @@ from multiprocessing import Process, Queue
 
 class MatrixProcess():
     def __init__(self, matrix: AbstractMatrix) -> None:
-        self.matrix = RealMatrix
+        self.matrix = matrix
         self.log: Log = Log("MatrixProcesss")
 
     def loop(self, matrix, queue: Queue):
@@ -19,7 +18,7 @@ class MatrixProcess():
         current_effect: AbstractEffect = None
         while 1:
             try:
-                if queue.empty():   
+                if queue.empty():
                     self.log.debug("Queue is empty")
                 else:
                     message: EffectMessage = queue.get(block=False)
@@ -32,7 +31,6 @@ class MatrixProcess():
                         proc = Process(
                             target=message.effect.run, args=[matrix])
                         proc.start()
-                        psutil.Process(proc.pid).nice(psutil.IOPRIO_CLASS_RT)
                         current_effect = message.effect
                 time.sleep(1)
             except KeyboardInterrupt:
