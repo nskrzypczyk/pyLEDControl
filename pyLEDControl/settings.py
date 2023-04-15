@@ -1,4 +1,4 @@
-from RGBMatrixEmulator import RGBMatrixOptions
+from RGBMatrixEmulator import RGBMatrixOptions as RGBMatrixOptionsEmulated
 import logging
 from enum import Enum
 from misc.domain_data import ExecutionMode
@@ -17,7 +17,7 @@ class MATRIX_EMULATION(Enum):
 
 def rgb_options():
     if MODE == ExecutionMode.EMULATED:
-        rgb_options = RGBMatrixOptions()
+        rgb_options = RGBMatrixOptionsEmulated()
         rgb_options.pixel_size = 16
         rgb_options.pixel_style = "square"
         rgb_options.rows = MATRIX_EMULATION.HEIGHT.value
