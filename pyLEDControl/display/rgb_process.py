@@ -1,16 +1,15 @@
-from control.effects.abstract_effect import AbstractEffect
-from control.adapter.emulated_matrix import EmulatedMatrix
-import settings
-import sys
 import time
-from RGBMatrixEmulator import RGBMatrix, RGBMatrixOptions
+import settings
+from control.effects.abstract_effect import AbstractEffect
+from control.adapter.abstract_matrix import AbstractMatrix
 from misc.logging import Log
 from control.effect_message import EffectMessage
 from multiprocessing import Process, Queue
 
 
-class RgbEmulator():
-    def __init__(self) -> None:
+class MatrixProcess():
+    def __init__(self, matrix: AbstractMatrix) -> None:
+        self.matrix = matrix
         self.log: Log = Log("RgbEmulator")
 
     def loop(self, matrix, queue: Queue):
@@ -37,14 +36,14 @@ class RgbEmulator():
                 self.log.debug("Terminating")
 
     def run(self, queue: Queue):
-        matrix = EmulatedMatrix(options=settings.rgb_options)
+        matrix = self.matrix(options=settings.rgb_options)
         self.loop(matrix, queue)
 
 
 if __name__ == "__main__":
-    matrix = RgbEmulator()
+    matrix = MatrixProcess()
 
-    def pixel(matrix: RGBMatrix):
+    def pixel(matrix: AbstractMatrix):
         matrix.SetPixel(1, 1, 10, 20, 30)
     matrix.mode = pixel
     matrix.run()
