@@ -11,17 +11,6 @@ from control.effect_message import EffectMessage
 
 class LedController():
 
-    def start_emulator(self) -> Process:
-        self.log.debug("Starting the Emulator")
-        matrix = MatrixProcess()
-        proc = Process(target=matrix.run, args=[self.queue])
-        proc.start()
-        return proc
-
-    def start_rgb_matrix(self) -> Process:
-        self.log.debug("Starting the RGB Matrix")
-        matrix = RealMatrix
-
     def start(self) -> Process:
         if settings.MODE == ExecutionMode.EMULATED:
             self.log.debug(f"Starting the Emulator")

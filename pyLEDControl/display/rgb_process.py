@@ -36,7 +36,7 @@ class MatrixProcess():
                 self.log.debug("Terminating")
 
     def run(self, queue: Queue):
-        matrix = self.matrix(options=settings.rgb_options)
+        matrix = self.matrix(options=settings.rgb_options())
         self.loop(matrix, queue)
 
 
