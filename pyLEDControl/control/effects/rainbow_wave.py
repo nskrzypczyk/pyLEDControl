@@ -79,7 +79,8 @@ class RainbowWave(AbstractEffect):
             rainbow = rotate(rainbow, base_offset)
 
     @staticmethod
-    def run(matrix: AbstractMatrix, options: EffectOptions = default_options):
+    def run(matrix_name: AbstractMatrix, options: EffectOptions = default_options):
+        matrix = matrix_name(options=settings.rgb_options())
         if options.mode == "left to right":
             RainbowWave.left_to_right(matrix)
         elif options.mode == "top left to bottom right":

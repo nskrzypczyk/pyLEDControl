@@ -38,8 +38,7 @@ class MatrixProcess():
 
     def run(self, queue: Queue):
         self.log.debug("run method called.")
-        matrix = self.matrix(options=settings.rgb_options())
-        self.loop(matrix, queue)
+        self.loop(self.matrix, queue)
 
 
 if __name__ == "__main__":
