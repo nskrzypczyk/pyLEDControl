@@ -13,8 +13,8 @@ from misc.logging import Log
 # FIXME: Implement options
 
 log = Log("RainbowWave")
-max_width = settings.MATRIX_EMULATION.WIDTH.value-1
-max_height = settings.MATRIX_EMULATION.HEIGHT.value-1
+max_width = settings.MATRIX_DIMENSIONS.WIDTH.value-1
+max_height = settings.MATRIX_DIMENSIONS.HEIGHT.value-1
 
 
 class RainbowWave(AbstractEffect):
@@ -79,8 +79,8 @@ class RainbowWave(AbstractEffect):
             rainbow = rotate(rainbow, base_offset)
 
     @staticmethod
-    def run(matrix_name: AbstractMatrix, options: EffectOptions = default_options):
-        matrix = matrix_name(options=settings.rgb_options())
+    def run(matrix_class_name: AbstractMatrix, options: EffectOptions = default_options):
+        matrix = matrix_class_name(options=settings.rgb_options())
         if options.mode == "left to right":
             RainbowWave.left_to_right(matrix)
         elif options.mode == "top left to bottom right":

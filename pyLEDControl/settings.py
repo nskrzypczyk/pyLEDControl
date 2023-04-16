@@ -10,7 +10,7 @@ ENABLE_STDOUT: bool = True
 MODE = ExecutionMode.REAL
 
 
-class MATRIX_EMULATION(Enum):
+class MATRIX_DIMENSIONS(Enum):
     HEIGHT: int = 64
     WIDTH: int = 64
 
@@ -20,8 +20,8 @@ def rgb_options():
         rgb_options = RGBMatrixOptionsEmulated()
         rgb_options.pixel_size = 16
         rgb_options.pixel_style = "square"
-        rgb_options.rows = MATRIX_EMULATION.HEIGHT.value
-        rgb_options.cols = MATRIX_EMULATION.WIDTH.value
+        rgb_options.rows = MATRIX_DIMENSIONS.HEIGHT.value
+        rgb_options.cols = MATRIX_DIMENSIONS.WIDTH.value
         return rgb_options
     elif MODE == ExecutionMode.REAL:
         rgb_options = RGBMatrixOptions()

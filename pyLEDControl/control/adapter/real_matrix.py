@@ -7,4 +7,5 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 
 class RealMatrix(RGBMatrix, AbstractMatrix):
     def __init__(self, options={}):
-        self = RGBMatrix(options=options)
+        super().__init__()
+        self.graphics = graphics

@@ -42,9 +42,9 @@ class MatrixProcess():
 
 
 if __name__ == "__main__":
-    matrix = MatrixProcess()
+    matrix_class_name = MatrixProcess()
 
     def pixel(matrix: AbstractMatrix):
         matrix.SetPixel(1, 1, 10, 20, 30)
-    matrix.mode = pixel
-    matrix.run()
+    matrix_class_name.mode = pixel
+    matrix_class_name.run()

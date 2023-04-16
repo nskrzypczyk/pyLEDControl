@@ -6,6 +6,7 @@ import abc
 
 
 class AbstractMatrix(abc.ABC):
+    graphics:any # TODO: Class definition
     """
     Method names are derived from the Canvas class of the RGBMatrixEmulator module
     """
