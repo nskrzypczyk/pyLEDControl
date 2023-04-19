@@ -30,7 +30,7 @@ def rgb_options():
         rgb_options.hardware_mapping = "adafruit-hat"
         # rgb_options.chain_length = 1
         # rgb_options.parallel = 1
-        # rgb_options.row_address_type = 0
+        # rgb_options.row_address_type = 1
         # rgb_options.multiplexing = 0
         # rgb_options.pwm_bits = 11
         # rgb_options.brightness = 100
