@@ -28,7 +28,7 @@ class Server(Process):
             return jsonify({"status": "success"})
 
         self.log.debug("Starting flask server")
-        app.run(port=settings.PORT)
+        app.run(host="0.0.0.0", port=settings.PORT)
 
     def run(self):
         self.run_server()
