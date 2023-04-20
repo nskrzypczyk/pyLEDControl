@@ -22,7 +22,7 @@ class Server(Process):
 
         @app.post("/effect/<effect>")
         def change_effect(effect: str):
-            self.log.info("Received Effect: "+effect)
+            self.log.info("Received Effect: " + effect)
             message = EffectMessage().set_effect(effect)
             self.queue.put(message)
             return jsonify({"status": "success"})
@@ -31,4 +31,7 @@ class Server(Process):
         app.run(host="0.0.0.0", port=settings.PORT)
 
     def run(self):
+        # Start clock on startup
+        message = EffectMessage().set_effect("DigiClock")
+        self.queue.put(message)
         self.run_server()
