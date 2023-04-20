@@ -5,12 +5,12 @@ from control.effects.abstract_effect import AbstractEffect
 from control.effects import RandomDot, Wave, RainbowWave, DigiClock
 
 
-class EffectMessage():
+class EffectMessage:
     effect_dict = {
+        "DigiClock": DigiClock,
+        "RainbowWave": RainbowWave,
         "RandomDot": RandomDot,
         "Wave": Wave,
-        "RainbowWave": RainbowWave,
-        "DigiClock": DigiClock
     }
     effect: AbstractEffect
 
