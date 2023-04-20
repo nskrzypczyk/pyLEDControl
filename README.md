@@ -18,5 +18,6 @@ I needed a clock for my office room, so here I am.
 - [x] Wire everything up using a Raspi 3
 - [ ] Build a case out of a cardboard box?
 - [ ] Build spotify integration + effect
-- [ ] DEMO
+- [ ] DEMO 
+- [ ] Document achievements
 - [ ] Profit
