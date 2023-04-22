@@ -3,10 +3,11 @@ import time
 import random
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
+from misc.logging import Log
 import settings
 import datetime
 
-
+log = Log("DigiClock")
 class DigiClock(AbstractEffect):
     @staticmethod
     def run(matrix_class_name):
@@ -16,8 +17,9 @@ class DigiClock(AbstractEffect):
         font = matrix.graphics.Font()
         font.LoadFont(
             "../../rpi-rgb-led-matrix/fonts/7x13.bdf")
+        refresh_rate = 1/24
         x = 5
-        y=10
+        y = 10
         dx = 1
         dy = 1
         while True:
@@ -31,10 +33,14 @@ class DigiClock(AbstractEffect):
             y += dy
 
             # Bounce off edges
-            if x <= 0 or x + text_width >= 64:
+            log.debug(f"text_height:{text_height}")
+            log.debug(f"text_width:{text_width}")
+            log.debug(f"y:{y}")
+            log.debug(f"x:{x}")
+            if (x <= 0) or (x + text_width >= 64):
                 dx = -dx
-            if y <= 0 or y + text_height >= 64+text_height:
+            if (y <= 9) or (y + text_height >= 64+text_height): # TODO: Remove magic numbers
                 dy = -dy
 
             canvas = matrix.SwapOnVSync(canvas)
-            time.sleep(0.9)
+            time.sleep(refresh_rate)
