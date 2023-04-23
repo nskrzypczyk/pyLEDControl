@@ -17,6 +17,8 @@ class MATRIX_DIMENSIONS(Enum):
 class SPOTIFY(Enum):
     CLIENT_ID: str = "<REPLACE ME>"
     CLIENT_SECRET: str = "<REPLACE ME>"
+    USERNAME: str = "<REPLACE ME>"
+    REDIRECT_URL: str = "http://localhost:8080/callback" 
     AUTH_URL = "https://accounts.spotify.com/api/token"
 
 def rgb_options():

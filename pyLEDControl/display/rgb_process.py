@@ -27,7 +27,7 @@ class MatrixProcess():
                         self.log.debug(
                             "Effect has changed. Restarting process")
                         if proc:
-                            proc.terminate()
+                            proc.kill()
                         proc = Process(
                             target=message.effect.run, args=[matrix])
                         proc.start()

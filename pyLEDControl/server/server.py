@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from control.led_controller import LedController
 from control.effect_message import EffectMessage
-import server.server_settings as settings
+import settings
 from misc.logging import Log
 from multiprocessing import Process, Queue
 
@@ -28,7 +28,7 @@ class Server(Process):
             return jsonify({"status": "success"})
 
         self.log.debug("Starting flask server")
-        app.run(host="0.0.0.0", port=settings.PORT)
+        app.run(host="0.0.0.0", port=settings.SERVER_PORT)
 
     def run(self):
         # Start clock on startup

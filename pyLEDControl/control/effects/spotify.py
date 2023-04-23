@@ -25,10 +25,13 @@ class Spotify(AbstractEffect):
         while 1:
             log.debug("Hello")
             matrix.graphics.DrawText(
-                canvas, font, 0, 10, matrix.graphics.Color(255, 255, 255), "Test"
+                canvas, font, 0, 10, matrix.graphics.Color(
+                    255, 255, 255), "Test"
             )
-            data = spotify.get()
-            log.debug(data)
+            try:
+                data = spotify.get()
+            except:
+                pass
 
             canvas = matrix.SwapOnVSync(canvas)
             time.sleep(refresh_rate)
