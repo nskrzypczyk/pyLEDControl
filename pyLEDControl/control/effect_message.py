@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import annotations
+import sys
 from control.effects.abstract_effect import AbstractEffect
-from control.effects import RandomDot, Wave, RainbowWave, DigiClock
+
+effects = "control.effects"
+__import__(effects)
+effect_list = sys.modules[effects]
 
 
 class EffectMessage:
     effect_dict = {
-        "DigiClock": DigiClock,
-        "RainbowWave": RainbowWave,
-        "RandomDot": RandomDot,
-        "Wave": Wave,
+        name: obj for name, obj in effect_list.__dict__.items() if isinstance(obj, type)
     }
     effect: AbstractEffect
 

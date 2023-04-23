@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 .vscode/PythonImportHelper*.json
 emulator_config.json
+pyLEDControl/settings.py
