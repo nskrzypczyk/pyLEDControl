@@ -3,54 +3,60 @@
 
 from __future__ import annotations
 import abc
+from io import BytesIO
+from PIL import Image
+import requests
+import settings
+
 
 class AbstractFont(abc.ABC):
     @abc.abstractmethod
-    def LoadFont(self, path:str):
+    def LoadFont(self, path: str):
         raise NotImplementedError(f"Method 'LoadFont' not implemented!")
 
     @abc.abstractmethod
     def CharacterWidth(self, char):
         raise NotImplementedError(f"Method 'CharacterWidth' not implemented!")
-    
+
 
 class AbstractColor(abc.ABC):
-    Color:AbstractColor
-    Font:AbstractFont
+    Color: AbstractColor
+    Font: AbstractFont
 
     @abc.abstractmethod
-    def __init__(self,r,g,b):
+    def __init__(self, r, g, b):
         raise NotImplementedError(f"Method '__init__' not implemented!")
 
     @abc.abstractmethod
-    def adjust_brightness(self,alpha:float, to_int = False):
-        raise NotImplementedError(f"Method 'adjust_brightness' not implemented!")
+    def adjust_brightness(self, alpha: float, to_int=False):
+        raise NotImplementedError(
+            f"Method 'adjust_brightness' not implemented!")
 
     @abc.abstractmethod
     def to_tuple(self):
         raise NotImplementedError(f"Method 'to_tuple' not implemented!")
-    
+
     @abc.abstractmethod
     def to_hex(self):
         raise NotImplementedError(f"Method 'to_hex' not implemented!")
-        
+
 
 class AbstractGraphics(abc.ABC):
     @abc.abstractmethod
-    def DrawText(canvas: AbstractMatrix, font: AbstractFont, x:int , y:int, text:str):
+    def DrawText(self, canvas: AbstractMatrix, font: AbstractFont, x: int, y: int, color: AbstractColor, text: str):
         raise NotImplementedError(f"Method 'DrawText' not implemented!")
-    
+
     @abc.abstractmethod
-    def DrawLine(canvas: AbstractMatrix, x1:int, y1: int, x2:int, y2:int, color:AbstractColor):
+    def DrawLine(self, canvas: AbstractMatrix, x1: int, y1: int, x2: int, y2: int, color: AbstractColor):
         raise NotImplementedError(f"Method 'DrawLine' not implemented!")
 
     @abc.abstractmethod
-    def DrawCircle(canvas: AbstractMatrix, x1:int, y1: int, x2:int, y2:int, color: AbstractColor):
+    def DrawCircle(self, canvas: AbstractMatrix, x1: int, y1: int, x2: int, y2: int, color: AbstractColor):
         raise NotImplementedError(f"Method 'DrawCircle' not implemented!")
 
 
 class AbstractMatrix(abc.ABC):
-    graphics:AbstractGraphics # TODO: Class definition
+    graphics: AbstractGraphics  # TODO: Class definition
     """
     Method names are derived from the Canvas class of the RGBMatrixEmulator module
     """
@@ -79,3 +85,13 @@ class AbstractMatrix(abc.ABC):
     def CreateFrameCanvas(self):
         raise NotImplementedError(
             f"Method 'CreateFrameCanvas' not implemented!")
+
+    def SetImageFromURL(self, url: str):
+        image_resp = requests.get(url)
+        self.SetImage(
+            Image.open(BytesIO(image_resp.content))
+            .resize(
+                (settings.MATRIX_DIMENSIONS.WIDTH.value,
+                 settings.MATRIX_DIMENSIONS.HEIGHT.value), Image.LANCZOS
+            ).convert("RGB")
+        )
