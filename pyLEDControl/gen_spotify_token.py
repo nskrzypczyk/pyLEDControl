@@ -11,12 +11,11 @@ import settings
 username = sys.argv[1]
 scope = "user-read-currently-playing"
 
-auth = spotipy.SpotifyOAuth(
+
+spotipy.util.prompt_for_user_token(
     client_id=settings.SPOTIFY.CLIENT_ID.value,
     client_secret=settings.SPOTIFY.CLIENT_SECRET.value,
     username=settings.SPOTIFY.USERNAME.value,
-    redirect_uri=settings.SPOTIFY.AUTH_URL.value,
+    redirect_uri=settings.SPOTIFY.REDIRECT_URL.value,
     scope=scope,
-    open_browser=False,
 )
-token = auth.get_access_token()
