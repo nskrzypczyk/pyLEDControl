@@ -1,3 +1,4 @@
+import os
 from misc.logging import Log
 from control.adapter.real_matrix import RealMatrix
 from control.adapter.emulated_matrix import EmulatedMatrix
@@ -9,13 +10,13 @@ from control.effects.random_dot import RandomDot
 from control.effect_message import EffectMessage
 
 
-class LedController():
-
+class LedController:
     def start(self) -> Process:
         if settings.MODE == ExecutionMode.EMULATED:
             self.log.debug(f"Starting the Emulator")
             matrix = EmulatedMatrix
         else:
+            os.environ["TERM"] = "xterm-256color"
             self.log.debug(f"Starting the Matrix")
             matrix = RealMatrix
 

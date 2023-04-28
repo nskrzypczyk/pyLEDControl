@@ -33,17 +33,25 @@ class Spotify(AbstractEffect):
                 data = spotify.get()
                 if counter < 5:
                     matrix.SetImageFromURL(data.album_art_url)
-                    canvas = matrix.SwapOnVSync(canvas=canvas)
                     log.debug("Image set")
 
                 elif counter < 9:
                     canvas.Clear()
-                    lines = textwrap.wrap(data.artist, width=int(64/6))
+                    lines = textwrap.wrap(
+                        f"{data.artist}\n-\n{data.track_name}", width=int(64 / 6)
+                    )
                     y = 10
                     for line in lines:
                         matrix.graphics.DrawText(
-                            canvas, font, 0, y, matrix.graphics.Color(255, 255, 255), line)
+                            canvas,
+                            font,
+                            0,
+                            y,
+                            matrix.graphics.Color(255, 255, 255),
+                            line,
+                        )
                         y += 10
+                    canvas = matrix.SwapOnVSync(canvas)
                     # matrix.graphics.DrawText(
                     #     canvas, font, 0, 10, matrix.graphics.Color(255, 255, 255), data.artist)
                     # matrix.graphics.DrawText(
@@ -52,6 +60,5 @@ class Spotify(AbstractEffect):
                     counter = 0
             except Exception as e:
                 log.error(e)
-            canvas = matrix.SwapOnVSync(canvas)
             time.sleep(refresh_rate)
             counter += 1
