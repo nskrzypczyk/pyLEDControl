@@ -7,10 +7,17 @@ import './App.css';
 
 const App: React.FC = () => {
   const [brightness, setBrightness] = React.useState<number>(50);
+  const [selectedChip, setSelectedChip] = React.useState<string>();
+  const [effectList, setEffectList] = React.useState<string[]>(["Spotify", "Wave", "RainbowWave", "DigiClock", "RandomDot"]);
+
 
   const handleBrigthnessChange = (event: Event, newValue: number | number[]) => {
     setBrightness(newValue as number);
   };
+
+  const handleEffectChip = (chipName: string) => {
+    setSelectedChip(chipName)
+  }
 
   const increaseBrightness = () => {
     let newVal = brightness + 10
@@ -27,25 +34,10 @@ const App: React.FC = () => {
     setBrightness(newVal)
   }
 
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: colors.blue[500],
-        dark: colors.grey[900]
-      },
-      secondary: {
-        main: colors.indigo[400]
-      },
-      background: {
-        default: colors.blueGrey[900]
-      }
-    },
-  });
-
   return (
     <div>
       <div className='main'>
-        <AppBar position='static' sx={{ borderRadius: "12px", marginBottom: "12px", marginTop: "12px" }}>
+        <AppBar position='static' color="primary" sx={{ borderRadius: "12px", marginBottom: "12px", marginTop: "12px", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)" }}>
           <Toolbar>
             <MenuItem>
               <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
@@ -98,16 +90,20 @@ const App: React.FC = () => {
               </Grid >
               <Divider sx={{ mt: 1.5, mb: 1.5 }} />
               <Grid container item spacing={1}>
-                {["Spotify", "Wave", "RainbowWave", "DigiClock", "RandomDot"].map((e) => (
+                {effectList.map((e) => (
                   <Grid key={e} item>
-                    <Chip key={e} label={e} />
+                    <Chip
+                      key={e}
+                      variant={selectedChip === e ? "filled" : "outlined"} label={e} onClick={() => handleEffectChip(e)}
+                      color={selectedChip === e ? "primary" : undefined}
+                    />
                   </Grid>
                 ))}
               </Grid>
             </Box>
           </Grid>
         </Grid>
-        <Grid container columns={1} sx={{ position: "fixed", bottom: 10, width: "100%" }} justifyContent="center">
+        <Grid container columns={1} sx={{ position: "fixed", bottom: 15, width: "100%" }} justifyContent="center">
           <Grid item>
             <Fab variant="extended" color="primary" aria-label="add">
               <Navigation sx={{ mr: 1 }} />

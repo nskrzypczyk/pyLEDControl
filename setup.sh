@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 if [[ $(/usr/bin/id -u) -ne 0 ]]; then
-    echo "Not running as root"
-    exit
+  echo "Not running as root"
+  exit
 fi
 
 PROJECT_NAME="pyLEDControl"
@@ -36,7 +36,12 @@ ExecStart= sh $basedir/systemd-entrypoint.sh
 
 [Install]
 WantedBy=multi-user.target
-" >> /etc/systemd/system/$PROJECT_NAME.service
+" >>/etc/systemd/system/$PROJECT_NAME.service
 
 sudo systemctl enable $PROJECT_NAME.service
 
+echo "Building React frontend"
+cd $basedir/plc-frontend
+npm i
+sudo npm i -g serve
+npm run build
