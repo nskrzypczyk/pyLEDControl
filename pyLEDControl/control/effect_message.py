@@ -14,6 +14,7 @@ class EffectMessage:
         name: obj for name, obj in effect_list.__dict__.items() if isinstance(obj, type)
     }
     effect: AbstractEffect
+    brightness: int
 
     def set_effect(self, effect: AbstractEffect | str) -> EffectMessage:
         if isinstance(effect, str):
@@ -21,3 +22,6 @@ class EffectMessage:
         else:
             self.effect = effect
         return self
+
+    def set_brightness(self, brightness: int) -> EffectMessage:
+        self.brightness = brightness
