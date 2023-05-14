@@ -1,5 +1,4 @@
 from flask import Flask, jsonify
-from control.led_controller import LedController
 from control.effect_message import EffectMessage, effect_list
 import settings
 from misc.logging import Log
@@ -27,14 +26,14 @@ class Server(Process):
         def get_effects():
             return jsonify(effect_list)
 
-        @app.get("effect/current")
+        @app.get("/effect/current")
         def get_current_effect():
             return jsonify({
                 "effect": self.current_effect,
                 "brightness": self.current_brightness
             })
 
-        @app.post("/effect/<effect>/<brightness>")
+        @app.post("/effect/<effect>/<int:brightness>")
         def change_effect(effect: str, brightness: int):
             if brightness > 100 or brightness < 0:
                 return jsonify("brightness must be a interval value in [0;100]")

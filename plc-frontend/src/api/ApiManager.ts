@@ -9,7 +9,6 @@ const handleErrors = (res: Response) => {
 export const setEffect = async (effectData: IEffectData) => {
     const res = await fetch(`/effect/${effectData.effect}/${effectData.brightness}`, {
         method: "POST",
-        mode: "same-origin",
         headers: {
             "Content-Type": "application/json"
         }
@@ -19,7 +18,9 @@ export const setEffect = async (effectData: IEffectData) => {
 }
 
 export const getStatus = async () => {
-    const res = await fetch("/effect/current")
+    const res = await fetch("/effect/current", {
+        method: "GET"
+    })
     handleErrors(res)
     return res.json()
 }

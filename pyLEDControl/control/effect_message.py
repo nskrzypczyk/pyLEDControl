@@ -25,3 +25,4 @@ class EffectMessage:
 
     def set_brightness(self, brightness: int) -> EffectMessage:
         self.brightness = brightness
+        return self
