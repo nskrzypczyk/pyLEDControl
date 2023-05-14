@@ -1,22 +1,47 @@
 import { BrightnessLowRounded, Navigation, SendTimeExtension } from '@mui/icons-material';
 import BrightnessHighIcon from '@mui/icons-material/BrightnessHigh';
-import { AppBar, Box, Button, Card, CardContent, Chip, createTheme, Divider, Fab, Grid, MenuItem, Slider, Stack, ThemeProvider, Toolbar, Typography } from '@mui/material';
-import * as colors from '@mui/material/colors';
+import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, MenuItem, Slide, Slider, Snackbar, Stack, Toolbar, Typography } from '@mui/material';
+import { TransitionProps } from '@mui/material/transitions';
 import React from 'react';
+import { getStatus, setEffect } from './api/ApiManager';
 import './App.css';
+import { IEffectData } from './domainData/DomainData';
+
 
 const App: React.FC = () => {
   const [brightness, setBrightness] = React.useState<number>(50);
-  const [selectedChip, setSelectedChip] = React.useState<string>();
+  const [selectedEffect, setSelectedEffect] = React.useState<string>();
   const [effectList, setEffectList] = React.useState<string[]>(["Spotify", "Wave", "RainbowWave", "DigiClock", "RandomDot"]);
-
+  const [sbState, setSbState] = React.useState<{
+    open: boolean;
+    Transition: React.ComponentType<
+      TransitionProps & {
+        children: React.ReactElement<any, any>;
+      }
+    >;
+    message: string;
+    severity: AlertColor
+  }>({
+    open: false,
+    Transition: Slide,
+    message: "",
+    severity: 'info'
+  });
 
   const handleBrigthnessChange = (event: Event, newValue: number | number[]) => {
     setBrightness(newValue as number);
   };
 
   const handleEffectChip = (chipName: string) => {
-    setSelectedChip(chipName)
+    setSelectedEffect(chipName)
+  }
+
+  const handleClickUpdate = async () => {
+    try {
+      await setEffect({ effect: selectedEffect!, brightness: brightness })
+    } catch (error: any) {
+      setSbState({ ...sbState, open: true, message: error.message, severity: "error" })
+    }
   }
 
   const increaseBrightness = () => {
@@ -34,8 +59,21 @@ const App: React.FC = () => {
     setBrightness(newVal)
   }
 
+  React.useEffect(() => {
+    const fn = async () => {
+      try {
+        const res: IEffectData = await getStatus()
+        setBrightness(res.brightness)
+        setSelectedEffect(res.effect)
+      } catch (error) {
+        setSbState({ ...sbState, open: true, message: String(error), severity: "error" })
+      }
+    }
+    fn()
+  }, [])
+
   return (
-    <div>
+    <>
       <div className='main'>
         <AppBar position='static' color="primary" sx={{ borderRadius: "12px", marginBottom: "12px", marginTop: "12px", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)" }}>
           <Toolbar>
@@ -94,8 +132,8 @@ const App: React.FC = () => {
                   <Grid key={e} item>
                     <Chip
                       key={e}
-                      variant={selectedChip === e ? "filled" : "outlined"} label={e} onClick={() => handleEffectChip(e)}
-                      color={selectedChip === e ? "primary" : undefined}
+                      variant={selectedEffect === e ? "filled" : "outlined"} label={e} onClick={() => handleEffectChip(e)}
+                      color={selectedEffect === e ? "primary" : undefined}
                     />
                   </Grid>
                 ))}
@@ -105,14 +143,28 @@ const App: React.FC = () => {
         </Grid>
         <Grid container columns={1} sx={{ position: "fixed", bottom: 15, width: "100%" }} justifyContent="center">
           <Grid item>
-            <Fab variant="extended" color="primary" aria-label="add">
+            <Fab variant="extended" color="primary" aria-label="add" onClick={handleClickUpdate}>
               <Navigation sx={{ mr: 1 }} />
               Update
             </Fab>
           </Grid>
         </Grid>
+        <Snackbar
+          open={sbState.open}
+          onClick={() => setSbState({ ...sbState, open: false })}
+          onClose={() => setSbState({ ...sbState, open: false })}
+          TransitionComponent={sbState.Transition}
+          message={sbState.message}
+          key={sbState.Transition.name}
+          autoHideDuration={6000}
+          anchorOrigin={{ vertical: 'top', horizontal: "center" }}
+        >
+          <Alert severity={sbState.severity}>
+            {sbState.message}
+          </Alert>
+        </Snackbar>
       </div>
-    </div >
+    </ >
   );
 }
 
