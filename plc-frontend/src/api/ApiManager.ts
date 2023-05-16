@@ -1,6 +1,5 @@
 import { IEffectData } from '../domainData/DomainData';
 
-// const HOST = "http://127.0.0.1:8080"
 const HOST = `http://${window.location.hostname}:8080`
 
 const handleErrors = (res: Response) => {

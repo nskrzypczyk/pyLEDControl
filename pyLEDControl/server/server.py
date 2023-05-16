@@ -3,7 +3,7 @@ from control.effect_message import EffectMessage, effect_list
 import settings
 from misc.logging import Log
 from multiprocessing import Process, Queue
-
+from flask_cors import CORS
 
 class Server(Process):
     def __init__(self, queue: Queue):
@@ -17,6 +17,7 @@ class Server(Process):
     def run_server(self):
         self.log.debug("Setting up flask server")
         app: Flask = Flask("pyLedControlServer")
+        CORS(app)
 
         @app.get("/")
         def index():
@@ -48,7 +49,7 @@ class Server(Process):
                 return jsonify(e)
 
         self.log.debug("Starting flask server")
-        app.run(host="0.0.0.0", port=settings.SERVER_PORT)
+        app.run(host="0.0.0.0", port=settings.SERVER_PORT )
 
     def run(self):
         # Start clock on startup
