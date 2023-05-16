@@ -3,6 +3,11 @@
 Experimental project which is about connecting, configuring and managing LED-RGB-Matrices.
 I needed a clock for my office room, so here I am.
 
+## Prerequisites
+- Raspi running Raspbian
+  - Python3 (>=3.10), used for backend & matrix control
+  - Nodejs, used for building the React frontend 
+
 ## TODO
 
 - [x] Creating base project / repo
