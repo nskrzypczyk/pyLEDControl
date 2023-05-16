@@ -15,7 +15,7 @@ basedir=$(pwd)
 cd ..
 
 echo "Installing rgb matrix bindings"
-git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
+git clone https://github.com/hzeller/rpi-rgb-led-matrix.git || echo "Repo already exists. Continuing..."
 cd rpi-rgb-led-matrix
 
 echo "Building rgb matrix bindings"
@@ -44,4 +44,4 @@ echo "Building React frontend"
 cd $basedir/plc-frontend
 npm i
 sudo npm i -g serve
-npm run build
+sudo npx react-scripts --max_old_space_size=512 build
