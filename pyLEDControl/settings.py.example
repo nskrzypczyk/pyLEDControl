@@ -20,6 +20,8 @@ class SPOTIFY(Enum):
     USERNAME: str = "<REPLACE ME>"
     REDIRECT_URL: str = "http://localhost:8080/callback" 
     AUTH_URL = "https://accounts.spotify.com/api/token"
+    CACHE_PATH = f"../.cache-{USERNAME}"
+
 
 def rgb_options():
     if MODE == ExecutionMode.EMULATED:

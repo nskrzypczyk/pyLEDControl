@@ -1,9 +1,11 @@
 from flask import Flask, jsonify
-from control.effect_message import EffectMessage, effect_list
+from control.effect_message import EffectMessage, EffectMessage
 import settings
 from misc.logging import Log
 from multiprocessing import Process, Queue
 from flask_cors import CORS
+from control.effect_message import EffectMessage
+
 
 class Server(Process):
     def __init__(self, queue: Queue):
@@ -25,7 +27,7 @@ class Server(Process):
 
         @app.get("/effect/available")
         def get_effects():
-            return jsonify(effect_list)
+            return jsonify(list(EffectMessage.effect_dict.keys()))
 
         @app.get("/effect/current")
         def get_current_effect():
@@ -49,7 +51,7 @@ class Server(Process):
                 return jsonify(e)
 
         self.log.debug("Starting flask server")
-        app.run(host="0.0.0.0", port=settings.SERVER_PORT )
+        app.run(host="0.0.0.0", port=settings.SERVER_PORT)
 
     def run(self):
         # Start clock on startup

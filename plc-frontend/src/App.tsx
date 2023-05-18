@@ -3,7 +3,7 @@ import BrightnessHighIcon from '@mui/icons-material/BrightnessHigh';
 import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, MenuItem, Slide, Slider, Snackbar, Stack, Toolbar, Typography } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import React from 'react';
-import { getStatus, setEffect } from './api/ApiManager';
+import { getStatus, setEffect, getAvailable } from './api/ApiManager';
 import './App.css';
 import { IEffectData } from './domainData/DomainData';
 
@@ -11,7 +11,7 @@ import { IEffectData } from './domainData/DomainData';
 const App: React.FC = () => {
   const [brightness, setBrightness] = React.useState<number>(50);
   const [selectedEffect, setSelectedEffect] = React.useState<string>();
-  const [effectList, setEffectList] = React.useState<string[]>(["Spotify", "Wave", "RainbowWave", "DigiClock", "RandomDot"]);
+  const [effectList, setEffectList] = React.useState<string[]>([]);
   const [sbState, setSbState] = React.useState<{
     open: boolean;
     Transition: React.ComponentType<
@@ -65,6 +65,8 @@ const App: React.FC = () => {
         const res: IEffectData = await getStatus()
         setBrightness(res.brightness)
         setSelectedEffect(res.effect)
+        const availableEffects = await getAvailable()
+        setEffectList(availableEffects)
       } catch (error) {
         setSbState({ ...sbState, open: true, message: String(error), severity: "error" })
       }

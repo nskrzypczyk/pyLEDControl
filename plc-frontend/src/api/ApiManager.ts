@@ -20,6 +20,18 @@ export const setEffect = async (effectData: IEffectData) => {
     return res.json()
 }
 
+export const getAvailable = async () => {
+    const res = await fetch(`${HOST}/effect/available`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        mode: "cors"
+    })
+    handleErrors(res)
+    return res.json()
+}
+
 export const getStatus = async () => {
     const res = await fetch(`${HOST}/effect/current`, {
         method: "GET",
