@@ -155,3 +155,4 @@ yarn-debug.log*
 yarn-error.log*
 
 .cache*
+pyLEDControl/brightness.txt
