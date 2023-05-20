@@ -1,10 +1,11 @@
 from flask import Flask, jsonify
-from control.effect_message import EffectMessage, EffectMessage
+from control.effect_message import EffectMessage
+from control.effects import effect_dict
+from control.effects.effect_message_builder import EffectMessageBuilder
 import settings
 from misc.logging import Log
 from multiprocessing import Process, Queue
 from flask_cors import CORS
-from control.effect_message import EffectMessage
 
 
 class Server(Process):
@@ -27,14 +28,13 @@ class Server(Process):
 
         @app.get("/effect/available")
         def get_effects():
-            return jsonify(list(EffectMessage.effect_dict.keys()))
+            return jsonify(list(effect_dict.keys()))
 
         @app.get("/effect/current")
         def get_current_effect():
-            return jsonify({
-                "effect": self.current_effect,
-                "brightness": self.current_brightness
-            })
+            return jsonify(
+                {"effect": self.current_effect, "brightness": self.current_brightness}
+            )
 
         @app.post("/effect/<effect>/<int:brightness>")
         def change_effect(effect: str, brightness: int):
@@ -42,7 +42,9 @@ class Server(Process):
                 return jsonify("brightness must be a interval value in [0;100]")
             try:
                 self.log.info("Received Effect: " + effect)
-                message = EffectMessage().set_effect(effect).set_brightness(brightness)
+                message = (
+                    EffectMessageBuilder().set_effect(effect).set_brightness(brightness)
+                )
                 self.queue.put(message)
                 self.current_effect = effect
                 self.current_brightness = brightness
@@ -55,7 +57,10 @@ class Server(Process):
 
     def run(self):
         # Start clock on startup
-        message = EffectMessage().set_effect(
-            self.current_effect).set_brightness(self.current_brightness)
+        message = (
+            EffectMessageBuilder()
+            .set_effect(self.current_effect)
+            .set_brightness(self.current_brightness)
+        )
         self.queue.put(message)
         self.run_server()

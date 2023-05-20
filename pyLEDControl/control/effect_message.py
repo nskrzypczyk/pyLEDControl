@@ -1,28 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import annotations
-import sys
-from control.effects.abstract_effect import AbstractEffect
-
-effects = "control.effects"
-__import__(effects)
-effect_list = sys.modules[effects]
+from typing import Union
 
 
 class EffectMessage:
-    effect_dict = {
-        name: obj for name, obj in effect_list.__dict__.items() if isinstance(obj, type)
-    }
-    effect: AbstractEffect
+    br_file_path = "brightness.txt"
+    effect: type
     brightness: int
-
-    def set_effect(self, effect: AbstractEffect | str) -> EffectMessage:
-        if isinstance(effect, str):
-            self.effect = EffectMessage.effect_dict[effect]
-        else:
-            self.effect = effect
-        return self
 
     def set_brightness(self, brightness: int) -> EffectMessage:
         self.brightness = brightness
+        with open(self.br_file_path, "w") as f:
+            f.write(str(brightness))
         return self
+
+    def get_brightness(self) -> int:
+        self.brightness = int(open(self.br_file_path, "r").read())
+        return self.brightness / 100

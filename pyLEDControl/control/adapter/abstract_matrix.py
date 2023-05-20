@@ -4,7 +4,7 @@
 from __future__ import annotations
 import abc
 from io import BytesIO
-from PIL import Image
+from PIL import Image, ImageEnhance
 import requests
 import settings
 
@@ -29,8 +29,7 @@ class AbstractColor(abc.ABC):
 
     @abc.abstractmethod
     def adjust_brightness(self, alpha: float, to_int=False):
-        raise NotImplementedError(
-            f"Method 'adjust_brightness' not implemented!")
+        raise NotImplementedError(f"Method 'adjust_brightness' not implemented!")
 
     @abc.abstractmethod
     def to_tuple(self):
@@ -43,15 +42,39 @@ class AbstractColor(abc.ABC):
 
 class AbstractGraphics(abc.ABC):
     @abc.abstractmethod
-    def DrawText(self, canvas: AbstractMatrix, font: AbstractFont, x: int, y: int, color: AbstractColor, text: str):
+    def DrawText(
+        self,
+        canvas: AbstractMatrix,
+        font: AbstractFont,
+        x: int,
+        y: int,
+        color: AbstractColor,
+        text: str,
+    ):
         raise NotImplementedError(f"Method 'DrawText' not implemented!")
 
     @abc.abstractmethod
-    def DrawLine(self, canvas: AbstractMatrix, x1: int, y1: int, x2: int, y2: int, color: AbstractColor):
+    def DrawLine(
+        self,
+        canvas: AbstractMatrix,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        color: AbstractColor,
+    ):
         raise NotImplementedError(f"Method 'DrawLine' not implemented!")
 
     @abc.abstractmethod
-    def DrawCircle(self, canvas: AbstractMatrix, x1: int, y1: int, x2: int, y2: int, color: AbstractColor):
+    def DrawCircle(
+        self,
+        canvas: AbstractMatrix,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        color: AbstractColor,
+    ):
         raise NotImplementedError(f"Method 'DrawCircle' not implemented!")
 
 
@@ -83,15 +106,21 @@ class AbstractMatrix(abc.ABC):
 
     @abc.abstractmethod
     def CreateFrameCanvas(self):
-        raise NotImplementedError(
-            f"Method 'CreateFrameCanvas' not implemented!")
+        raise NotImplementedError(f"Method 'CreateFrameCanvas' not implemented!")
 
-    def SetImageFromURL(self, url: str):
+    def SetImageFromURL(self, url: str, brightness: int):
         image_resp = requests.get(url)
-        self.SetImage(
+        img = (
             Image.open(BytesIO(image_resp.content))
             .resize(
-                (settings.MATRIX_DIMENSIONS.WIDTH.value,
-                 settings.MATRIX_DIMENSIONS.HEIGHT.value), Image.LANCZOS
-            ).convert("RGB")
+                (
+                    settings.MATRIX_DIMENSIONS.WIDTH.value,
+                    settings.MATRIX_DIMENSIONS.HEIGHT.value,
+                ),
+                Image.LANCZOS,
+            )
+            .convert("RGB")
         )
+        enhancer = ImageEnhance.Brightness(img)
+        img = enhancer.enhance(brightness)
+        self.SetImage(img)

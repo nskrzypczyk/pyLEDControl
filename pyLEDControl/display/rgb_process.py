@@ -29,7 +29,7 @@ class MatrixProcess():
                         if proc:
                             proc.kill()
                         proc = Process(
-                            target=message.effect.run, args=[matrix])
+                            target=message.effect.run, args=[matrix, message])
                         proc.start()
                         current_effect = message.effect
                 time.sleep(1)

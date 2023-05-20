@@ -7,6 +7,7 @@ import settings
 from misc.logging import Log
 from control.effects.abstract_effect import AbstractEffect
 from control.adapter.abstract_matrix import AbstractMatrix
+from control.effect_message import EffectMessage
 from PIL import Image
 from io import BytesIO
 import requests
@@ -18,7 +19,7 @@ width = settings.MATRIX_DIMENSIONS.WIDTH.value
 
 class Spotify(AbstractEffect):
     @staticmethod
-    def run(matrix_class):
+    def run(matrix_class, msg: EffectMessage):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
@@ -29,10 +30,11 @@ class Spotify(AbstractEffect):
         spotify = SpotifyBinding()
 
         while 1:
+            br = msg.get_brightness()
             try:
                 data = spotify.get()
                 if counter < 5:
-                    matrix.SetImageFromURL(data.album_art_url)
+                    matrix.SetImageFromURL(data.album_art_url, br)
                     log.debug("Image set")
 
                 elif counter < 9:
@@ -47,15 +49,11 @@ class Spotify(AbstractEffect):
                             font,
                             0,
                             y,
-                            matrix.graphics.Color(255, 255, 255),
+                            matrix.graphics.Color(255 * br, 255 * br, 255 * br),
                             line,
                         )
                         y += 10
                     canvas = matrix.SwapOnVSync(canvas)
-                    # matrix.graphics.DrawText(
-                    #     canvas, font, 0, 10, matrix.graphics.Color(255, 255, 255), data.artist)
-                    # matrix.graphics.DrawText(
-                    #     canvas, font, 0, 21, matrix.graphics.Color(255, 255, 255), data.track_name)
                 else:
                     counter = 0
             except Exception as e:
