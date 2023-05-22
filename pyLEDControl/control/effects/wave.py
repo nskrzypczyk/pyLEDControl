@@ -39,19 +39,17 @@ class Wave(AbstractEffect):
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         while 1:
             br = msg.get_brightness()
-            color_r = int(colors[0] * br)
-            color_g = int(colors[1] * br)
-            color_b = int(colors[2] * br)
             for xx, colors in enumerate(data):
+                color_r = int(colors[0] * br)
+                color_g = int(colors[1] * br)
+                color_b = int(colors[2] * br)
                 matrix.graphics.DrawLine(
                     canvas,
                     xx,
                     0,
                     xx,
                     height,
-                    matrix.graphics.Color(
-                        color_r, color_g, color_b
-                    ),
+                    matrix.graphics.Color(color_r, color_g, color_b),
                 )
             canvas = matrix.SwapOnVSync(canvas)
             data = rotate(data, base_offset)
