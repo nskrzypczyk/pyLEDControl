@@ -31,6 +31,7 @@ class Spotify(AbstractEffect):
 
         while 1:
             br = msg.get_brightness()
+            color_text = 255 * br
             try:
                 data = spotify.get()
                 if counter < 5:
@@ -49,7 +50,8 @@ class Spotify(AbstractEffect):
                             font,
                             0,
                             y,
-                            matrix.graphics.Color(255 * br, 255 * br, 255 * br),
+                            matrix.graphics.Color(
+                                color_text, 255 * br, 255 * br),
                             line,
                         )
                         y += 10

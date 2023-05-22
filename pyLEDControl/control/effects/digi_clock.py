@@ -14,7 +14,8 @@ log = Log("DigiClock")
 class DigiClock(AbstractEffect):
     @staticmethod
     def run(matrix_class_name, msg: EffectMessage):
-        matrix: AbstractMatrix = matrix_class_name(options=settings.rgb_options())
+        matrix: AbstractMatrix = matrix_class_name(
+            options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
         font.LoadFont("../../rpi-rgb-led-matrix/fonts/7x13.bdf")
@@ -23,18 +24,23 @@ class DigiClock(AbstractEffect):
         y = 10
         dx = 1
         dy = 1
+        counter = 5
         while True:
-            br: int = msg.get_brightness()
+            if counter == 5:
+                br: int = msg.get_brightness()
+                color = 255*br
+                counter = 0
             canvas.Clear()
             current_time = datetime.datetime.now().strftime("%H:%M:%S")
-            text_width = sum([font.CharacterWidth(ord(char)) for char in current_time])
+            text_width = sum([font.CharacterWidth(ord(char))
+                             for char in current_time])
             text_height = font.height
             matrix.graphics.DrawText(
                 canvas,
                 font,
                 x,
                 y,
-                matrix.graphics.Color(255 * br, 255 * br, 255 * br),
+                matrix.graphics.Color(color, color, color),
                 current_time,
             )
             x += dx
@@ -53,4 +59,5 @@ class DigiClock(AbstractEffect):
                 dy = -dy
 
             canvas = matrix.SwapOnVSync(canvas)
+            counter += 1
             time.sleep(refresh_rate)

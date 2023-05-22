@@ -43,7 +43,8 @@ class RainbowWave(AbstractEffect):
         while 1:
             for x in range(max_width + 1):
                 [
-                    canvas.SetPixel(x, y, rainbow[x][0], rainbow[x][1], rainbow[x][2])
+                    canvas.SetPixel(
+                        x, y, rainbow[x][0], rainbow[x][1], rainbow[x][2])
                     for y in range(max_height + 1)
                 ]
 
@@ -80,9 +81,9 @@ class RainbowWave(AbstractEffect):
                     canvas.SetPixel(
                         base_x,
                         base_y,
-                        rainbow[max_height + counter][0] * br,
-                        rainbow[max_height + counter][1] * br,
-                        rainbow[max_height + counter][2] * br,
+                        int(rainbow[max_height + counter][0] * br),
+                        int(rainbow[max_height + counter][1] * br),
+                        int(rainbow[max_height + counter][2] * br),
                     )
                     base_x += 1
                     base_y -= 1

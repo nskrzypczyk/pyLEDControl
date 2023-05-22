@@ -14,5 +14,5 @@ class RandomDot(AbstractEffect):
         while True:
             br = msg.get_brightness()
             matrix.SetPixel(random.randint(0, 63), random.randint(
-                0, 63), random.randint(0, 128)*br, random.randint(0, 128)*br, random.randint(0, 128)*br)
+                0, 63), int(random.randint(0, 128)*br), int(random.randint(0, 128)*br), int(random.randint(0, 128)*br))
             time.sleep(0.0001)
