@@ -33,7 +33,8 @@ class Server(Process):
         @app.get("/effect/current")
         def get_current_effect():
             return jsonify(
-                {"effect": self.current_effect, "brightness": self.current_brightness}
+                {"effect": self.current_effect,
+                    "brightness": self.current_brightness}
             )
 
         @app.post("/effect/<effect>/<int:brightness>")
@@ -43,7 +44,7 @@ class Server(Process):
             try:
                 self.log.info("Received Effect: " + effect)
                 message = (
-                    EffectMessageBuilder().set_effect(effect).set_brightness(brightness)
+                    EffectMessageBuilder().set_effect(effect).set_brightness(brightness).build()
                 )
                 self.queue.put(message)
                 self.current_effect = effect
@@ -61,6 +62,7 @@ class Server(Process):
             EffectMessageBuilder()
             .set_effect(self.current_effect)
             .set_brightness(self.current_brightness)
+            .build()
         )
         self.queue.put(message)
         self.run_server()

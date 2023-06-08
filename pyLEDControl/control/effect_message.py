@@ -8,12 +8,11 @@ class EffectMessage:
     br_file_path = "brightness.txt"
     effect: type
     brightness: int
+    options: dict
 
-    def set_brightness(self, brightness: int) -> EffectMessage:
-        self.brightness = brightness
+    def set_brightness(self, br: int) -> None:
         with open(self.br_file_path, "w") as f:
-            f.write(str(brightness))
-        return self
+            f.write(str(br))
 
     def get_brightness(self) -> int:
         self.brightness = int(open(self.br_file_path, "r").read())
