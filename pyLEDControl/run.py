@@ -20,7 +20,7 @@ def main():
 
     try:
         while 1:
-            time.sleep(1)
+            time.sleep(3600)
     except KeyboardInterrupt:
         server_proc.terminate()
         led_controller_proc.terminate()
