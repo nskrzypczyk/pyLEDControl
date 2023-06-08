@@ -4,6 +4,8 @@
 from __future__ import annotations
 import abc
 from io import BytesIO
+from pathlib import Path
+from typing import Union
 from PIL import Image, ImageEnhance
 import requests
 import settings
@@ -29,7 +31,8 @@ class AbstractColor(abc.ABC):
 
     @abc.abstractmethod
     def adjust_brightness(self, alpha: float, to_int=False):
-        raise NotImplementedError(f"Method 'adjust_brightness' not implemented!")
+        raise NotImplementedError(
+            f"Method 'adjust_brightness' not implemented!")
 
     @abc.abstractmethod
     def to_tuple(self):
@@ -106,7 +109,8 @@ class AbstractMatrix(abc.ABC):
 
     @abc.abstractmethod
     def CreateFrameCanvas(self):
-        raise NotImplementedError(f"Method 'CreateFrameCanvas' not implemented!")
+        raise NotImplementedError(
+            f"Method 'CreateFrameCanvas' not implemented!")
 
     def SetImageFromURL(self, url: str, brightness: int):
         image_resp = requests.get(url)
@@ -123,4 +127,10 @@ class AbstractMatrix(abc.ABC):
         )
         enhancer = ImageEnhance.Brightness(img)
         img = enhancer.enhance(brightness)
+        img.load()
         self.SetImage(img)
+
+    def SetImageFromFile(self, path: Union[str, Path], x: int, y: int):
+        img = Image.open(path).convert("RGB")
+        img.load()
+        self.SetImage(img, x, y)
