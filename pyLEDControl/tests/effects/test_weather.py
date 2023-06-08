@@ -6,14 +6,15 @@ import sys
 import unittest
 
 from control.adapter.emulated_matrix import EmulatedMatrix
-from control.effects.rainbow_wave import RainbowWave
+from control.effects.weather import Weather
 from control.effect_message import EffectMessage
 from control.effects.effect_message_builder import EffectMessageBuilder
+from control.effects.spotify import Spotify
 from settings import rgb_options
 
 
-class TestRainbowWave(unittest.TestCase):
-    RainbowWave.run(
+class TestWeather(unittest.TestCase):
+    Weather.run(
         EmulatedMatrix, EffectMessageBuilder().set_brightness(100).build())
 
 
