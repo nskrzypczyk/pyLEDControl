@@ -9,6 +9,9 @@ LOG_LEVEL: logging._nameToLevel = "DEBUG"
 ENABLE_STDOUT: bool = True
 MODE = ExecutionMode.REAL
 
+WEATHER_LAT: float = <REPLACE ME>
+WEATHER_LONG: float = <REPLACE ME>
+
 
 class MATRIX_DIMENSIONS(Enum):
     HEIGHT: int = 64
