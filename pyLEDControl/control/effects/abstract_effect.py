@@ -9,6 +9,6 @@ from control.effect_message import EffectMessage
 class AbstractEffect(ABC):
     @staticmethod
     @abstractmethod
-    def run(matrix: AbstractMatrix, effect_message: EffectMessage):
+    def run(matrix: type, effect_message: EffectMessage):
         """Runs the effect"""
         pass
