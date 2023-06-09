@@ -28,7 +28,6 @@ class Weather(AbstractEffect):
             color = 255 * br
             color_white = matrix.graphics.Color(
                 color, color, color)
-            canvas.Clear()
 
             # Build header row
             matrix.graphics.DrawText(
@@ -43,12 +42,10 @@ class Weather(AbstractEffect):
             for i in range(64):
                 canvas.SetPixel(i, 8, color, color, color)
 
-            yoff += 3
+            yoff = 9
             for row in range(4):
                 yoff += 12
                 for col in range(4):
-                    matrix.SetImageFromFile(
-                        forecast["icons"][row], xoff+2, yoff-6)
                     matrix.graphics.DrawText(
                         canvas, font, xoff+15, yoff, color_white, str(int(forecast["temperature_2m_max"][row])))
                     matrix.graphics.DrawText(
@@ -57,4 +54,12 @@ class Weather(AbstractEffect):
                         canvas, font, xoff+54, yoff, color_white, str(int(forecast["precipitation_probability"][row])))
 
             canvas = matrix.SwapOnVSync(canvas)
+
+            # Additional loop because SetImage does not use canvas
+            yoff = 9
+            for row in range(4):
+                yoff += 12
+                for col in range(4):
+                    matrix.SetImageFromFile(
+                        forecast["icons"][row], xoff+2, yoff-6, br)
             time.sleep(refresh_rate)

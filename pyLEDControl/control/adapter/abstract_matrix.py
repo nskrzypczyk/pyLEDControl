@@ -130,7 +130,9 @@ class AbstractMatrix(abc.ABC):
         img.load()
         self.SetImage(img)
 
-    def SetImageFromFile(self, path: Union[str, Path], x: int, y: int):
+    def SetImageFromFile(self, path: Union[str, Path], x: int, y: int, brightness:int):
         img = Image.open(path).convert("RGB")
+        enhancer = ImageEnhance.Brightness(img)
+        img = enhancer.enhance(brightness)
         img.load()
         self.SetImage(img, x, y)
