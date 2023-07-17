@@ -5,7 +5,7 @@ I needed a clock for my office room, so here I am.
 
 ## Prerequisites
 - Raspi running Raspbian
-  - Python3 (>=3.10), used for backend & matrix control
+  - Python3 (<=3.9.2), used for backend & matrix control
   - Nodejs, used for building the React frontend 
 
 ## TODO
