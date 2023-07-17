@@ -10,7 +10,7 @@ from bindings.weather_binding import WeatherBinding, is_weather_up_to_date
 
 class Weather(AbstractEffect):
     @staticmethod
-    def run(matrix_class: type, msg: EffectMessage):
+    def run(matrix_class: type, msg: EffectMessage, conn):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
@@ -19,7 +19,7 @@ class Weather(AbstractEffect):
         binding = WeatherBinding()
         forecast = binding.get()
 
-        while 1:
+        while not Weather.is_terminated(conn):
             xoff = 0
             yoff = 6
             if not is_weather_up_to_date(forecast):

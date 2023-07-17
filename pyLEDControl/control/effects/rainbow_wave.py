@@ -43,8 +43,7 @@ class RainbowWave(AbstractEffect):
         while 1:
             for x in range(max_width + 1):
                 [
-                    canvas.SetPixel(
-                        x, y, rainbow[x][0], rainbow[x][1], rainbow[x][2])
+                    canvas.SetPixel(x, y, rainbow[x][0], rainbow[x][1], rainbow[x][2])
                     for y in range(max_height + 1)
                 ]
 
@@ -53,12 +52,12 @@ class RainbowWave(AbstractEffect):
             rainbow = rotate(rainbow, base_offset)
 
     @staticmethod
-    def top_left_to_bottom_right(matrix: AbstractMatrix, msg: EffectMessage):
+    def top_left_to_bottom_right(matrix: AbstractMatrix, msg: EffectMessage, conn):
         rainbow = RainbowWave.rainbow
         matrix.Clear()
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         base_offset = 1
-        while 1:
+        while not RainbowWave.is_terminated(conn):
             br = msg.get_brightness()
             counter = 1
             for x in range(max_width + 1):
@@ -104,9 +103,9 @@ class RainbowWave(AbstractEffect):
     #         RainbowWave.top_left_to_bottom_right(matrix)
 
     @staticmethod
-    def run(matrix_class_name: AbstractMatrix, msg: EffectMessage):
+    def run(matrix_class_name: AbstractMatrix, msg: EffectMessage, conn):
         matrix = matrix_class_name(options=settings.rgb_options())
         # if options.mode == "left to right":
         #     RainbowWave.left_to_right(matrix)
         # elif options.mode == "top left to bottom right":
-        RainbowWave.top_left_to_bottom_right(matrix, msg)
+        RainbowWave.top_left_to_bottom_right(matrix, msg, conn)
