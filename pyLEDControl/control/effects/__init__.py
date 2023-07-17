@@ -5,6 +5,7 @@ from control.effects.digi_clock import DigiClock
 from control.effects.spotify import Spotify
 from control.effects.off import OFF
 from control.effects.weather import Weather
+from control.effects.shuffle import Shuffle
 import sys
 
 effects = "control.effects"
