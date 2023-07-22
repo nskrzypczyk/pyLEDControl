@@ -25,14 +25,11 @@ class DigiClock(AbstractEffect):
         dx = 1
         dy = 1
         counter = 5
-        while True:
+        while not DigiClock.is_terminated(conn):
             if counter == 5:
                 br: int = msg.get_brightness()
                 color = 255 * br
                 counter = 0
-                if conn.poll():
-                    if conn.recv():
-                        return
             canvas.Clear()
             current_time = datetime.datetime.now().strftime("%H:%M:%S")
             text_width = sum([font.CharacterWidth(ord(char)) for char in current_time])
