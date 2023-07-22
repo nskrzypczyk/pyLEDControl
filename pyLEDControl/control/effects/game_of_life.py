@@ -84,7 +84,7 @@ class GameOfLife(AbstractEffect):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
 
-        field = Field([[]])
+        field = Field([])
         for x in range(64):
             row = []
             for y in range(64):
