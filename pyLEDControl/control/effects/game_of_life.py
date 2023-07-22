@@ -11,9 +11,6 @@ import copy
 from typing import List, NewType
 from dataclasses import dataclass
 
-REFRESH_RATE = 1 / 30
-
-
 @dataclass
 class Cell:
     is_alive: bool
@@ -97,4 +94,3 @@ class GameOfLife(AbstractEffect):
             if counter == 20:
                 br = msg.get_brightness()
             field = _new_generation(field, matrix, canvas, br)
-            time.sleep(REFRESH_RATE)
