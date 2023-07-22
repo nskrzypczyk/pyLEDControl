@@ -21,7 +21,6 @@ class Shuffle(AbstractEffect):
                 local_effect_dict.pop("OFF")
         max_count = len(local_effect_dict)
         counter = 0
-        print(local_effect_dict)
         while not Shuffle.is_terminated(conn_p):
             if counter == max_count - 1:
                 log.debug("Resetting counter")
