@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+import pickle
 from control.effects.abstract_effect import AbstractEffect
 import settings
 from control.adapter.abstract_matrix import AbstractMatrix
@@ -10,6 +11,9 @@ import random
 import copy
 from typing import List, NewType
 from dataclasses import dataclass
+import numpy as np
+from multiprocessing import Process, Manager
+
 
 @dataclass
 class Cell:
@@ -21,55 +25,78 @@ class Cell:
         return "0" if self.is_alive else "."
 
 
-Field: NewType = NewType("Field", List[List[Cell]])
-
-
-def __is_index_out_of_bounds(field: Field, x: int, y: int) -> bool:
-    return (0 <= x) and (x < len(field)) and (0 <= y) and (y < len(field[0]))
+def __is_index_out_of_bounds(field: np.ndarray, x: int, y: int) -> bool:
+    return (0 <= x) and (x < field.shape[0]) and (0 <= y) and (y < field.shape[1])
 
 
 def __print_field(
-    field: Field, matrix: AbstractMatrix, canvas: AbstractMatrix, br: int
+    field: np.ndarray, matrix: AbstractMatrix, canvas: AbstractMatrix, br: int
 ):
-    for row in field:
-        for cell in row:
-            if cell.is_alive:
+    for x in range(field.shape[0]):
+        for y in range(field.shape[1]):
+            if field[x, y].is_alive:
                 canvas.SetPixel(
-                    cell.x,
-                    cell.y,
+                    x,
+                    y,
                     255 * br,
                     255 * br,
                     255 * br,
                 )
             else:
                 canvas.SetPixel(
-                    cell.x,
-                    cell.y,
+                    x,
+                    y,
                     0,
                     0,
                     0,
                 )
     canvas = matrix.SwapOnVSync(canvas)
 
+def _calc_row(field, new_field, ir):
+    for ic in range(field.shape[1]):
+        cell = field[ir, ic]
+        active_neighbors = 0
+        for ranges in [
+            # one row "above" the cell
+            zip([cell.x - 1, cell.x, cell.x + 1], [cell.y - 1] * 3),
+            # one row "below" the cell
+            zip([cell.x - 1, cell.x, cell.x + 1], [cell.y + 1] * 3),
+            # left and right to the cell
+            zip([cell.x - 1, cell.x + 1], [cell.y] * 2),
+        ]:
+            for xi, yi in ranges:
+                if __is_index_out_of_bounds(field, xi, yi):
+                    if field[xi, yi].is_alive:
+                        active_neighbors += 1
+        if cell.is_alive and (active_neighbors < 2 or active_neighbors > 3):
+            new_field[ir, ic].is_alive = False
+        elif not cell.is_alive and (active_neighbors == 3):
+            new_field[ir, ic].is_alive = True
 
-def _new_generation(field: Field, matrix: AbstractMatrix, canvas: AbstractMatrix, br):
-    new_field: Field = copy.deepcopy(field, None, [])
-    for ir, row in enumerate(field):
-        for ic, cell in enumerate(row):
+def _new_generation(
+    field: np.ndarray, matrix: AbstractMatrix, canvas: AbstractMatrix, br
+):
+    new_field: np.ndarray = pickle.loads(pickle.dumps(field))
+    for ir in range(field.shape[0]):
+        for ic in range(field.shape[1]):
+            cell = field[ir, ic]
             active_neighbors = 0
             for ranges in [
+                # one row "above" the cell
                 zip([cell.x - 1, cell.x, cell.x + 1], [cell.y - 1] * 3),
+                # one row "below" the cell
                 zip([cell.x - 1, cell.x, cell.x + 1], [cell.y + 1] * 3),
+                # left and right to the cell
                 zip([cell.x - 1, cell.x + 1], [cell.y] * 2),
             ]:
                 for xi, yi in ranges:
                     if __is_index_out_of_bounds(field, xi, yi):
-                        if field[xi][yi].is_alive:
+                        if field[xi, yi].is_alive:
                             active_neighbors += 1
             if cell.is_alive and (active_neighbors < 2 or active_neighbors > 3):
-                new_field[ir][ic].is_alive = False
+                new_field[ir, ic].is_alive = False
             elif not cell.is_alive and (active_neighbors == 3):
-                new_field[ir][ic].is_alive = True
+                new_field[ir, ic].is_alive = True
 
     __print_field(new_field, matrix, canvas, br)
     return new_field
@@ -81,16 +108,16 @@ class GameOfLife(AbstractEffect):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
 
-        field = Field([])
-        for x in range(64):
-            row = []
-            for y in range(64):
-                row.append(Cell(random.choice([True, False]), x, y))
-            field.append(row)
+        field = np.empty((64, 64), dtype=Cell)
+        for x in range(field.shape[0]):
+            for y in range(field.shape[0]):
+                field[x, y] = Cell(
+                    np.random.choice([True, False], p=[1 / 6, 5 / 6]), x, y
+                )
 
         counter = 0
         br = msg.get_brightness()
         while not GameOfLife.is_terminated(conn):
-            if counter == 20:
+            if counter == 10:
                 br = msg.get_brightness()
             field = _new_generation(field, matrix, canvas, br)
