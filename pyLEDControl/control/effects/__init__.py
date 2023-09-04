@@ -9,9 +9,11 @@ from control.effects.shuffle import Shuffle
 from control.effects.off import OFF
 import sys
 
+from control.effects.abstract_effect import AbstractEffect
+
 effects = "control.effects"
 __import__(effects)
 effect_list = sys.modules[effects]
-effect_dict = {
+effect_dict: dict[str, type[AbstractEffect]] = {
     name: obj for name, obj in effect_list.__dict__.items() if isinstance(obj, type)
 }

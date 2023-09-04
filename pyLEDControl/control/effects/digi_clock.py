@@ -1,20 +1,24 @@
+import datetime
 import multiprocessing
 import os
-import time
 import random
+import time
+
 import settings
-import datetime
-from misc.logging import Log
+from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
-from control.effect_message import EffectMessage
 from control.effects.abstract_effect import AbstractEffect
+from misc.logging import Log
 
 log = Log("DigiClock")
 
 
 class DigiClock(AbstractEffect):
+    class Options(AbstractEffectOptions):
+        pass
+
     @staticmethod
-    def run(matrix_class_name, msg: EffectMessage, conn):
+    def run(matrix_class_name, options: Options, conn):
         matrix: AbstractMatrix = matrix_class_name(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
@@ -27,7 +31,7 @@ class DigiClock(AbstractEffect):
         counter = 5
         while not DigiClock.is_terminated(conn):
             if counter == 5:
-                br: int = msg.get_brightness()
+                br: int = options.get_brightness()
                 color = 255 * br
                 counter = 0
             canvas.Clear()

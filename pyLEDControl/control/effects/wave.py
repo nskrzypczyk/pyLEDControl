@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import time
-from control.effects.abstract_effect import AbstractEffect
-from control.adapter.abstract_matrix import AbstractColor, AbstractMatrix
-from control.effect_message import EffectMessage
-from misc.utils import rotate
+
 import settings
+from control.abstract_effect_options import AbstractEffectOptions
+from control.adapter.abstract_matrix import AbstractColor, AbstractMatrix
+from control.effects.abstract_effect import AbstractEffect
+from misc.utils import rotate
 
 # TODO: Abstract options so that they can be specified for each effect
 
@@ -31,14 +32,16 @@ def _data():
 
 
 class Wave(AbstractEffect):
+    class Options(AbstractEffectOptions):
+        pass
     @staticmethod
-    def default(matrix: AbstractMatrix, msg: EffectMessage, conn):
+    def default(matrix: AbstractMatrix, options: Options, conn):
         base_offset = 1
         data = _data()
         matrix.Clear()
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         while not Wave.is_terminated(conn):
-            br = msg.get_brightness()
+            br = options.get_brightness()
             for xx, colors in enumerate(data):
                 color_r = int(colors[0] * br)
                 color_g = int(colors[1] * br)
@@ -56,6 +59,6 @@ class Wave(AbstractEffect):
             time.sleep(0.01)
 
     @staticmethod
-    def run(matrix_class_name: AbstractMatrix, msg: EffectMessage, conn):
+    def run(matrix_class_name: AbstractMatrix, msg: AbstractEffectOptions, conn):
         matrix = matrix_class_name(options=settings.rgb_options())
         Wave.default(matrix, msg, conn)

@@ -1,17 +1,31 @@
-from abc import abstractmethod
 import os
 import time
-from control.effects.abstract_effect import AbstractEffect
-from control.effect_message import EffectMessage
-from control.adapter.abstract_matrix import AbstractMatrix
-from misc.logging import Log
+from abc import abstractmethod
+from dataclasses import dataclass
+from multiprocessing import Pipe, Process
 from threading import Thread
-from multiprocessing import Process, Pipe
+from typing import List
+
+from control.abstract_effect_options import AbstractEffectOptions
+from control.adapter.abstract_matrix import AbstractMatrix
+from control.effects.abstract_effect import AbstractEffect
+from misc.logging import Log
 
 
 class Shuffle(AbstractEffect):
+    class Options(AbstractEffectOptions):
+        """
+        protoype of new Options API
+        Shall replace the EffectMessage
+        Every Effect will have to implement this option class if needed.
+        """
+
+        # Make class abstract
+        active_effects: List[str]
+        brightness: int  # add existing "options" from EffectMessage to abstract class
+
     @abstractmethod
-    def run(matrix: type, msg: EffectMessage, conn_p):
+    def run(matrix: type, options: Options, conn_p):
         log = Log(__class__.__name__)
         from control.effects import effect_dict
 
@@ -28,7 +42,7 @@ class Shuffle(AbstractEffect):
             _conn, conn_c = Pipe(True)
             tt = Process(
                 target=list(local_effect_dict.values())[counter].run,
-                args=[matrix, msg, conn_c],
+                args=[matrix, options, conn_c],
             )
             counter += 1
             log.debug("Starting thread")

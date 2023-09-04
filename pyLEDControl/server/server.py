@@ -1,5 +1,6 @@
-from flask import Flask, jsonify
-from control.effect_message import EffectMessage
+import json
+from flask import Flask, jsonify, request
+from control.abstract_effect_options import AbstractEffectOptions
 from control.effects import effect_dict
 from control.effects.effect_message_builder import EffectMessageBuilder
 import settings
@@ -33,19 +34,24 @@ class Server(Process):
         @app.get("/effect/current")
         def get_current_effect():
             return jsonify(
-                {"effect": self.current_effect,
-                    "brightness": self.current_brightness}
+                {"effect": self.current_effect, "brightness": self.current_brightness}
             )
 
         @app.post("/effect/<effect>/<int:brightness>")
         def change_effect(effect: str, brightness: int):
+            """ 
+            TODO: Modify endpoint: 
+            - Backend: Options class should contain neccessary information like brightness etc.
+            - Frontend: Build payload 
+            """
             if brightness > 100 or brightness < 0:
                 return jsonify("brightness must be a interval value in [0;100]")
             try:
                 self.log.info("Received Effect: " + effect)
-                message = (
-                    EffectMessageBuilder().set_effect(effect).set_brightness(brightness).build()
-                )
+
+                raw_options_data = json.loads(request.json)
+                options_instance = effect_dict[effect].Options(**raw_options_data)
+
                 self.queue.put(message)
                 self.current_effect = effect
                 self.current_brightness = brightness

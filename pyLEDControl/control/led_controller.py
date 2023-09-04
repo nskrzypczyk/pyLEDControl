@@ -1,13 +1,12 @@
 import os
-from misc.logging import Log
-from control.adapter.real_matrix import RealMatrix
-from control.adapter.emulated_matrix import EmulatedMatrix
 import settings
-from misc.domain_data import ExecutionMode
-from display.rgb_process import MatrixProcess
 from multiprocessing import Process, Queue
-from control.effects.random_dot import RandomDot
-from control.effect_message import EffectMessage
+
+from control.adapter.emulated_matrix import EmulatedMatrix
+from control.adapter.real_matrix import RealMatrix
+from display.rgb_process import MatrixProcess
+from misc.domain_data import ExecutionMode
+from misc.logging import Log
 
 
 class LedController:

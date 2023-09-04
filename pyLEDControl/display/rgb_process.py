@@ -1,12 +1,12 @@
 import os
 import time
-import settings
-from control.effects.abstract_effect import AbstractEffect
+from multiprocessing import Pipe, Process, Queue
+
+from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.adapter.real_matrix import RealMatrix
+from control.effects.abstract_effect import AbstractEffect
 from misc.logging import Log
-from control.effect_message import EffectMessage
-from multiprocessing import Process, Queue, Pipe
 
 
 class MatrixProcess:
@@ -22,9 +22,9 @@ class MatrixProcess:
                 if queue.empty():
                     self.log.debug("Queue is empty")
                 else:
-                    message: EffectMessage = queue.get(block=False)
-                    print(message)
-                    if message.effect != current_effect:
+                    options: AbstractEffectOptions = queue.get(block=False)
+                    print(options)
+                    if options.effect != current_effect:
                         self.log.debug("Effect has changed. Restarting process")
 
                         if proc:
@@ -32,10 +32,10 @@ class MatrixProcess:
                             proc.join()
                         conn_p, conn_c = Pipe(True)
                         proc = Process(
-                            target=message.effect.run, args=[matrix, message, conn_c]
+                            target=options.effect.run, args=[matrix, options, conn_c]
                         )
                         proc.start()
-                        current_effect = message.effect
+                        current_effect = options.effect
                 time.sleep(1)
             except KeyboardInterrupt:
                 self.log.debug("Terminating")
