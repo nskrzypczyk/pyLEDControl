@@ -52,7 +52,7 @@ class Server(Process):
                 raw_options_data = json.loads(request.json)
                 options_instance = effect_dict[effect].Options(**raw_options_data)
 
-                self.queue.put(message)
+                self.queue.put(options_instance)
                 self.current_effect = effect
                 self.current_brightness = brightness
                 return jsonify({"status": "success"})
@@ -64,11 +64,7 @@ class Server(Process):
 
     def run(self):
         # Start clock on startup
-        message = (
-            EffectMessageBuilder()
-            .set_effect(self.current_effect)
-            .set_brightness(self.current_brightness)
-            .build()
-        )
-        self.queue.put(message)
+        options_instance = effect_dict[self.current_effect].Options(
+            brightness=self.current_brightness, effect=effect_dict[self.current_effect])
+        self.queue.put(options_instance)
         self.run_server()
