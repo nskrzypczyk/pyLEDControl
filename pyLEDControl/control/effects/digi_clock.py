@@ -1,7 +1,4 @@
 import datetime
-import multiprocessing
-import os
-import random
 import time
 
 import settings
@@ -54,7 +51,7 @@ class DigiClock(AbstractEffect):
             log.debug(f"text_width:{text_width}")
             log.debug(f"y:{y}")
             log.debug(f"x:{x}")
-            if (x <= 0) or (x + text_width >= 64):
+            if (x < 0) or (x + text_width > 64):
                 dx = -dx
             if (y <= 9) or (
                 y + text_height >= 64 + text_height
