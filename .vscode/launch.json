@@ -8,8 +8,12 @@
       "name": "Python: RUN",
       "type": "python",
       "request": "launch",
-      "program": "pyLEDControl/run.py",
-      "console": "integratedTerminal"
+      "cwd": "${workspaceFolder}/pyLEDControl",
+      "program": "run.py",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "autoReload": {"enable": true},
+      
     }
   ]
 }
