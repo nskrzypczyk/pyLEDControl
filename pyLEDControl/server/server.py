@@ -1,8 +1,7 @@
 import json
 from flask import Flask, jsonify, request
-from control.abstract_effect_options import AbstractEffectOptions
+from control.abstract_effect_options import get_attribute_types
 from control.effects import effect_dict
-from control.effects.effect_message_builder import EffectMessageBuilder
 import settings
 from misc.logging import Log
 from multiprocessing import Process, Queue
@@ -30,6 +29,10 @@ class Server(Process):
         @app.get("/effect/available")
         def get_effects():
             return jsonify(list(effect_dict.keys()))
+        
+        @app.get("/effect/<effect>/options")
+        def get_effect_option_parameters(effect:str):
+            return jsonify(get_attribute_types(effect_dict[effect].Options))
 
         @app.get("/effect/current")
         def get_current_effect():
