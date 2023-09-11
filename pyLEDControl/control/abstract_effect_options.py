@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import abc
-from dataclasses import dataclass
-from typing import Union
-
+from dataclasses import Field, dataclass
 
 @dataclass
 class AbstractEffectOptions(abc.ABC):
@@ -20,3 +18,13 @@ class AbstractEffectOptions(abc.ABC):
     def get_brightness(self) -> int:
         self.brightness = int(open(self.br_file_path, "r").read())
         return self.brightness / 100
+
+
+def get_attribute_types(obj:type):
+    dc_fields = obj.__dict__["__dataclass_fields__"]
+    attributes = dict()
+    v:Field
+    for k,v in dc_fields.items():
+        attributes[k]=str(v.type)
+    print(attributes)
+    return attributes
