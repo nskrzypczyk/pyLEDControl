@@ -21,9 +21,9 @@ class Shuffle(AbstractEffect):
         from control.effects import effect_dict
 
         local_effect_dict = effect_dict
-        for unwanted in ["Shuffle", "OFF"]:
+        for unwanted in ["Shuffle", "OFF", "AbstractEffect"]: # TODO: Add decorator / interface for unwanted effects
             if unwanted in local_effect_dict:
-                local_effect_dict.pop("OFF")
+                local_effect_dict.pop(unwanted)
         max_count = len(local_effect_dict)
         counter = 0
         while not Shuffle.is_terminated(conn_p):

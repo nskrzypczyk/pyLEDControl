@@ -1,6 +1,6 @@
 import json
 from flask import Flask, jsonify, request
-from control.abstract_effect_options import get_attribute_types
+from control.abstract_effect_options import get_attribute_types, to_json_td
 from control.effects import effect_dict
 import settings
 from misc.logging import Log
@@ -32,7 +32,8 @@ class Server(Process):
         
         @app.get("/effect/<effect>/options")
         def get_effect_option_parameters(effect:str):
-            return jsonify(get_attribute_types(effect_dict[effect].Options))
+            return jsonify(to_json_td(effect_dict[effect].Options))
+            # return jsonify(get_attribute_types(effect_dict[effect].Options))
 
         @app.get("/effect/current")
         def get_current_effect():
@@ -40,7 +41,7 @@ class Server(Process):
                 {"effect": self.current_effect, "brightness": self.current_brightness}
             )
 
-        @app.post("/effect/<effect>/<int:brightness>")
+        @app.post("/effect/<effect>")
         def change_effect(effect: str, brightness: int):
             """ 
             TODO: Modify endpoint: 

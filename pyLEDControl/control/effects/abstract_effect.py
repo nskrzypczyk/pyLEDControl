@@ -2,16 +2,19 @@
 # -*- coding: utf-8 -*-
 
 from abc import ABC
+from dataclasses import dataclass
+from misc.utils import Generics
 from control.abstract_effect_options import AbstractEffectOptions
-from control.adapter.abstract_matrix import AbstractMatrix
 
 
 class AbstractEffect(ABC):
+
+    @dataclass
     class Options(AbstractEffectOptions):
         pass
 
     @staticmethod
-    def run(matrix: type, effect_message: Options, conn):
+    def run(matrix: type, effect_message: Generics.T_EFFECT_OPTIONS, conn):
         """Effect definition which will be called by MatrixProcess"""
         pass
 

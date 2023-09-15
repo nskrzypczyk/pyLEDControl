@@ -1,4 +1,4 @@
-import { IEffectData } from '../domainData/DomainData';
+import { IEffectOptions } from '../domainData/DomainData';
 
 const HOST = `http://${window.location.hostname}:8080`
 
@@ -8,13 +8,16 @@ const handleErrors = (res: Response) => {
     }
 }
 
-export const setEffect = async (effectData: IEffectData) => {
-    const res = await fetch(`${HOST}/effect/${effectData.effect}/${effectData.brightness}`, {
+export const setEffect = async (effectData: IEffectOptions) => {
+    const res = await fetch(`${HOST}/effect/${effectData.effect}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        mode: "cors"
+        mode: "cors",
+        // body:JSON.stringify(
+            
+        // )
     })
     handleErrors(res)
     return res.json()
@@ -32,7 +35,7 @@ export const getAvailable = async (): Promise<string[]> => {
     return await res.json()
 }
 
-export const getStatus = async (): Promise<IEffectData> => {
+export const getStatus = async (): Promise<IEffectOptions> => {
     const res = await fetch(`${HOST}/effect/current`, {
         method: "GET",
         mode: "cors"

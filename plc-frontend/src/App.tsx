@@ -3,9 +3,9 @@ import BrightnessHighIcon from '@mui/icons-material/BrightnessHigh';
 import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, MenuItem, Slide, Slider, Snackbar, Stack, Toolbar, Typography } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import React from 'react';
-import { getStatus, setEffect, getAvailable } from './api/ApiManager';
+import { getStatus, setEffect, getAvailable, getOptionParameters } from './api/ApiManager';
 import './App.css';
-import { IEffectData } from './domainData/DomainData';
+import { IEffectOptions } from './domainData/DomainData';
 
 
 const App: React.FC = () => {
@@ -31,9 +31,10 @@ const App: React.FC = () => {
   const handleBrigthnessChange = (event: Event, newValue: number | number[]) => {
     setBrightness(newValue as number);
   };
-
-  const handleEffectChip = (chipName: string) => {
-    setSelectedEffect(chipName)
+  
+  const handleEffectChip = async(chipName: string) => {
+    await console.log(getOptionParameters(chipName))
+    await setSelectedEffect(chipName)
   }
 
   const handleClickUpdate = async () => {
@@ -62,7 +63,7 @@ const App: React.FC = () => {
   React.useEffect(() => {
     const fn = async () => {
       try {
-        const res: IEffectData = await getStatus()
+        const res: IEffectOptions = await getStatus()
         setBrightness(res.brightness)
         setSelectedEffect(res.effect)
         const availableEffects = await getAvailable()

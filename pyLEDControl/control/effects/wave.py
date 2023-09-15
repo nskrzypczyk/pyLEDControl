@@ -3,10 +3,11 @@
 import time
 
 import settings
-from control.abstract_effect_options import AbstractEffectOptions
-from control.adapter.abstract_matrix import AbstractColor, AbstractMatrix
+from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
 from misc.utils import rotate
+from misc.utils import Generics
+
 
 # TODO: Abstract options so that they can be specified for each effect
 
@@ -32,10 +33,9 @@ def _data():
 
 
 class Wave(AbstractEffect):
-    class Options(AbstractEffectOptions):
-        pass
+
     @staticmethod
-    def default(matrix: AbstractMatrix, options: Options, conn):
+    def default(matrix: AbstractMatrix, options: Generics.T_EFFECT_OPTIONS, conn):
         base_offset = 1
         data = _data()
         matrix.Clear()
@@ -59,6 +59,6 @@ class Wave(AbstractEffect):
             time.sleep(0.01)
 
     @staticmethod
-    def run(matrix_class_name: AbstractMatrix, msg: AbstractEffectOptions, conn):
+    def run(matrix_class_name: AbstractMatrix, options: Generics.T_EFFECT_OPTIONS, conn):
         matrix = matrix_class_name(options=settings.rgb_options())
-        Wave.default(matrix, msg, conn)
+        Wave.default(matrix, options, conn)

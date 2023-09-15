@@ -1,3 +1,4 @@
+from abc import ABC
 from control.effects.wave import Wave
 from control.effects.game_of_life import GameOfLife
 from control.effects.random_dot import RandomDot
@@ -15,5 +16,5 @@ effects = "control.effects"
 __import__(effects)
 effect_list = sys.modules[effects]
 effect_dict: dict[str, type[AbstractEffect]] = {
-    name: obj for name, obj in effect_list.__dict__.items() if isinstance(obj, type)
+    name: T for name, T in effect_list.__dict__.items() if (isinstance(T, type) and name!="AbstractEffect") # Implement marker interface instead of hardcoded exclusion!
 }

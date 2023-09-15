@@ -10,7 +10,7 @@ from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
 from misc.logging import Log
-from misc.utils import rotate
+from misc.utils import Generics, rotate
 
 # TODO: Implement options
 
@@ -20,8 +20,6 @@ max_height = settings.MATRIX_DIMENSIONS.HEIGHT.value - 1
 
 
 class RainbowWave(AbstractEffect):
-    class Options(AbstractEffectOptions):
-        pass
 
     rainbow = []
     for i in range(128):
@@ -46,7 +44,8 @@ class RainbowWave(AbstractEffect):
         while 1:
             for x in range(max_width + 1):
                 [
-                    canvas.SetPixel(x, y, rainbow[x][0], rainbow[x][1], rainbow[x][2])
+                    canvas.SetPixel(
+                        x, y, rainbow[x][0], rainbow[x][1], rainbow[x][2])
                     for y in range(max_height + 1)
                 ]
 
@@ -55,7 +54,7 @@ class RainbowWave(AbstractEffect):
             rainbow = rotate(rainbow, base_offset)
 
     @staticmethod
-    def top_left_to_bottom_right(matrix: AbstractMatrix, options: Options, conn):
+    def top_left_to_bottom_right(matrix: AbstractMatrix, options: Generics.T_EFFECT_OPTIONS, conn):
         rainbow = RainbowWave.rainbow
         matrix.Clear()
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
@@ -106,7 +105,7 @@ class RainbowWave(AbstractEffect):
     #         RainbowWave.top_left_to_bottom_right(matrix)
 
     @staticmethod
-    def run(matrix_class_name: AbstractMatrix, options: Options, conn):
+    def run(matrix_class_name: AbstractMatrix, options: Generics.T_EFFECT_OPTIONS, conn):
         matrix = matrix_class_name(options=settings.rgb_options())
         # if options.mode == "left to right":
         #     RainbowWave.left_to_right(matrix)

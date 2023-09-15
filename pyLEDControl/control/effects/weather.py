@@ -1,20 +1,19 @@
 import time
+from typing import TypeVar
 
 import settings
 from bindings.weather_binding import WeatherBinding, is_weather_up_to_date
 from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
+from misc.utils import Generics
 
 # icons are 6x8
 
 
 class Weather(AbstractEffect):
-    class Options(AbstractEffectOptions):
-        pass
-
     @staticmethod
-    def run(matrix_class: type, options: Options, conn):
+    def run(matrix_class: type, options:Generics.T_EFFECT_OPTIONS, conn):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()

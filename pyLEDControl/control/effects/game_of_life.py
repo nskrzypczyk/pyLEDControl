@@ -3,16 +3,13 @@
 
 
 import pickle
-from control.effects.abstract_effect import AbstractEffect
+from dataclasses import dataclass
+
+import numpy as np
 import settings
 from control.adapter.abstract_matrix import AbstractMatrix
-import time
-import random
-import copy
-from typing import List, NewType
-from dataclasses import dataclass
-import numpy as np
-from multiprocessing import Process, Manager
+from control.effects.abstract_effect import AbstractEffect
+from misc.utils import Generics
 
 
 @dataclass
@@ -104,7 +101,7 @@ def _new_generation(
 
 class GameOfLife(AbstractEffect):
     @staticmethod
-    def run(matrix_class, msg, conn):
+    def run(matrix_class, options: Generics.T_EFFECT_OPTIONS, conn):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
 
@@ -116,8 +113,8 @@ class GameOfLife(AbstractEffect):
                 )
 
         counter = 0
-        br = msg.get_brightness()
+        br = options.get_brightness()
         while not GameOfLife.is_terminated(conn):
             if counter == 10:
-                br = msg.get_brightness()
+                br = options.get_brightness()
             field = _new_generation(field, matrix, canvas, br)

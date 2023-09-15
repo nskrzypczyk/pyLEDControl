@@ -1,21 +1,19 @@
+from dataclasses import dataclass
 import datetime
 import time
+from misc.utils import Generics
 
 import settings
-from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
 from misc.logging import Log
 
 log = Log("DigiClock")
 
-
 class DigiClock(AbstractEffect):
-    class Options(AbstractEffectOptions):
-        pass
 
     @staticmethod
-    def run(matrix_class_name, options: Options, conn):
+    def run(matrix_class_name, options: Generics.T_EFFECT_OPTIONS, conn):
         matrix: AbstractMatrix = matrix_class_name(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
