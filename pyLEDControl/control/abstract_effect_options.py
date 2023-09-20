@@ -3,13 +3,21 @@
 from __future__ import annotations
 
 import abc
-from dataclasses import Field, dataclass
+from control.effects import effect_dict
+from dataclasses import Field, dataclass, field
+from typing import Callable, Literal, TypeVar, Union
+from misc.domain_data import IntervalConstraint
+
+# TODO: REFACTORING AFTER IMPLEMENTING OPTION CLASS ABSTRACTION!
+
 
 @dataclass
 class AbstractEffectOptions(abc.ABC):
     br_file_path = "brightness.txt"
     effect: type
     brightness: int
+
+    brightness_constraints = IntervalConstraint(0, True, 100, True)
 
     def set_brightness(self, br: int) -> None:
         with open(self.br_file_path, "w") as f:
@@ -18,11 +26,12 @@ class AbstractEffectOptions(abc.ABC):
     def get_brightness(self) -> int:
         self.brightness = int(open(self.br_file_path, "r").read())
         return self.brightness / 100
-    
+
 
 def to_json_td(cls: type):
+    print
     type_def = {}
-    v:Field
+    v: Field
     for k, v in cls.__dict__["__dataclass_fields__"].items():
         type_def[str(k)] = __att_to_json(v.type)
         # Hier weiter machen! JTD schema einführen
@@ -40,11 +49,19 @@ def __att_to_json(data):
     return to_json_td(data.__class__)
 
 
-def get_attribute_types(obj:type):
+def get_attribute_types(obj: type):
+    """Note: Input type/instance must be a @dataclass
+
+    Args:
+        obj (type): _description_
+
+    Returns:
+        attributes: A dict[Field,str] where the values are the names of the fields.
+    """
     dc_fields = obj.__dict__["__dataclass_fields__"]
     attributes = dict()
-    v:Field
-    for k,v in dc_fields.items():
-        attributes[k]=str(v.type)
+    v: Field
+    for k, v in dc_fields.items():
+        attributes[k] = str(v.type)
     print(attributes)
     return attributes
