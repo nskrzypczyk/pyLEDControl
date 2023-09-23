@@ -1,6 +1,6 @@
 import json
 from flask import Flask, jsonify, request
-from control.abstract_effect_options import get_attribute_types, to_json_td
+from control.abstract_effect_options import to_json_td
 from control.effects import effect_dict
 import settings
 from misc.logging import Log

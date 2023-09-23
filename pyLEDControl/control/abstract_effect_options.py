@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import abc
-from control.effects import effect_dict
 from dataclasses import Field, dataclass, field
 from typing import Callable, Literal, TypeVar, Union
+import typing
 from misc.domain_data import IntervalConstraint
 
 # TODO: REFACTORING AFTER IMPLEMENTING OPTION CLASS ABSTRACTION!
@@ -23,13 +23,12 @@ class AbstractEffectOptions(abc.ABC):
         with open(self.br_file_path, "w") as f:
             f.write(str(br))
 
-    def get_brightness(self) -> int:
+    def get_brightness(self) -> float:
         self.brightness = int(open(self.br_file_path, "r").read())
         return self.brightness / 100
 
 
 def to_json_td(cls: type):
-    print
     type_def = {}
     v: Field
     for k, v in cls.__dict__["__dataclass_fields__"].items():
@@ -38,15 +37,40 @@ def to_json_td(cls: type):
     return type_def
 
 
-def __att_to_json(data):
-    print(data)
-    if data is None or data in [bool, int, float, str, object]:
-        return data
-    elif data is list:
-        return [__att_to_json(d) for d in data]
-    elif data is dict:
-        return {k: __att_to_json(v) for k, v in data.items()}
-    return to_json_td(data.__class__)
+def __python_type_to_json_type(t: type) -> str:
+    if t in [int, float]:
+        return "number"
+    elif t == bool:
+        return "boolean"
+    elif t == str:
+        return "string"
+    elif t == None:
+        return "null"
+    elif t == list:
+        return "any[]"
+    else:
+        return "any"
+
+
+def __GenericAllias_to_json_string_converter(ga: typing._GenericAlias) -> str:
+    """ Example for _Genericalias: 
+        >>>  {'_inst': False, '_name': 'List', '__origin__': <class 'list'>, '__slots__': None, '__args__': (<class 'str'>,), '__parameters__': (), '_paramspec_tvars': False}  
+    """
+    if ga.__dict__["__origin__"] == list:
+        return f"{__att_to_json(ga.__dict__['__args__'][0],True)}[]"
+
+
+def __att_to_json(data: type, is_class = False):
+    cls = data.__class__ if not is_class else data
+    if (cls is None) or (cls in [bool, int, float, str, object, list]):
+        return __python_type_to_json_type(cls)
+
+    elif cls is typing._GenericAlias:
+        if data.__dict__["__origin__"] == list:
+            return __GenericAllias_to_json_string_converter(data)
+        else:
+            return __python_type_to_json_type(None)
+    return to_json_td(cls.__class__)
 
 
 def get_attribute_types(obj: type):
@@ -63,5 +87,4 @@ def get_attribute_types(obj: type):
     v: Field
     for k, v in dc_fields.items():
         attributes[k] = str(v.type)
-    print(attributes)
     return attributes
