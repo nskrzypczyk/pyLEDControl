@@ -10,10 +10,10 @@
       "request": "launch",
       "cwd": "${workspaceFolder}/pyLEDControl",
       "program": "run.py",
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "internalConsoleOptions": "openOnSessionStart",
       "autoReload": {"enable": true},
-      
+      "subProcess": true
     }
   ]
 }
