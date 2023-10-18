@@ -22,17 +22,21 @@ class MatrixProcess:
                 if queue.empty():
                     self.log.debug("Queue is empty")
                 else:
-                    options: AbstractEffectOptions = queue.get(block=False)
-                    print(options)
+                    queue_data = queue.get(block=False)
+                    effect_class: AbstractEffect = queue_data[0]
+                    options: AbstractEffectOptions = queue_data[1]
                     if options.effect != current_effect:
-                        self.log.debug("Effect has changed. Restarting process")
+                        self.log.debug(
+                            "Effect has changed. Restarting process")
 
                         if proc:
                             conn_p.send(True)
                             proc.join()
                         conn_p, conn_c = Pipe(True)
                         proc = Process(
-                            target=options.effect.run, args=[matrix, options, conn_c]
+                            target=effect_class.run, args=[
+                                matrix, options, conn_c
+                            ]
                         )
                         proc.start()
                         current_effect = options.effect
