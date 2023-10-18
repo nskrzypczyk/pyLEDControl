@@ -1,16 +1,16 @@
 import time
-from control.effects.abstract_effect import AbstractEffect
-from control.effect_message import EffectMessage
-from control.adapter.abstract_matrix import AbstractMatrix
+from typing import TypeVar
+
 import settings
 from bindings.weather_binding import WeatherBinding, is_weather_up_to_date
-
+from control.adapter.abstract_matrix import AbstractMatrix
+from control.effects.abstract_effect import AbstractEffect
 # icons are 6x8
 
 
 class Weather(AbstractEffect):
     @staticmethod
-    def run(matrix_class: type, msg: EffectMessage, conn):
+    def run(matrix_class: type, options, conn):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
@@ -24,20 +24,15 @@ class Weather(AbstractEffect):
             yoff = 6
             if not is_weather_up_to_date(forecast):
                 forecast = binding.get()
-            br = msg.get_brightness()
+            br = options.get_brightness()
             color = 255 * br
-            color_white = matrix.graphics.Color(
-                color, color, color)
+            color_white = matrix.graphics.Color(color, color, color)
 
             # Build header row
-            matrix.graphics.DrawText(
-                canvas, font, xoff+2, yoff, color_white, "W")
-            matrix.graphics.DrawText(
-                canvas, font, xoff+11, yoff, color_white, "Tmax")
-            matrix.graphics.DrawText(
-                canvas, font, xoff+34, yoff, color_white, "Tmin")
-            matrix.graphics.DrawText(
-                canvas, font, xoff+54, yoff, color_white, "R%")
+            matrix.graphics.DrawText(canvas, font, xoff + 2, yoff, color_white, "W")
+            matrix.graphics.DrawText(canvas, font, xoff + 11, yoff, color_white, "Tmax")
+            matrix.graphics.DrawText(canvas, font, xoff + 34, yoff, color_white, "Tmin")
+            matrix.graphics.DrawText(canvas, font, xoff + 54, yoff, color_white, "R%")
 
             for i in range(64):
                 canvas.SetPixel(i, 8, color, color, color)
@@ -47,11 +42,29 @@ class Weather(AbstractEffect):
                 yoff += 12
                 for col in range(4):
                     matrix.graphics.DrawText(
-                        canvas, font, xoff+15, yoff, color_white, str(int(forecast["temperature_2m_max"][row])))
+                        canvas,
+                        font,
+                        xoff + 15,
+                        yoff,
+                        color_white,
+                        str(int(forecast["temperature_2m_max"][row])),
+                    )
                     matrix.graphics.DrawText(
-                        canvas, font, xoff+37, yoff, color_white, str(int(forecast["temperature_2m_min"][row])))
+                        canvas,
+                        font,
+                        xoff + 37,
+                        yoff,
+                        color_white,
+                        str(int(forecast["temperature_2m_min"][row])),
+                    )
                     matrix.graphics.DrawText(
-                        canvas, font, xoff+54, yoff, color_white, str(int(forecast["precipitation_probability"][row])))
+                        canvas,
+                        font,
+                        xoff + 54,
+                        yoff,
+                        color_white,
+                        str(int(forecast["precipitation_probability"][row])),
+                    )
 
             canvas = matrix.SwapOnVSync(canvas)
 
@@ -61,5 +74,6 @@ class Weather(AbstractEffect):
                 yoff += 12
                 for col in range(4):
                     matrix.SetImageFromFile(
-                        forecast["icons"][row], xoff+2, yoff-6, br)
+                        forecast["icons"][row], xoff + 2, yoff - 6, br
+                    )
             time.sleep(refresh_rate)

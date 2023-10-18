@@ -1,12 +1,12 @@
 import os
 import time
-import settings
-from control.effects.abstract_effect import AbstractEffect
+from multiprocessing import Pipe, Process, Queue
+
+from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.adapter.real_matrix import RealMatrix
+from control.effects.abstract_effect import AbstractEffect
 from misc.logging import Log
-from control.effect_message import EffectMessage
-from multiprocessing import Process, Queue, Pipe
 
 
 class MatrixProcess:
@@ -22,20 +22,24 @@ class MatrixProcess:
                 if queue.empty():
                     self.log.debug("Queue is empty")
                 else:
-                    message: EffectMessage = queue.get(block=False)
-                    print(message)
-                    if message.effect != current_effect:
-                        self.log.debug("Effect has changed. Restarting process")
+                    queue_data = queue.get(block=False)
+                    effect_class: AbstractEffect = queue_data[0]
+                    options: AbstractEffectOptions = queue_data[1]
+                    if options.effect != current_effect:
+                        self.log.debug(
+                            "Effect has changed. Restarting process")
 
                         if proc:
                             conn_p.send(True)
                             proc.join()
                         conn_p, conn_c = Pipe(True)
                         proc = Process(
-                            target=message.effect.run, args=[matrix, message, conn_c]
+                            target=effect_class.run, args=[
+                                matrix, options, conn_c
+                            ]
                         )
                         proc.start()
-                        current_effect = message.effect
+                        current_effect = options.effect
                 time.sleep(1)
             except KeyboardInterrupt:
                 self.log.debug("Terminating")

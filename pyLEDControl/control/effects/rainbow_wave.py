@@ -2,17 +2,16 @@
 # -*- coding: utf-8 -*-
 import colorsys
 import time
-from misc.utils import rotate
-import settings
-from typing import Literal
 from dataclasses import dataclass
+from typing import Literal
+
+import settings
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
 from misc.logging import Log
-from control.effect_message import EffectMessage
+from misc.utils import rotate
 
-
-# FIXME: Implement options
+# TODO: Implement options
 
 log = Log("RainbowWave")
 max_width = settings.MATRIX_DIMENSIONS.WIDTH.value - 1
@@ -20,6 +19,7 @@ max_height = settings.MATRIX_DIMENSIONS.HEIGHT.value - 1
 
 
 class RainbowWave(AbstractEffect):
+
     rainbow = []
     for i in range(128):
         hue = 0 + i * (1 / 128)
@@ -43,7 +43,8 @@ class RainbowWave(AbstractEffect):
         while 1:
             for x in range(max_width + 1):
                 [
-                    canvas.SetPixel(x, y, rainbow[x][0], rainbow[x][1], rainbow[x][2])
+                    canvas.SetPixel(
+                        x, y, rainbow[x][0], rainbow[x][1], rainbow[x][2])
                     for y in range(max_height + 1)
                 ]
 
@@ -52,13 +53,13 @@ class RainbowWave(AbstractEffect):
             rainbow = rotate(rainbow, base_offset)
 
     @staticmethod
-    def top_left_to_bottom_right(matrix: AbstractMatrix, msg: EffectMessage, conn):
+    def top_left_to_bottom_right(matrix: AbstractMatrix, options, conn):
         rainbow = RainbowWave.rainbow
         matrix.Clear()
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         base_offset = 1
         while not RainbowWave.is_terminated(conn):
-            br = msg.get_brightness()
+            br = options.get_brightness()
             counter = 1
             for x in range(max_width + 1):
                 base_x = x
@@ -103,9 +104,9 @@ class RainbowWave(AbstractEffect):
     #         RainbowWave.top_left_to_bottom_right(matrix)
 
     @staticmethod
-    def run(matrix_class_name: AbstractMatrix, msg: EffectMessage, conn):
+    def run(matrix_class_name: AbstractMatrix, options, conn):
         matrix = matrix_class_name(options=settings.rgb_options())
         # if options.mode == "left to right":
         #     RainbowWave.left_to_right(matrix)
         # elif options.mode == "top left to bottom right":
-        RainbowWave.top_left_to_bottom_right(matrix, msg, conn)
+        RainbowWave.top_left_to_bottom_right(matrix, options, conn)

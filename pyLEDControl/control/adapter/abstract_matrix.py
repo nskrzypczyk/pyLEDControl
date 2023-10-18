@@ -82,7 +82,7 @@ class AbstractGraphics(abc.ABC):
 
 
 class AbstractMatrix(abc.ABC):
-    graphics: AbstractGraphics  # TODO: Class definition
+    graphics: AbstractGraphics
     """
     Method names are derived from the Canvas class of the RGBMatrixEmulator module
     """

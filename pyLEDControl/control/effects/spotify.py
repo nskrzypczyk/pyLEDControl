@@ -2,15 +2,13 @@
 
 import textwrap
 import time
-from bindings.spotify_binding import SpotifyBinding
+
 import settings
-from misc.logging import Log
-from control.effects.abstract_effect import AbstractEffect
+from bindings.spotify_binding import SpotifyBinding
 from control.adapter.abstract_matrix import AbstractMatrix
-from control.effect_message import EffectMessage
+from control.effects.abstract_effect import AbstractEffect
+from misc.logging import Log
 from PIL import Image
-from io import BytesIO
-import requests
 
 log = Log("Spotify")
 height = settings.MATRIX_DIMENSIONS.HEIGHT.value
@@ -18,8 +16,9 @@ width = settings.MATRIX_DIMENSIONS.WIDTH.value
 
 
 class Spotify(AbstractEffect):
+
     @staticmethod
-    def run(matrix_class, msg: EffectMessage, conn):
+    def run(matrix_class, options, conn):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
@@ -30,7 +29,7 @@ class Spotify(AbstractEffect):
         spotify = SpotifyBinding()
 
         while not Spotify.is_terminated(conn):
-            br = msg.get_brightness()
+            br = options.get_brightness()
             color = 255 * br
             color_text = matrix.graphics.Color(color, color, color)
             try:

@@ -1,7 +1,7 @@
-from flask import Flask, jsonify
-from control.effect_message import EffectMessage
-from control.effects import effect_dict
-from control.effects.effect_message_builder import EffectMessageBuilder
+import json
+from flask import Flask, jsonify, request
+from misc.utils import to_json_td
+from control.effects import get_effects
 import settings
 from misc.logging import Log
 from multiprocessing import Process, Queue
@@ -27,26 +27,38 @@ class Server(Process):
             return "Hello World"
 
         @app.get("/effect/available")
-        def get_effects():
-            return jsonify(list(effect_dict.keys()))
+        def get_all_effects():
+            return jsonify(list(get_effects().keys()))
+        
+        @app.get("/effect/<effect>/options")
+        def get_effect_option_parameters(effect:str):
+            return jsonify(to_json_td(get_effects()[effect].Options))
 
         @app.get("/effect/current")
         def get_current_effect():
             return jsonify(
-                {"effect": self.current_effect,
-                    "brightness": self.current_brightness}
+                {"effect": self.current_effect, "brightness": self.current_brightness}
             )
 
-        @app.post("/effect/<effect>/<int:brightness>")
-        def change_effect(effect: str, brightness: int):
-            if brightness > 100 or brightness < 0:
-                return jsonify("brightness must be a interval value in [0;100]")
+        @app.post("/effect/<effect>")
+        def change_effect(effect:str):
+            """ 
+            TODO: Modify endpoint: 
+            - Backend: Options class should contain neccessary information like brightness etc.
+            - Frontend: Build payload 
+            """
             try:
+                formdata = request.get_json(force=True)
+                brightness = formdata["brightness"]
+                if brightness > 100 or brightness < 0:
+                    return jsonify("brightness must be a interval value in [0;100]")
                 self.log.info("Received Effect: " + effect)
-                message = (
-                    EffectMessageBuilder().set_effect(effect).set_brightness(brightness).build()
-                )
-                self.queue.put(message)
+
+                raw_options_data = formdata
+                effect_class = get_effects()[effect]
+                options_instance = effect_class.Options(**raw_options_data)
+
+                self.queue.put((effect_class, options_instance))
                 self.current_effect = effect
                 self.current_brightness = brightness
                 return jsonify({"status": "success"})
@@ -58,11 +70,9 @@ class Server(Process):
 
     def run(self):
         # Start clock on startup
-        message = (
-            EffectMessageBuilder()
-            .set_effect(self.current_effect)
-            .set_brightness(self.current_brightness)
-            .build()
-        )
-        self.queue.put(message)
+        effect_dict = get_effects()
+        effect_class = effect_dict[self.current_effect]
+        options_instance = effect_class.Options(
+            brightness=self.current_brightness, effect=effect_dict[self.current_effect])
+        self.queue.put((effect_class,options_instance))
         self.run_server()

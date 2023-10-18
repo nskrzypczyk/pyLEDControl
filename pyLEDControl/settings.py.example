@@ -35,7 +35,7 @@ def rgb_options():
         rgb_options.cols = MATRIX_DIMENSIONS.WIDTH.value
         return rgb_options
     elif MODE == ExecutionMode.REAL:
-         rgb_options = RGBMatrixOptions()
+        rgb_options = RGBMatrixOptions()
         rgb_options.rows = 64
         rgb_options.cols = 64
         rgb_options.hardware_mapping = "adafruit-hat"
