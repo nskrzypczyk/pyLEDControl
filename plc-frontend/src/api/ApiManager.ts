@@ -1,4 +1,4 @@
-import { IEffectOptions } from '../domainData/DomainData';
+import { IEffectOptionsDefinition, IStatus } from '../domainData/DomainData';
 
 const HOST = `http://${window.location.hostname}:8080`
 
@@ -8,16 +8,16 @@ const handleErrors = (res: Response) => {
     }
 }
 
-export const setEffect = async (effectData: IEffectOptions) => {
+export const setEffect = async (effectData: any) => {
+    console.log(effectData);
+    
     const res = await fetch(`${HOST}/effect/${effectData.effect}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         mode: "cors",
-        // body:JSON.stringify(
-            
-        // )
+        body:JSON.stringify(effectData)
     })
     handleErrors(res)
     return res.json()
@@ -35,7 +35,7 @@ export const getAvailable = async (): Promise<string[]> => {
     return await res.json()
 }
 
-export const getStatus = async (): Promise<IEffectOptions> => {
+export const getStatus = async (): Promise<IStatus> => {
     const res = await fetch(`${HOST}/effect/current`, {
         method: "GET",
         mode: "cors"
@@ -44,11 +44,21 @@ export const getStatus = async (): Promise<IEffectOptions> => {
     return await res.json()
 }
 
-export const getOptionParameters = async (effect:string) => {
+export const getOptionDefinition = async (effect:string): Promise<IEffectOptionsDefinition> => {
     const res = await fetch(`${HOST}/effect/${effect}/options`, {
         method: "GET",
         mode: "cors"
     })
     handleErrors(res)
-    return await res.json()
+    const unsorted: Record<string,any> = await res.json()
+    const order = ["brightness", "effect"]
+    const otherKeys = Object.keys(unsorted).filter((key) => !order.includes(key))
+    const finalOrder = order.concat(otherKeys)
+    const sorted: Record<string, any> = {}
+    finalOrder.forEach((key)=>{
+        if(unsorted.hasOwnProperty(key)){
+            sorted[key] = unsorted[key]
+        }
+    })
+    return sorted
 }
