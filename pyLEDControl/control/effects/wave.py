@@ -6,10 +6,6 @@ import settings
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
 from misc.utils import rotate
-from misc.utils import Generics
-
-
-# TODO: Abstract options so that they can be specified for each effect
 
 width: int = settings.MATRIX_DIMENSIONS.WIDTH.value
 height: int = settings.MATRIX_DIMENSIONS.HEIGHT.value
@@ -28,14 +24,13 @@ def _data():
             data.append((255, 255, 255))
         else:
             data.append((0, 0, 0))
-    print(len(data))
     return data
 
 
 class Wave(AbstractEffect):
 
     @staticmethod
-    def default(matrix: AbstractMatrix, options: Generics.T_EFFECT_OPTIONS, conn):
+    def default(matrix: AbstractMatrix, options, conn):
         base_offset = 1
         data = _data()
         matrix.Clear()
@@ -59,6 +54,6 @@ class Wave(AbstractEffect):
             time.sleep(0.01)
 
     @staticmethod
-    def run(matrix_class_name: AbstractMatrix, options: Generics.T_EFFECT_OPTIONS, conn):
+    def run(matrix_class_name: AbstractMatrix, options, conn):
         matrix = matrix_class_name(options=settings.rgb_options())
         Wave.default(matrix, options, conn)

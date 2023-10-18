@@ -3,7 +3,7 @@
 
 from abc import ABC
 from dataclasses import dataclass
-from misc.utils import Generics
+
 from control.abstract_effect_options import AbstractEffectOptions
 
 
@@ -14,7 +14,7 @@ class AbstractEffect(ABC):
         pass
 
     @staticmethod
-    def run(matrix: type, effect_message: Generics.T_EFFECT_OPTIONS, conn):
+    def run(matrix: type, effect_message, conn):
         """Effect definition which will be called by MatrixProcess"""
         pass
 

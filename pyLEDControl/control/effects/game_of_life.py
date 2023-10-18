@@ -9,7 +9,6 @@ import numpy as np
 import settings
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
-from misc.utils import Generics
 
 
 @dataclass
@@ -101,7 +100,7 @@ def _new_generation(
 
 class GameOfLife(AbstractEffect):
     @staticmethod
-    def run(matrix_class, options: Generics.T_EFFECT_OPTIONS, conn):
+    def run(matrix_class, options, conn):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
 

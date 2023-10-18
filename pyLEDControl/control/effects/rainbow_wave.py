@@ -6,11 +6,10 @@ from dataclasses import dataclass
 from typing import Literal
 
 import settings
-from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
 from misc.logging import Log
-from misc.utils import Generics, rotate
+from misc.utils import rotate
 
 # TODO: Implement options
 
@@ -54,7 +53,7 @@ class RainbowWave(AbstractEffect):
             rainbow = rotate(rainbow, base_offset)
 
     @staticmethod
-    def top_left_to_bottom_right(matrix: AbstractMatrix, options: Generics.T_EFFECT_OPTIONS, conn):
+    def top_left_to_bottom_right(matrix: AbstractMatrix, options, conn):
         rainbow = RainbowWave.rainbow
         matrix.Clear()
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
@@ -105,7 +104,7 @@ class RainbowWave(AbstractEffect):
     #         RainbowWave.top_left_to_bottom_right(matrix)
 
     @staticmethod
-    def run(matrix_class_name: AbstractMatrix, options: Generics.T_EFFECT_OPTIONS, conn):
+    def run(matrix_class_name: AbstractMatrix, options, conn):
         matrix = matrix_class_name(options=settings.rgb_options())
         # if options.mode == "left to right":
         #     RainbowWave.left_to_right(matrix)

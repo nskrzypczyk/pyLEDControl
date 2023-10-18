@@ -8,7 +8,6 @@ from bindings.spotify_binding import SpotifyBinding
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
 from misc.logging import Log
-from misc.utils import Generics
 from PIL import Image
 
 log = Log("Spotify")
@@ -19,7 +18,7 @@ width = settings.MATRIX_DIMENSIONS.WIDTH.value
 class Spotify(AbstractEffect):
 
     @staticmethod
-    def run(matrix_class, options: Generics.T_EFFECT_OPTIONS, conn):
+    def run(matrix_class, options, conn):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()

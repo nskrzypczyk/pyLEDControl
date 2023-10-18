@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 import datetime
 import time
-from misc.utils import Generics
 
 import settings
 from control.adapter.abstract_matrix import AbstractMatrix
@@ -13,7 +12,7 @@ log = Log("DigiClock")
 class DigiClock(AbstractEffect):
 
     @staticmethod
-    def run(matrix_class_name, options: Generics.T_EFFECT_OPTIONS, conn):
+    def run(matrix_class_name, options, conn):
         matrix: AbstractMatrix = matrix_class_name(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
