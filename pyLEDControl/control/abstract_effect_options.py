@@ -31,6 +31,9 @@ class AbstractEffectOptions(abc.ABC):
                                                           "Wave",
                                                           "Weather",
                                                           "Shuffle"])
+    
+    def __post_init__(self):
+        self.set_brightness(self.brightness)
 
     def set_brightness(self, br: int) -> None:
         with open(self.br_file_path, "w") as f:
