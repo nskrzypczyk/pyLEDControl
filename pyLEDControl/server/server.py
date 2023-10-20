@@ -35,9 +35,9 @@ class Server(Process):
             return jsonify(to_json_td(get_effects()[effect].Options))
 
         @app.get("/effect/current")
-        def get_current_effect():
+        def get_status():
             return jsonify(
-                {"effect": self.current_effect, "brightness": self.current_brightness}
+                self.current_options_instance
             )
 
         @app.post("/effect/<effect>")
@@ -61,6 +61,7 @@ class Server(Process):
                 self.queue.put((effect_class, options_instance))
                 self.current_effect = effect
                 self.current_brightness = brightness
+                self.current_options_instance = options_instance
                 return jsonify({"status": "success"})
             except Exception as e:
                 return jsonify(e)
@@ -72,7 +73,7 @@ class Server(Process):
         # Start clock on startup
         effect_dict = get_effects()
         effect_class = effect_dict[self.current_effect]
-        options_instance = effect_class.Options(
+        self.current_options_instance = effect_class.Options(
             brightness=self.current_brightness, effect=effect_dict[self.current_effect])
-        self.queue.put((effect_class,options_instance))
+        self.queue.put((effect_class,self.current_options_instance))
         self.run_server()

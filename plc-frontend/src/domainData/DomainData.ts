@@ -28,6 +28,7 @@ export interface IConstraint{
 export interface IStatus extends Record<string, any> {
     effect:string,
     brightness: number
+    [key: string]: any;
 }
 
 /*-------------------------------------*/
