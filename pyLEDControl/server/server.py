@@ -1,4 +1,3 @@
-import json
 from flask import Flask, jsonify, request
 from misc.utils import to_json_td
 from control.effects import get_effects
@@ -37,7 +36,7 @@ class Server(Process):
         @app.get("/effect/current")
         def get_status():
             return jsonify(
-                self.current_options_instance
+                self.current_options_instance.to_dict()
             )
 
         @app.post("/effect/<effect>")
