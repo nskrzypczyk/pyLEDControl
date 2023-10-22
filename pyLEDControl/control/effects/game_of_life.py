@@ -100,7 +100,7 @@ def _new_generation(
 
 class GameOfLife(AbstractEffect):
     @staticmethod
-    def run(matrix_class, options, conn):
+    def run(matrix_class, options, conn, *args, **kwargs):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
 

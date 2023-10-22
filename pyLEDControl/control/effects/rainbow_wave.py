@@ -104,7 +104,7 @@ class RainbowWave(AbstractEffect):
     #         RainbowWave.top_left_to_bottom_right(matrix)
 
     @staticmethod
-    def run(matrix_class_name: AbstractMatrix, options, conn):
+    def run(matrix_class_name: AbstractMatrix, options, conn, *args, **kwargs):
         matrix = matrix_class_name(options=settings.rgb_options())
         # if options.mode == "left to right":
         #     RainbowWave.left_to_right(matrix)

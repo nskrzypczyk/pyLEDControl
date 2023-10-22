@@ -7,7 +7,7 @@ import settings
 
 class OFF(AbstractEffect):
     @staticmethod
-    def run(matrix_class_name, _, conn):
+    def run(matrix_class_name, _, conn, *args, **kwargs):
         matrix: AbstractMatrix = matrix_class_name(options=settings.rgb_options())
         matrix.Clear()
         while OFF.is_terminated(conn):

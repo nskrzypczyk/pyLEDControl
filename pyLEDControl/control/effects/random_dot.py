@@ -9,7 +9,7 @@ from RGBMatrixEmulator import RGBMatrix
 class RandomDot(AbstractEffect):
 
     @staticmethod
-    def run(matrix_class_name: RGBMatrix, options, conn):
+    def run(matrix_class_name: RGBMatrix, options, conn, *args, **kwargs):
         matrix = matrix_class_name(options=settings.rgb_options())
         while not RandomDot.is_terminated(conn):
             br = options.get_brightness()

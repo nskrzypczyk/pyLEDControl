@@ -12,7 +12,7 @@ log = Log("DigiClock")
 class DigiClock(AbstractEffect):
 
     @staticmethod
-    def run(matrix_class_name, options, conn):
+    def run(matrix_class_name, options, conn, *args, **kwargs):
         matrix: AbstractMatrix = matrix_class_name(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()

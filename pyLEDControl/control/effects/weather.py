@@ -10,7 +10,7 @@ from control.effects.abstract_effect import AbstractEffect
 
 class Weather(AbstractEffect):
     @staticmethod
-    def run(matrix_class: type, options, conn):
+    def run(matrix_class: type, options, conn, *args, **kwargs):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()

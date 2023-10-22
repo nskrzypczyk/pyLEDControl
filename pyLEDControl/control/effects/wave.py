@@ -54,6 +54,6 @@ class Wave(AbstractEffect):
             time.sleep(0.01)
 
     @staticmethod
-    def run(matrix_class_name: AbstractMatrix, options, conn):
+    def run(matrix_class_name: AbstractMatrix, options, conn, *args, **kwargs):
         matrix = matrix_class_name(options=settings.rgb_options())
         Wave.default(matrix, options, conn)
