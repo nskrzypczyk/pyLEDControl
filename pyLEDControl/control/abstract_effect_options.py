@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import abc
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from misc.domain_data import IntervalConstraint, SingleselectConstraint
 
 
@@ -35,6 +35,14 @@ class AbstractEffectOptions(abc.ABC):
     def __post_init__(self):
         self.set_brightness(self.brightness)
 
+    def __eq__(self, other):
+        if isinstance(other, AbstractEffectOptions):
+            return hash(self) == hash(other)
+        return False
+    
+    def __hash__(self):
+        return hash(self.to_dict())
+
     def set_brightness(self, br: int) -> None:
         with open(self.br_file_path, "w") as f:
             f.write(str(br))
@@ -42,3 +50,15 @@ class AbstractEffectOptions(abc.ABC):
     def get_brightness(self) -> float:
         self.brightness = int(open(self.br_file_path, "r").read())
         return self.brightness / 100
+
+    def to_dict(self) -> str:
+        field_values = {}
+        for field in fields(self):
+            if not field.metadata.get("static", False):
+                field_name = field.name
+                field_value = getattr(self, field_name)
+                if not isinstance(field_value, type):
+                    field_values[field_name] = field_value
+                else:
+                    field_values[field_name] = self.__dict__[field_name].__name__
+        return field_values
