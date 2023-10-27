@@ -3,6 +3,7 @@
 
 import abc
 from dataclasses import dataclass, fields
+from typing_extensions import deprecated
 from misc.domain_data import IntervalConstraint, SingleselectConstraint
 
 
@@ -31,15 +32,24 @@ class AbstractEffectOptions(abc.ABC):
                                                           "Wave",
                                                           "Weather",
                                                           "Shuffle"])
+
+    def init_with_dict(cls, arg_dict):
+        field_set = {f.name for f in fields(cls) if f.init}
+        filtered_args = {k: v for k, v in arg_dict.items() if k in field_set}
+        return cls(**filtered_args)
     
-    def __post_init__(self):
-        self.set_brightness(self.brightness)
+    def init_with_instance(cls, other_instance):
+        return cls.init_with_dict(cls, other_instance.to_dict())
+
+    def update_instance(self, other_instance):
+        for att, val in vars(other_instance).items():
+            setattr(self, att, val)
 
     def __eq__(self, other):
         if isinstance(other, AbstractEffectOptions):
             return hash(self) == hash(other)
         return False
-    
+
     def __hash__(self):
         return hash(self.to_dict())
 
@@ -47,11 +57,12 @@ class AbstractEffectOptions(abc.ABC):
         with open(self.br_file_path, "w") as f:
             f.write(str(br))
 
-    def get_brightness(self) -> float:
-        self.brightness = int(open(self.br_file_path, "r").read())
+    @deprecated("Use brightness attribute")
+    def get_brightness(self) -> float: 
+        """ TODO: Remove method """
         return self.brightness / 100
 
-    def to_dict(self) -> str:
+    def to_dict(self) -> dict:
         field_values = {}
         for field in fields(self):
             if not field.metadata.get("static", False):
@@ -60,5 +71,6 @@ class AbstractEffectOptions(abc.ABC):
                 if not isinstance(field_value, type):
                     field_values[field_name] = field_value
                 else:
-                    field_values[field_name] = self.__dict__[field_name].__name__
+                    field_values[field_name] = self.__dict__[
+                        field_name].__name__
         return field_values

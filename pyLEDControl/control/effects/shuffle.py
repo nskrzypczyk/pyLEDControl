@@ -22,17 +22,12 @@ class Shuffle(AbstractEffect):
                                                               set(get_effects().keys()) - {"AbstractEffect", "Shuffle", "OFF"}),
                                                           True)
 
-    def run(matrix: type, options: Options, conn_p: Connection, conn_p_options: Connection, *args, **kwargs):
+    def run(matrix: type, options: Options, conn_p: Connection, *args, **kwargs):
         log = Log(__class__.__name__)
 
         counter = 0
         while not __class__.is_terminated(conn_p):
-            new_options = __class__.get_new_options(conn_p_options)
-            # TODO: Extract this to somewhere else
-            if new_options is not None and new_options.active_effects != options.active_effects: # if active effect list has been changed
-                options = new_options
-                counter = 0
-            elif counter == len(options.active_effects):
+            if counter == len(options.active_effects):
                 log.debug("Resetting counter")
                 counter = 0
             _conn, conn_c = Pipe(True)

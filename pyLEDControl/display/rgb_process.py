@@ -1,6 +1,7 @@
-import os
+from multiprocessing.managers import BaseManager
 import time
 from multiprocessing import Pipe, Process, Queue
+from multiprocessing.managers import NamespaceProxy
 
 from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
@@ -8,6 +9,8 @@ from control.adapter.real_matrix import RealMatrix
 from control.effects.abstract_effect import AbstractEffect
 from misc.logging import Log
 
+class SharedOptionsManager(BaseManager):
+    pass
 
 class MatrixProcess:
     def __init__(self, matrix: AbstractMatrix) -> None:
@@ -35,19 +38,21 @@ class MatrixProcess:
 
                         # create new pipes
                         conn_p, conn_c = Pipe(True)
-                        conn_p_options, conn_c_options = Pipe(True)
-
+                        SharedOptionsManager.register(options.__class__.__name__, options.__class__.init_with_instance, NamespaceProxy)
+                        options_mgr = SharedOptionsManager()
+                        options_mgr.start()
+                        shared_options: AbstractEffectOptions = options_mgr.Options(options.__class__, options)
                         # create and start new effect process
                         proc = Process(
                             target=effect_class.run, args=[
-                                matrix, options, conn_c, conn_c_options
+                                matrix, shared_options, conn_c
                             ]
                         )
                         proc.start()
 
                         current_options = options
                     elif options != current_options: # if just the options changed
-                        conn_p_options.send(options) # send new options via pipe to current effect
+                        shared_options.update_instance(options) # send new options via shared object to current effect
                         current_options = options
                 time.sleep(1)
             except KeyboardInterrupt:
