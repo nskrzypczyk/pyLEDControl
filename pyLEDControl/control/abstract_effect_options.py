@@ -32,14 +32,15 @@ class AbstractEffectOptions(abc.ABC):
                                                           "Wave",
                                                           "Weather",
                                                           "Shuffle"])
-
+    @classmethod
     def init_with_dict(cls, arg_dict):
         field_set = {f.name for f in fields(cls) if f.init}
         filtered_args = {k: v for k, v in arg_dict.items() if k in field_set}
         return cls(**filtered_args)
     
+    @classmethod
     def init_with_instance(cls, other_instance):
-        return cls.init_with_dict(cls, other_instance.to_dict())
+        return cls.init_with_dict(other_instance.to_dict())
 
     def update_instance(self, other_instance):
         for att, val in vars(other_instance).items():
@@ -47,13 +48,18 @@ class AbstractEffectOptions(abc.ABC):
 
     def __eq__(self, other):
         if isinstance(other, AbstractEffectOptions):
-            return hash(self) == hash(other)
+            return self.__dict__ == other.__dict__
         return False
+    
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __hash__(self):
         return hash(self.to_dict())
 
+    @deprecated("Use brightness attribute")
     def set_brightness(self, br: int) -> None:
+        """ TODO: Remove method """
         with open(self.br_file_path, "w") as f:
             f.write(str(br))
 

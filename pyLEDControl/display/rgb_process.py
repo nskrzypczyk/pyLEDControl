@@ -1,7 +1,8 @@
 from multiprocessing.managers import BaseManager
 import time
 from multiprocessing import Pipe, Process, Queue
-from multiprocessing.managers import NamespaceProxy
+from multiprocessing.managers import NamespaceProxy, BaseProxy
+import types
 
 from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
@@ -11,6 +12,21 @@ from misc.logging import Log
 
 class SharedOptionsManager(BaseManager):
     pass
+
+def build_proxy_class(target):
+    """ It is necessary to expose all methods and attributes """
+    def __getattr__(self, key):
+        result = self._callmethod('__getattribute__', (key,))
+        if isinstance(result, types.MethodType):
+            def wrapper(*args, **kwargs):
+                return self._callmethod(key, args, kwargs)
+            return wrapper
+        return result
+    dic = {'types': types, '__getattr__': __getattr__}
+    proxy_name = target.__name__ + "Proxy"
+    ProxyType = type(proxy_name, (NamespaceProxy,), dic)
+    ProxyType._exposed_ = tuple(dir(target))
+    return ProxyType
 
 class MatrixProcess:
     def __init__(self, matrix: AbstractMatrix) -> None:
@@ -38,10 +54,11 @@ class MatrixProcess:
 
                         # create new pipes
                         conn_p, conn_c = Pipe(True)
-                        SharedOptionsManager.register(options.__class__.__name__, options.__class__.init_with_instance, NamespaceProxy)
+                        OptionProxy = build_proxy_class(options.__class__)
+                        SharedOptionsManager.register(options.__class__.__name__, options.__class__.init_with_instance, OptionProxy)
                         options_mgr = SharedOptionsManager()
                         options_mgr.start()
-                        shared_options: AbstractEffectOptions = options_mgr.Options(options.__class__, options)
+                        shared_options = options_mgr.Options(options)
                         # create and start new effect process
                         proc = Process(
                             target=effect_class.run, args=[
@@ -53,6 +70,7 @@ class MatrixProcess:
                         current_options = options
                     elif options != current_options: # if just the options changed
                         shared_options.update_instance(options) # send new options via shared object to current effect
+                        options_mgr.connect()
                         current_options = options
                 time.sleep(1)
             except KeyboardInterrupt:
