@@ -5,7 +5,7 @@ import abc
 from dataclasses import dataclass, fields
 from typing_extensions import deprecated
 from misc.domain_data import IntervalConstraint, SingleselectConstraint
-
+from control.effects import get_effect_list
 
 # TODO: REFACTORING / INVESTIGATION: replace regular variables with new classes like e.g. "MultiselectOption" which contains attributes like "display_name" (for frontend), "constraint" etc. That will simplify parsing in the frontend.
 
@@ -22,16 +22,7 @@ class AbstractEffectOptions(abc.ABC):
 
     brightness_constraint = IntervalConstraint(
         "Brightness", 0, True, 100, True)
-    # TODO: Dont make this hard coded
-    effect_constraint = SingleselectConstraint("Effect", ["DigiClock",
-                                                          "GameOfLife",
-                                                          "OFF",
-                                                          "RainbowWave",
-                                                          "RandomDot",
-                                                          "Spotify",
-                                                          "Wave",
-                                                          "Weather",
-                                                          "Shuffle"])
+    effect_constraint = SingleselectConstraint("Effect", get_effect_list())
     @classmethod
     def init_with_dict(cls, arg_dict):
         field_set = {f.name for f in fields(cls) if f.init}
