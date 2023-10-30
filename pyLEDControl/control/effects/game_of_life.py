@@ -116,4 +116,7 @@ class GameOfLife(AbstractEffect):
         while not GameOfLife.is_terminated(conn):
             if counter == 10:
                 br = options.get_brightness()
+                counter = 0
             field = _new_generation(field, matrix, canvas, br)
+            counter+=1
+
