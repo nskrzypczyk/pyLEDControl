@@ -9,7 +9,7 @@ from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
 from misc.logging import Log
 from misc.domain_data import MultiselectConstraint
-from control.effects import get_effects
+from control.effects import get_effects, get_effect_list
 
 
 class Shuffle(AbstractEffect):
@@ -19,7 +19,7 @@ class Shuffle(AbstractEffect):
 
         active_effects_constraint = MultiselectConstraint("Active effects",
                                                           list(
-                                                              set(get_effects().keys()) - {"AbstractEffect", "Shuffle", "OFF"}),
+                                                              set(get_effect_list()) - {"AbstractEffect", "Shuffle", "OFF"}),
                                                           True)
 
     def run(matrix: type, options: Options, conn_p: Connection, *args, **kwargs):
