@@ -159,3 +159,4 @@ pyLEDControl/brightness.txt
 brightness.txt
 
 .idea
+*.o
