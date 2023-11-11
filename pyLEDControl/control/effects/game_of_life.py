@@ -1,36 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-import pickle
-from dataclasses import dataclass
-
-import numpy as np
+import ctypes
+import os
 import settings
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
 
 
-@dataclass
-class Cell:
-    is_alive: bool
-    x: int
-    y: int
-
-    def __str__(self) -> str:
-        return "0" if self.is_alive else "."
-
-
-def __is_index_out_of_bounds(field: np.ndarray, x: int, y: int) -> bool:
-    return (0 <= x) and (x < field.shape[0]) and (0 <= y) and (y < field.shape[1])
-
-
-def __print_field(
-    field: np.ndarray, matrix: AbstractMatrix, canvas: AbstractMatrix, br: int
+def _print_field(
+        field: list, matrix: AbstractMatrix, canvas: AbstractMatrix, br: int
 ):
-    for x in range(field.shape[0]):
-        for y in range(field.shape[1]):
-            if field[x, y].is_alive:
+    for x in range(settings.MATRIX_DIMENSIONS.HEIGHT.value):
+        for y in range(settings.MATRIX_DIMENSIONS.HEIGHT.value):
+            if field[x][y] == 1:
                 canvas.SetPixel(
                     x,
                     y,
@@ -48,68 +31,26 @@ def __print_field(
                 )
     canvas = matrix.SwapOnVSync(canvas)
 
-def _calc_row(field, new_field, ir):
-    for ic in range(field.shape[1]):
-        cell = field[ir, ic]
-        active_neighbors = 0
-        for ranges in [
-            # one row "above" the cell
-            zip([cell.x - 1, cell.x, cell.x + 1], [cell.y - 1] * 3),
-            # one row "below" the cell
-            zip([cell.x - 1, cell.x, cell.x + 1], [cell.y + 1] * 3),
-            # left and right to the cell
-            zip([cell.x - 1, cell.x + 1], [cell.y] * 2),
-        ]:
-            for xi, yi in ranges:
-                if __is_index_out_of_bounds(field, xi, yi):
-                    if field[xi, yi].is_alive:
-                        active_neighbors += 1
-        if cell.is_alive and (active_neighbors < 2 or active_neighbors > 3):
-            new_field[ir, ic].is_alive = False
-        elif not cell.is_alive and (active_neighbors == 3):
-            new_field[ir, ic].is_alive = True
-
-def _new_generation(
-    field: np.ndarray, matrix: AbstractMatrix, canvas: AbstractMatrix, br
-):
-    new_field: np.ndarray = pickle.loads(pickle.dumps(field))
-    for ir in range(field.shape[0]):
-        for ic in range(field.shape[1]):
-            cell = field[ir, ic]
-            active_neighbors = 0
-            for ranges in [
-                # one row "above" the cell
-                zip([cell.x - 1, cell.x, cell.x + 1], [cell.y - 1] * 3),
-                # one row "below" the cell
-                zip([cell.x - 1, cell.x, cell.x + 1], [cell.y + 1] * 3),
-                # left and right to the cell
-                zip([cell.x - 1, cell.x + 1], [cell.y] * 2),
-            ]:
-                for xi, yi in ranges:
-                    if __is_index_out_of_bounds(field, xi, yi):
-                        if field[xi, yi].is_alive:
-                            active_neighbors += 1
-            if cell.is_alive and (active_neighbors < 2 or active_neighbors > 3):
-                new_field[ir, ic].is_alive = False
-            elif not cell.is_alive and (active_neighbors == 3):
-                new_field[ir, ic].is_alive = True
-
-    __print_field(new_field, matrix, canvas, br)
-    return new_field
-
 
 class GameOfLife(AbstractEffect):
     @staticmethod
     def run(matrix_class, options, conn, *args, **kwargs):
+        c_lib = ctypes.CDLL(f"c_libs/{str(os.path.basename(__file__)).replace('.py', '.so')}")
+        c_lib.create_grid.argtypes = [ctypes.c_int, ctypes.c_int]
+        c_lib.create_grid.restype = ctypes.POINTER(ctypes.POINTER(ctypes.c_int))
+
+        c_lib.free_grid.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int)), ctypes.c_int]
+
+        c_lib.update_grid.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int)), ctypes.c_int, ctypes.c_int]
+        c_lib.update_grid.restype = ctypes.POINTER(ctypes.POINTER(ctypes.c_int))
+
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
 
-        field = np.empty((64, 64), dtype=Cell)
-        for x in range(field.shape[0]):
-            for y in range(field.shape[0]):
-                field[x, y] = Cell(
-                    np.random.choice([True, False], p=[1 / 6, 5 / 6]), x, y
-                )
+        rows = settings.rgb_options().rows
+        cols = settings.rgb_options().cols
+
+        current_grid = c_lib.create_grid(rows, cols)
 
         counter = 0
         br = options.get_brightness()
@@ -117,6 +58,10 @@ class GameOfLife(AbstractEffect):
             if counter == 10:
                 br = options.get_brightness()
                 counter = 0
-            field = _new_generation(field, matrix, canvas, br)
-            counter+=1
+            new_grid = c_lib.update_grid(current_grid, rows, cols)
+            c_lib.free_grid(current_grid, rows)
+            current_grid = new_grid
 
+            _print_field(current_grid, matrix, canvas, br)
+
+            counter += 1
