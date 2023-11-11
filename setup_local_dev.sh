@@ -22,25 +22,9 @@ cd rpi-rgb-led-matrix
 
 echo "Building rgb matrix bindings"
 make build-python PYTHON=$(command -v python3)
-sudo make install-python PYTHON=$(command -v python3)
+make install-python PYTHON=$(command -v python3)
 
-echo "Creating autostart entry"
-if [ -e "/etc/systemd/system/$PROJECT_NAME.service" ]; then
-  rm -f /etc/systemd/system/$PROJECT_NAME.service
-fi
-echo "
-[Unit]
-Description=My Python Script
-After=multi-user.target
-
-[Service]
-ExecStart= sh $basedir/systemd-entrypoint.sh
-
-[Install]
-WantedBy=multi-user.target
-" >>/etc/systemd/system/$PROJECT_NAME.service
-
-sudo systemctl enable $PROJECT_NAME.service
+systemctl enable $PROJECT_NAME.service
 
 echo "Building C-Libraries"
 cd "$script_dir/pyLEDControl/c_libs"
