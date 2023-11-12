@@ -24,8 +24,6 @@ echo "Building rgb matrix bindings"
 make build-python PYTHON=$(command -v python3)
 make install-python PYTHON=$(command -v python3)
 
-systemctl enable $PROJECT_NAME.service
-
 echo "Building C-Libraries"
 cd "$script_dir/pyLEDControl/c_libs"
 make all
