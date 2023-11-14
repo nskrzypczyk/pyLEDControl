@@ -40,6 +40,10 @@ Please proceed with [text](https://)
 pyLEDControl includes a React-based frontend which is used to e.g. change the current effect and brightness. Moreover it is capable of change effect related options as long as they are defined in the `.py`-counterpart. 
 To build the frontend run `npm run build`. After this, copy the `build` directory to the same place on your Raspi system. This can be done e.g. via sftp or a remote VS Code connection to your Raspi.
 
+## Participate
+
+Feel free to participate in this project! Check out the corresponding [GitHub board](https://github.com/users/nskrzypczyk/projects/1) in which current problems as well as the project's progress are documented. If you find issues, whether it be code, setup et cetera, do not hesitate to create a new board entry :) 
+
 ## TODO
 
 - [X] Creating base project / repo
