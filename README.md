@@ -35,7 +35,7 @@ After that, continue with [the setup of the settings.py](#setting-up-the-constan
 After the platform dependent first time installation of the environment, it is essential to copy the `settings.py.example`-file as a new file called `settings.py`. 
 Open the newly created file and replace all `<REPLACE_ME>` placeholders the the respective values, e.g. regarding your location and Spotify metadata.
 Depending on your system (development or deployment Raspi system), it is necessary to adjust the value `MODE` to either `ExecutionMode.REAL` or `ExecutionMode.EMULATION`.
-Please proceed with [text](https://)
+Please proceed with [the preparation of the frontend](#building-the-frontend-and-push-it-to-your-deployment-system)
 
 ### Building the frontend and push it to your deployment system
 pyLEDControl includes a React-based frontend which is used to e.g. change the current effect and brightness. Moreover it is capable of change effect related options as long as they are defined in the `.py`-counterpart. 
