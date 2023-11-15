@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="img/logo.svg" alt="Logo" />
+    <img src="img/logo.png" alt="Logo" width="300px" />
   <p align="center">
     A ready-to-use platform for the deployment of 64x64 RGB-LED matrices.
   </p>
