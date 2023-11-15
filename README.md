@@ -1,5 +1,6 @@
 <div align="center">
-    <img src="img/logo.png" alt="Logo" width="300px" />
+    <img src="img/logo.png" alt="Logo" width="300px" style="margin-right: 50px" />
+    <img src="img/digiclock_GoL.gif" alt="Logo" height="300px" />
   <p align="center">
     A ready-to-use platform for the deployment of 64x64 RGB-LED matrices.
   </p>
