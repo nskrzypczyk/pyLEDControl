@@ -12,6 +12,15 @@
 Experimental project which is about connecting, configuring and managing LED-RGB-Matrices.
 I needed a clock for my office room, so here I am.
 
+**Features**
+- A [Flask](https://flask.palletsprojects.com)-server which manages the state of the RGB matrix
+- A responsive React-frontend to control your matrix via phone, tablet etc.
+- Builtin collection of effects which will be extended
+- An [API](https://github.com/hzeller/rpi-rgb-led-matrix) which allows you to configure custom effects to the last detail
+  - If that is not enough, optimize your code with C-libs or feed your matrix with custom third-party APIs for weather-info or whatever you desire
+- An emulation-mode for local debugging of effects
+- Installation scripts that simplify the setup-process for local development and Raspi-deployment 
+
 ## Prerequisites
 
 - Raspi running **Raspbian** and ...
