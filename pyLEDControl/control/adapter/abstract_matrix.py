@@ -22,17 +22,11 @@ class AbstractFont(abc.ABC):
 
 
 class AbstractColor(abc.ABC):
-    Color: AbstractColor
     Font: AbstractFont
 
     @abc.abstractmethod
     def __init__(self, r, g, b):
         raise NotImplementedError(f"Method '__init__' not implemented!")
-
-    @abc.abstractmethod
-    def adjust_brightness(self, alpha: float, to_int=False):
-        raise NotImplementedError(
-            f"Method 'adjust_brightness' not implemented!")
 
     @abc.abstractmethod
     def to_tuple(self):
@@ -43,7 +37,9 @@ class AbstractColor(abc.ABC):
         raise NotImplementedError(f"Method 'to_hex' not implemented!")
 
 
-class AbstractGraphics(abc.ABC):
+class AbstractGraphics(abc.ABC):    
+    class Color(AbstractColor):
+        pass
     @abc.abstractmethod
     def DrawText(
         self,
