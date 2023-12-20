@@ -1,14 +1,16 @@
-import { AddCircle, Check, Checklist, CompareArrows, Navigation, RemoveCircle } from '@mui/icons-material';
-import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, Grow, MenuItem, Slide, Slider, Snackbar, Stack, Toolbar, Typography } from '@mui/material';
+import { AddCircle, Check, Checklist, CompareArrows, FileUpload, Navigation, RemoveCircle, UploadFileOutlined } from '@mui/icons-material';
+import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, Grow, IconButton, MenuItem, Slide, Slider, Snackbar, Stack, Toolbar, Typography } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import React, { useState } from 'react';
 import './App.css';
 import { getOptionDefinition, getStatus, setEffect } from './api/ApiManager';
 import { IStatus } from './domainData/DomainData';
+import AddCustomEffectDialog from './components/AddCustomEffect.dialog';
 
 const App: React.FC = () => {
   const [effectOptionDefinition, setEffectOptionDefinition] = useState<any>();
   const [formData, setFormData] = useState<any>({});
+  const [addCustomEffectDialogOpen, setAddCustomEffectDialogOpen] = React.useState<boolean>(false);
   const [snackState, setSnackState] = React.useState<{
     open: boolean;
     Transition: React.ComponentType<
@@ -30,13 +32,13 @@ const App: React.FC = () => {
     try {
       const outData = formData
       // filter out unneeded fields
-      Object.keys(outData).forEach((key:any)=>{
-        if(!effectOptionDefinition.hasOwnProperty(key)){
+      Object.keys(outData).forEach((key: any) => {
+        if (!effectOptionDefinition.hasOwnProperty(key)) {
           delete outData[key]
         }
       })
-      for(const key of Object.keys(effectOptionDefinition)){
-        if(!outData.hasOwnProperty(key)){
+      for (const key of Object.keys(effectOptionDefinition)) {
+        if (!outData.hasOwnProperty(key)) {
           setSnackState({ ...snackState, open: true, message: `Effect options for ${formData.effect} is missing the field ${key}`, severity: "error" })
           return
         }
@@ -86,6 +88,10 @@ const App: React.FC = () => {
     setFormData({ ...formData, [fieldName]: newVal })
   }
 
+  const handleUploadFileClick = () => setAddCustomEffectDialogOpen(true)
+
+  const handleUploadDialogOnSave = () => undefined;
+
   React.useEffect(() => {
     const fn = async () => {
       try {
@@ -117,11 +123,17 @@ const App: React.FC = () => {
       <div className='main'>
         <AppBar position='static' color="primary" sx={{ borderRadius: "12px", marginBottom: "12px", marginTop: "12px", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)" }}>
           <Toolbar>
-            <MenuItem>
-              <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-                pyLEDControl
-              </Typography>
-            </MenuItem>
+            <Typography variant="h4" component="div" sx={{ flexGrow: 2 }}>
+              pyLEDControl
+            </Typography>
+            <IconButton
+              size="large"
+              edge="end"
+              onClick={handleUploadFileClick}
+            >
+              <FileUpload sx={{ mr: 1 }} style={{ color: "#fff" }} />
+              <Typography>Upload</Typography>
+            </IconButton>
           </Toolbar>
         </AppBar>
         <Grid container direction="row" justifyContent="center" alignItems="stretch" columns={{ xs: 1, sm: 2, md: 2 }} spacing={{ xs: 2, md: 2 }}>
@@ -166,6 +178,10 @@ const App: React.FC = () => {
             {snackState.message}
           </Alert>
         </Snackbar>
+        <AddCustomEffectDialog
+          isOpen={addCustomEffectDialogOpen}
+          handleClose={() => setAddCustomEffectDialogOpen(false)}
+          onSave={handleUploadDialogOnSave} />
       </div>
     </ >
   );
@@ -181,32 +197,32 @@ const makeTransition = (key: string, component: JSX.Element) => {
 
 const getMultiselectForm = (fieldName: string, displayName: string, optionList: string[], selectedElements: string[] | undefined, handleSelectionChange: any) => {
   return (
-      <Grid key={fieldName} className='panel' item xs={1} justifyContent="center">
-        <Box sx={{ borderRadius: "12px", backgroundColor: "white", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)", padding: "10px" }}>
-          <Grid container columns={8} direction="row" alignItems="center">
-            <Grid container item xs={1}>
-              <Checklist />
-            </Grid>
-            <Grid item xs="auto">
-              <Typography variant='h5'>
-                {displayName}
-              </Typography>
-            </Grid>
+    <Grid key={fieldName} className='panel' item xs={1} justifyContent="center">
+      <Box sx={{ borderRadius: "12px", backgroundColor: "white", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)", padding: "10px" }}>
+        <Grid container columns={8} direction="row" alignItems="center">
+          <Grid container item xs={1}>
+            <Checklist />
           </Grid>
-          <Divider sx={{ mt: 1.5, mb: 1.5 }} />
-          <Grid container item spacing={1}>
-            {optionList.map((e) => (
-              <Grid key={e + "_grid_" + fieldName} item>
-                <Chip
-                  key={e + "_chip_" + fieldName}
-                  variant={selectedElements?.includes(e) ? "filled" : "outlined"} label={e}
-                  onClick={() => handleSelectionChange(fieldName, e)}
-                  color={selectedElements?.includes(e) ? "primary" : undefined} />
-              </Grid>
-            ))}
+          <Grid item xs="auto">
+            <Typography variant='h5'>
+              {displayName}
+            </Typography>
           </Grid>
-        </Box>
-      </Grid>
+        </Grid>
+        <Divider sx={{ mt: 1.5, mb: 1.5 }} />
+        <Grid container item spacing={1}>
+          {optionList.map((e) => (
+            <Grid key={e + "_grid_" + fieldName} item>
+              <Chip
+                key={e + "_chip_" + fieldName}
+                variant={selectedElements?.includes(e) ? "filled" : "outlined"} label={e}
+                onClick={() => handleSelectionChange(fieldName, e)}
+                color={selectedElements?.includes(e) ? "primary" : undefined} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </Grid>
   )
 }
 
