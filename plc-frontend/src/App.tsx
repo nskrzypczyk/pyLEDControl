@@ -1,11 +1,11 @@
-import { AddCircle, Check, Checklist, CompareArrows, FileUpload, Navigation, RemoveCircle, UploadFileOutlined } from '@mui/icons-material';
-import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, Grow, IconButton, MenuItem, Slide, Slider, Snackbar, Stack, Toolbar, Typography } from '@mui/material';
+import { AddCircle, Check, Checklist, CompareArrows, FileUpload, Navigation, RemoveCircle } from '@mui/icons-material';
+import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, Grow, IconButton, Slide, Slider, Snackbar, Stack, Toolbar, Typography } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import React, { useState } from 'react';
 import './App.css';
 import { getOptionDefinition, getStatus, setEffect } from './api/ApiManager';
-import { IStatus } from './domainData/DomainData';
 import AddCustomEffectDialog from './components/AddCustomEffect.dialog';
+import { IStatus } from './domainData/DomainData';
 
 const App: React.FC = () => {
   const [effectOptionDefinition, setEffectOptionDefinition] = useState<any>();

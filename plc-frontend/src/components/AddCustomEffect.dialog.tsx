@@ -1,5 +1,5 @@
-import { Close, Save } from "@mui/icons-material";
-import { AppBar, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, TextField, Toolbar, Typography } from "@mui/material"
+import { Circle, Close, Save } from "@mui/icons-material";
+import { AppBar, Dialog, DialogContent, DialogContentText, DialogTitle, IconButton, List, ListItem, ListItemIcon, TextField, Toolbar, Typography } from "@mui/material";
 
 export interface PropsAddCustomEffectDialog {
     handleClose: () => void;
@@ -15,7 +15,7 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Prop
             open={props.isOpen}
             onClose={props.handleClose}
         >
-            <AppBar position='static' color="primary" sx={{ borderRadius: "12px", marginBottom: "12px", marginTop: "12px", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)" }}>
+            <AppBar position='static' color="primary" sx={{ marginBottom: "12px", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)" }}>
                 <Toolbar>
                     <IconButton
                         edge="start"
@@ -34,8 +34,20 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Prop
             </AppBar>
             <DialogContent>
                 <DialogContentText>
-                    This dialog can be used to upload a custom effect which can be a file or URL leading to a png, jpeg or gif.
+                    This dialog can be used to upload a custom effect which is based on a provided
+                    <List>
+                        {["png file", "jpeg file", "gif file", "a URL that points to one of those file types"].map(e => (
+                            <ListItem key={e}>
+                                <ListItemIcon>
+                                    <Circle sx={{ scale: '0.6' }} />
+                                </ListItemIcon>
+                                {e}
+                            </ListItem>
+                        ))}
+                    </List>
                 </DialogContentText>
+                Basic information
+
                 <TextField
                     autoFocus
                     margin="dense"
@@ -43,8 +55,9 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Prop
                     label="Effect name"
                     type="text"
                     fullWidth
-                    variant="standard"
+                    variant="outlined"
                 />
+                Type: Media URL
                 <TextField
                     margin="dense"
                     id="urlTF_addCustomEffectDialog"
@@ -53,6 +66,7 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Prop
                     fullWidth
                     variant="standard"
                 />
+
             </DialogContent>
         </Dialog>
     )
