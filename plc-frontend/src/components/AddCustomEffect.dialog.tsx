@@ -1,5 +1,6 @@
 import { Circle, Close, Save } from "@mui/icons-material";
-import { AppBar, Dialog, DialogContent, DialogContentText, DialogTitle, IconButton, List, ListItem, ListItemIcon, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, Dialog, DialogContent, DialogContentText, DialogTitle, IconButton, List, ListItem, ListItemIcon, Tab, Tabs, TextField, Toolbar, Typography, Box, Button } from "@mui/material";
+import React, { SyntheticEvent, useState } from "react";
 
 export interface PropsAddCustomEffectDialog {
     handleClose: () => void;
@@ -7,7 +8,32 @@ export interface PropsAddCustomEffectDialog {
     onSave: () => void;
 }
 
+function TabPanel(props: {
+    children?: React.ReactNode;
+    index:number;
+    value: number;
+}) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`full-width-tabpanel-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ p: 3 }}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
+
 const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: PropsAddCustomEffectDialog) => {
+    const [tabValue, setTabValue] = useState<number>(0)
+    const handleTabChange = (event: SyntheticEvent, idx: number) => setTabValue(idx);
     return (
         <Dialog
             fullScreen
@@ -46,26 +72,45 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Prop
                         ))}
                     </List>
                 </DialogContentText>
-                Basic information
-
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="nameTF_addCustomEffectDialog"
-                    label="Effect name"
-                    type="text"
-                    fullWidth
-                    variant="outlined"
-                />
-                Type: Media URL
-                <TextField
-                    margin="dense"
-                    id="urlTF_addCustomEffectDialog"
-                    label="Media URL"
-                    type="url"
-                    fullWidth
-                    variant="standard"
-                />
+                <Tabs
+                    value={tabValue}
+                    orientation="horizontal"
+                    onChange={handleTabChange}
+                >
+                    <Tab label="Provide URL" />
+                    <Tab label="Upload file" />
+                </Tabs>
+                <TabPanel value={tabValue} index={0}>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="nameTF_addCustomEffectDialog"
+                        label="Effect name"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                    />
+                    <TextField
+                        margin="dense"
+                        id="urlTF_addCustomEffectDialog"
+                        label="Media URL"
+                        type="url"
+                        fullWidth
+                        variant="outlined"
+                    />
+                </TabPanel>
+                <TabPanel value={tabValue} index={1}>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="nameTF_addCustomEffectDialog"
+                        label="Effect name"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                    />
+                    <Button sx={{width:"100%"}} variant="outlined">Select file</Button>
+                </TabPanel>
 
             </DialogContent>
         </Dialog>

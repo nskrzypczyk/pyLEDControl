@@ -1,11 +1,13 @@
 import { AddCircle, Check, Checklist, CompareArrows, FileUpload, Navigation, RemoveCircle } from '@mui/icons-material';
-import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, Grow, IconButton, Slide, Slider, Snackbar, Stack, Toolbar, Typography } from '@mui/material';
+import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, Grow, IconButton, Slide, Slider, Snackbar, Stack, Toolbar, Typography, createTheme } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import React, { useState } from 'react';
 import './App.css';
 import { getOptionDefinition, getStatus, setEffect } from './api/ApiManager';
 import AddCustomEffectDialog from './components/AddCustomEffect.dialog';
 import { IStatus } from './domainData/DomainData';
+import { ThemeProvider } from '@emotion/react';
+import { dark } from '@mui/material/styles/createPalette';
 
 const App: React.FC = () => {
   const [effectOptionDefinition, setEffectOptionDefinition] = useState<any>();
@@ -118,12 +120,21 @@ const App: React.FC = () => {
     fn()
   }, [formData.effect])
 
+  const theme = createTheme({
+    typography: {
+      allVariants: {
+        fontFamily: "monospace"
+      }
+    },
+  });
+
+
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <div className='main'>
         <AppBar position='static' color="primary" sx={{ borderRadius: "12px", marginBottom: "12px", marginTop: "12px", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)" }}>
           <Toolbar>
-            <Typography variant="h4" component="div" sx={{ flexGrow: 2 }}>
+            <Typography variant="h4" sx={{ flexGrow: 2 }}>
               pyLEDControl
             </Typography>
             <IconButton
@@ -132,7 +143,7 @@ const App: React.FC = () => {
               onClick={handleUploadFileClick}
             >
               <FileUpload sx={{ mr: 1 }} style={{ color: "#fff" }} />
-              <Typography>Upload</Typography>
+              <Typography variant="button" sx={{ flexGrow: 2 }} color="white">Upload</Typography>
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -183,7 +194,7 @@ const App: React.FC = () => {
           handleClose={() => setAddCustomEffectDialogOpen(false)}
           onSave={handleUploadDialogOnSave} />
       </div>
-    </ >
+    </ThemeProvider>
   );
 }
 
@@ -204,7 +215,7 @@ const getMultiselectForm = (fieldName: string, displayName: string, optionList: 
             <Checklist />
           </Grid>
           <Grid item xs="auto">
-            <Typography variant='h5'>
+            <Typography variant='h5' color="black">
               {displayName}
             </Typography>
           </Grid>
@@ -234,7 +245,7 @@ const getSingleSelectForm = (fieldName: string, displayName: string, optionList:
           <Check />
         </Grid>
         <Grid item xs="auto">
-          <Typography variant='h5'>
+          <Typography variant='h5' color="black">
             {displayName}
           </Typography>
         </Grid>
@@ -262,7 +273,7 @@ const getCustomSliderForm = (fieldName: string, displayName: string, decreaseFun
           <CompareArrows />
         </Grid>
         <Grid item xs="auto">
-          <Typography variant='h5'>
+          <Typography variant='h5' color="black">
             {displayName}
           </Typography>
         </Grid>
@@ -278,7 +289,7 @@ const getCustomSliderForm = (fieldName: string, displayName: string, decreaseFun
         </Button>
       </Stack>
       <Stack direction={'row'} spacing={1} alignItems="center" justifyContent={'center'}>
-        <Typography variant="h6">
+        <Typography variant="h6" color="black">
           {value} %
         </Typography>
       </Stack>
