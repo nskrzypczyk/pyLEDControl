@@ -5,6 +5,7 @@ import settings
 from misc.logging import Log
 from multiprocessing import Process, Queue
 from flask_cors import CORS
+from server.routes.effect_upload_routes import upload_bp
 
 
 class Server(Process):
@@ -20,6 +21,8 @@ class Server(Process):
         self.log.debug("Setting up flask server")
         app: Flask = Flask("pyLedControlServer")
         CORS(app)
+
+        app.register_blueprint(blueprint=upload_bp, url_prefix="/upload")
 
         @app.get("/")
         def index():
