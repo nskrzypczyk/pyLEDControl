@@ -1,9 +1,13 @@
-from dataclasses import dataclass
-import dataclasses
-from enum import IntEnum
 import abc
+import dataclasses
+from dataclasses import dataclass
+from enum import IntEnum
 from typing import Any, Callable, Union
 
+
+"""
+Collection of domain specific data structures
+"""
 
 class ExecutionMode(IntEnum):
     REAL = 0

@@ -46,8 +46,7 @@ class Server(Process):
         def change_effect(effect:str):
             """ 
             TODO: Modify endpoint: 
-            - Backend: Options class should contain neccessary information like brightness etc.
-            - Frontend: Build payload 
+            - Verify payload via constraints which are defined in options subclass
             """
             try:
                 formdata = request.get_json(force=True)
