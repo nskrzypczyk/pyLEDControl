@@ -4,6 +4,8 @@ import yaml
 from flask import Blueprint, jsonify, redirect, request
 from werkzeug.utils import secure_filename
 
+from control.effects.abstract.uploaded_effect import get_uploaded_effects
+
 UPLOAD_DIR: str = "uploads"
 CONF_DIR: str = "uploads_effect_config"
 ALLOWED_EXTENSIONS: set = {"jpg", "jpeg", "png", "gif"}
@@ -18,36 +20,37 @@ def load_existing_file_paths():
     file_paths = load_file_paths()
 
 
-@upload_bp.route(methods=("POST"))
-def upload_custom_effect():
+@upload_bp.route("/add/<effect_name>", methods=["POST"])
+def add_effect(effect_name:str):
     if "file" not in request.files:
         return redirect(request.url)
 
     file = request.files["file"]
+    
 
-    if file.filename == "":
-        return redirect(request.url)
+    if file.filename == "" or effect_name == "":
+        return "Effect and file names must not be null!"
 
     if file and is_file_allowed(file.filename):
         filename = secure_filename(file.filename)
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        file.save(os.path.join(UPLOAD_DIR, filename))
         return "File uploaded successfully"
     else:
-        return "Invalid file format. Allowed formats are jpg, jpeg, png, and gif."
+        return f"Invalid file format. Allowed formats are {ALLOWED_EXTENSIONS}"
 
 
-@upload_bp.route(methods=("GET"))
-def get_uploaded_effects():
+@upload_bp.route("/get/all", methods=["GET"])
+def get_uploaded_custom_effects():
     try:
         return jsonify(get_uploaded_effects())
     except Exception as e:
         return jsonify(e)
 
 
-@upload_bp.route("/delete/<filename>", methods=["GET"])
-def delete_file(filename):
+@upload_bp.route("/delete/<effect_name>", methods=["DELETE"])
+def delete_effect(effect_name):
     # Construct the full file path
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    file_path = os.path.join(UPLOAD_DIR, effect_name)
 
     # Check if the file exists
     if os.path.exists(file_path):
@@ -60,9 +63,9 @@ def delete_file(filename):
         # Save updated file paths to YAML file
         save_file_paths()
 
-        return f"File {filename} deleted successfully"
+        return f"Effect {effect_name} deleted successfully"
     else:
-        return f"File {filename} not found"
+        return f"Effect {effect_name} not found"
 
 
 def is_file_allowed(filename) -> bool:

@@ -9,13 +9,13 @@ from misc.logging import Log
 
 log = Log("UploadedEffect")
 def get_uploaded_effects() -> list:
-    pass
+    return []
 
 class UploadedEffect(AbstractEffect):
     @dataclass
     class Options(AbstractEffectOptions):
         active_effects: List[str]
-        active_effects_constraint = MultiselectConstraint("Active uploaded effects", get_uploaded_effects)
+        active_effects_constraint = MultiselectConstraint("Active uploaded effects", get_uploaded_effects(), strict=True)
     @staticmethod
     def run(matrix_class, options, conn, *args, **kwargs):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
