@@ -20,23 +20,28 @@ def load_existing_file_paths():
     file_paths = load_file_paths()
 
 
-@upload_bp.route("/add/<effect_name>", methods=["POST"])
-def add_effect(effect_name:str):
-    if "file" not in request.files:
-        return redirect(request.url)
-
+@upload_bp.route("/add", methods=["POST"])
+def add_effect():
     file = request.files["file"]
+    effect_name = request.form.get("effect_name", default="")
     
-
     if file.filename == "" or effect_name == "":
-        return "Effect and file names must not be null!"
+        return jsonify(error="Effect and file names must not be null!"), 400
 
     if file and is_file_allowed(file.filename):
         filename = secure_filename(file.filename)
-        file.save(os.path.join(UPLOAD_DIR, filename))
-        return "File uploaded successfully"
+        _, file_extension = os.path.splitext(filename)
+        file_path = os.path.join(UPLOAD_DIR, effect_name+file_extension)
+
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+        if os.path.exists(file_path):
+            return jsonify(error="Effect with this name already exists!"), 400
+
+        file.save(file_path)
+        return jsonify("File uploaded successfully"), 200
     else:
-        return f"Invalid file format. Allowed formats are {ALLOWED_EXTENSIONS}"
+        return jsonify(error=f"Invalid file format. Allowed formats are {ALLOWED_EXTENSIONS}"), 400
 
 
 @upload_bp.route("/get/all", methods=["GET"])
