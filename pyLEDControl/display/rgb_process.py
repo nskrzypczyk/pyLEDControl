@@ -39,7 +39,7 @@ class MatrixProcess:
         while 1:
             try:
                 if queue.empty():
-                    self.log.debug("Queue is empty")
+                    self.log.info("Queue is empty")
                 else:
                     queue_data = queue.get(block=False) # get effect and corresponding options from queue
                     effect_class: AbstractEffect = queue_data[0]
