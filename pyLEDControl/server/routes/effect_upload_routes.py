@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 UPLOAD_DIR: str = "uploads"
 CONF_DIR: str = "uploads_effect_config"
 ALLOWED_EXTENSIONS: set = {"jpg", "jpeg", "png", "gif"}
+YAML_EXTENSION = ".yaml"
 
 upload_bp = Blueprint("upload", __name__)
 log = Log(__name__)
@@ -29,6 +30,7 @@ def load_existing_file_paths():
 def add_effect():
     file = request.files["file"]
     effect_name = request.form.get("effect_name", default="")
+    # TODO: Introduce settings for custom effects
 
     if file.filename == "" or effect_name == "":
         return jsonify(error="Effect and file names must not be null!"), 400
@@ -44,6 +46,20 @@ def add_effect():
             return jsonify(error="Effect with this name already exists!"), 400
 
         file.save(file_path)
+
+        # write yaml config
+        with open(os.path.join(CONF_DIR, effect_name+YAML_EXTENSION), "w") as conf_file:
+            yaml.dump(
+                yaml.safe_load(
+                    f"""
+                    name: {effect_name}
+                    source: {file_path}
+                    settings: 
+                    """
+                ),
+                conf_file
+            )
+
         return jsonify("File uploaded successfully"), 200
     else:
         return (

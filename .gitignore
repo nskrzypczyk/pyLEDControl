@@ -160,3 +160,5 @@ brightness.txt
 
 .idea
 *.o
+pyLEDControl/uploads
+pyLEDControl/uploads_effect_config
