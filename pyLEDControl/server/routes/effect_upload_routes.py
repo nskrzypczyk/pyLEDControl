@@ -5,6 +5,9 @@ import yaml
 from flask import Blueprint, jsonify, redirect, request
 from werkzeug.utils import secure_filename
 
+# TODO: Introduce settings for custom effects
+# TODO: Add PUT route for updating an existing custom effect
+
 UPLOAD_DIR: str = "uploads"
 CONF_DIR: str = "uploads_effect_config"
 ALLOWED_EXTENSIONS: set = {"jpg", "jpeg", "png", "gif"}
@@ -23,14 +26,13 @@ def load_existing_file_paths():
     custom_effects_names = [
         yaml.safe_load(open(path)).get("name", "") for path in file_paths
     ]
-    log.debug([file_paths,custom_effects_names])
+    log.debug([file_paths, custom_effects_names])
 
 
 @upload_bp.route("/add", methods=["POST"])
 def add_effect():
     file = request.files["file"]
     effect_name = request.form.get("effect_name", default="")
-    # TODO: Introduce settings for custom effects
 
     if file.filename == "" or effect_name == "":
         return jsonify(error="Effect and file names must not be null!"), 400
@@ -48,7 +50,9 @@ def add_effect():
         file.save(file_path)
 
         # write yaml config
-        with open(os.path.join(CONF_DIR, effect_name+YAML_EXTENSION), "w") as conf_file:
+        with open(
+            os.path.join(CONF_DIR, effect_name + YAML_EXTENSION), "w"
+        ) as conf_file:
             yaml.dump(
                 yaml.safe_load(
                     f"""
@@ -57,7 +61,7 @@ def add_effect():
                     settings: 
                     """
                 ),
-                conf_file
+                conf_file,
             )
 
         return jsonify("File uploaded successfully"), 200
@@ -73,30 +77,26 @@ def add_effect():
 @upload_bp.route("/get/all", methods=["GET"])
 def get_uploaded_custom_effects():
     try:
-        return jsonify(custom_effects_names)
+        return jsonify(custom_effects_names), 200
     except Exception as e:
-        return jsonify(e)
+        return jsonify(e), 500
 
 
 @upload_bp.route("/delete/<effect_name>", methods=["DELETE"])
 def delete_effect(effect_name):
-    # Construct the full file path
-    file_path = os.path.join(UPLOAD_DIR, effect_name)
+    # Construct the full file paths for src and conf
+    conf_path = get_effect_conf_path(effect_name)
+    src_path = yaml.safe_load(open(conf_path, "r")).get("source", None)
 
-    # Check if the file exists
-    if os.path.exists(file_path):
-        # Remove the file
-        os.remove(file_path)
+    # Check if the files exists
+    if os.path.exists(src_path) and os.path.exists(conf_path):
+        # Remove the files
+        os.remove(src_path)
+        os.remove(conf_path)
 
-        # Remove the entry from the file_paths list
-        file_paths.remove(file_path)
-
-        # Save updated file paths to YAML file
-        save_file_paths()
-
-        return f"Effect {effect_name} deleted successfully"
+        return jsonify(f"Effect {effect_name} deleted successfully"), 200
     else:
-        return f"Effect {effect_name} not found"
+        return jsonify(f"Effect {effect_name} not found"), 404
 
 
 def is_file_allowed(filename) -> bool:
@@ -113,6 +113,5 @@ def load_conf_file_paths():
     return []
 
 
-def save_file_paths():
-    with open(CONF_DIR, "w") as file:
-        yaml.dump(file_paths, file)
+def get_effect_conf_path(effect_name: str) -> str:
+    return os.path.join(CONF_DIR, effect_name + YAML_EXTENSION)
