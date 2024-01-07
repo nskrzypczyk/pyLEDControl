@@ -16,26 +16,26 @@ YAML_EXTENSION = ".yaml"
 upload_bp = Blueprint("upload", __name__)
 log = Log(__name__)
 file_paths: list = []
-custom_effects_names = []
+custom_effects_with_settings = {}
 
 
 @upload_bp.before_app_first_request
 def load_existing_file_paths():
-    global file_paths, custom_effects_names
+    global file_paths, custom_effects_with_settings
     file_paths = load_conf_file_paths()
-    custom_effects_names = [
-        yaml.safe_load(open(path)).get("name", "") for path in file_paths
-    ]
-    log.debug([file_paths, custom_effects_names])
+    for path in file_paths:
+        settings_file = yaml.safe_load(open(path))
+        custom_effects_with_settings[settings_file.get("name", "")] = settings_file.get("settings", None)
+    log.debug([file_paths, custom_effects_with_settings])
 
 
 @upload_bp.route("/add", methods=["POST"])
 def add_effect():
-    file = request.files["file"]
+    file = request.files.get("file")
     effect_name = request.form.get("effect_name", default="")
 
-    if file.filename == "" or effect_name == "":
-        return jsonify(error="Effect and file names must not be null!"), 400
+    if file is None or file.filename == "" or effect_name == "":
+        return jsonify(error="Effect name and file must not be null!"), 400
 
     if file and is_file_allowed(file.filename):
         filename = secure_filename(file.filename)
@@ -64,6 +64,7 @@ def add_effect():
                 conf_file,
             )
 
+        load_existing_file_paths()
         return jsonify("File uploaded successfully"), 200
     else:
         return (
@@ -77,7 +78,7 @@ def add_effect():
 @upload_bp.route("/get/all", methods=["GET"])
 def get_uploaded_custom_effects():
     try:
-        return jsonify(custom_effects_names), 200
+        return jsonify(list(custom_effects_with_settings.keys())), 200
     except Exception as e:
         return jsonify(e), 500
 
