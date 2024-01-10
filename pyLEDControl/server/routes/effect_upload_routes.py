@@ -50,9 +50,7 @@ def add_effect():
         file.save(file_path)
 
         # write yaml config
-        with open(
-            os.path.join(CONF_DIR, effect_name + YAML_EXTENSION), "w"
-        ) as conf_file:
+        with open_conf_file(effect_name) as conf_file:
             yaml.dump(
                 yaml.safe_load(
                     f"""
@@ -74,6 +72,14 @@ def add_effect():
             400,
         )
 
+
+def open_conf_file(effect_name, read=False):
+    return open(
+            os.path.join(CONF_DIR, effect_name + YAML_EXTENSION), "r" if read else "w"
+        )
+
+def load_yaml_file_as_dict(effect_name, read = False) -> dict:
+    return yaml.safe_load(open_conf_file(effect_name, read))
 
 @upload_bp.route("/get/all", methods=["GET"])
 def get_uploaded_custom_effects():

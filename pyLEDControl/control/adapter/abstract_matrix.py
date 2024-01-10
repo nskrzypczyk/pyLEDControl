@@ -9,6 +9,7 @@ from typing import Union
 from PIL import Image, ImageEnhance
 import requests
 import settings
+from settings import MATRIX_DIMENSIONS
 
 
 class AbstractFont(abc.ABC):
@@ -126,8 +127,10 @@ class AbstractMatrix(abc.ABC):
         img.load()
         self.SetImage(img)
 
-    def SetImageFromFile(self, path: Union[str, Path], x: int, y: int, brightness:int):
+    def SetImageFromFile(self, path: Union[str, Path], x: int, y: int, brightness:int, resize = False):
         img = Image.open(path).convert("RGB")
+        if resize:
+            img = img.resize((MATRIX_DIMENSIONS.HEIGHT.value, MATRIX_DIMENSIONS.WIDTH.value), Image.LANCZOS)
         enhancer = ImageEnhance.Brightness(img)
         img = enhancer.enhance(brightness)
         img.load()
