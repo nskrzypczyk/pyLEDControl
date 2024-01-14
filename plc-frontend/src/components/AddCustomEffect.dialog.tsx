@@ -1,18 +1,18 @@
 import { Circle, Close, Save } from "@mui/icons-material";
-import { AppBar, Dialog, DialogContent, DialogContentText, DialogTitle, IconButton, List, ListItem, ListItemIcon, Tab, Tabs, TextField, Toolbar, Typography, Box, Button } from "@mui/material";
-import React, { SyntheticEvent, useState } from "react";
+import { Alert, AppBar, Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, List, ListItem, ListItemIcon, Tab, Tabs, TextField, Toolbar, Typography } from "@mui/material";
+import React, { ChangeEvent, SyntheticEvent, useRef, useState } from "react";
 
 export interface PropsAddCustomEffectDialog {
     handleClose: () => void;
+    handleFileName: (file: File) => void;
     isOpen: boolean;
-    onSave: () => void;
 }
 
-function TabPanel(props: {
+function TabPanel(props: Readonly<{
     children?: React.ReactNode;
-    index:number;
+    index: number;
     value: number;
-}) {
+}>) {
     const { children, value, index, ...other } = props;
 
     return (
@@ -31,9 +31,28 @@ function TabPanel(props: {
     );
 }
 
-const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: PropsAddCustomEffectDialog) => {
+const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Readonly<PropsAddCustomEffectDialog>) => {
     const [tabValue, setTabValue] = useState<number>(0)
-    const handleTabChange = (event: SyntheticEvent, idx: number) => setTabValue(idx);
+    const [selectedFile, setSelectedFile] = useState<File>()
+    const handleTabChange = (event: SyntheticEvent, idx: number) => setTabValue(idx)
+    const handleSelectFileClick = () => (ref as any).current.click()
+    const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) {
+            return
+        }
+        props.handleFileName(e.target.files[0])
+        setSelectedFile(e.target.files[0])
+    }
+
+    const handleSave = () =>{
+        // FIXME: Implement
+    }
+    
+    const handleDelete = () => {
+        // FIXME: Implement
+    }
+
+    const ref = useRef()
     return (
         <Dialog
             fullScreen
@@ -52,7 +71,7 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Prop
                         <Close />
                     </IconButton>
                     <DialogTitle sx={{ ml: 1, flex: 1 }}>Add custom effect</DialogTitle>
-                    <IconButton size="large" edge="end" color="inherit" onClick={props.handleClose}>
+                    <IconButton size="large" edge="end" color="inherit" onClick={handleSave}>
                         <Save sx={{ mr: 1 }} />
                         <Typography>Save</Typography>
                     </IconButton>
@@ -77,10 +96,10 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Prop
                     orientation="horizontal"
                     onChange={handleTabChange}
                 >
-                    <Tab label="Provide URL" />
                     <Tab label="Upload file" />
+                    <Tab label="Provide URL" />
                 </Tabs>
-                <TabPanel value={tabValue} index={0}>
+                <TabPanel value={tabValue} index={1}>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -99,7 +118,7 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Prop
                         variant="outlined"
                     />
                 </TabPanel>
-                <TabPanel value={tabValue} index={1}>
+                <TabPanel value={tabValue} index={0}>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -109,11 +128,30 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Prop
                         fullWidth
                         variant="outlined"
                     />
-                    <Button sx={{width:"100%"}} variant="outlined">Select file</Button>
+                    <Grid container spacing={selectedFile ? 1 : 0}>
+                        <Grid item xs={selectedFile ? 3 : 12}>
+                            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                <input type="file" accept=".png, .gif, .jpeg, .jpg" ref={ref as any} style={{ display: "none" }} onChange={handleFileInput as any} />
+                                <Button onClick={handleSelectFileClick} sx={{ flex: "1", width: "100%", minHeight: "100%" }} variant="outlined">
+                                    Select file
+                                </Button>
+                            </div>
+
+                        </Grid>
+                        <Grid item xs={9}>
+                            {selectedFile
+                                ?
+                                <Alert variant="outlined">
+                                    Selected file: {selectedFile.name}
+                                </Alert>
+                                : null}
+                        </Grid>
+                    </Grid>
                 </TabPanel>
 
             </DialogContent>
         </Dialog>
     )
 }
+
 export default AddCustomEffectDialog

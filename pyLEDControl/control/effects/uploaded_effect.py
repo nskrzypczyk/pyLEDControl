@@ -61,12 +61,12 @@ class UploadedEffect(AbstractEffect):
         log = Log("UploadedEffect")
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
 
-        conf_files = [
-           load_yaml_file_as_dict(name, read=True) for name in options.active_effects
-        ]
         current_proc = None
         counter = 0
         while not __class__.is_terminated(conn_p):
+            conf_files = [
+            load_yaml_file_as_dict(name, read=True) for name in options.active_effects
+            ]
             if counter == len(options.active_effects):
                 log.info("Resetting counter")
                 counter = 0
