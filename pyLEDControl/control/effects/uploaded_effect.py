@@ -1,24 +1,26 @@
+import time
 from dataclasses import dataclass
 from multiprocessing import Pipe, Process
 from multiprocessing.connection import Connection
-import time
 from typing import List
-from misc.domain_data import MultiselectConstraint
+
+import imageio
 import settings
 from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
-from misc.logging import Log
-from server.routes.effect_upload_routes import (
-    custom_effects_with_settings,
-    open_conf_file,
-)
-import imageio
 from control.effects.shuffle import exit_sub
+from misc.domain_data import MultiselectConstraint
+from misc.logging import Log
 from PIL import Image, ImageEnhance
-from server.routes.effect_upload_routes import load_yaml_file_as_dict
+from server.routes.effect_upload_routes import (load_yaml_file_as_dict,
+                                                open_conf_file)
 from settings import MATRIX_DIMENSIONS
 
+
+def load_effects(): # No eye candy really ._.
+    from server.routes.effect_upload_routes import custom_effects_with_settings
+    return list(custom_effects_with_settings.keys())
 
 class UploadedEffect(AbstractEffect):
     """
@@ -28,11 +30,12 @@ class UploadedEffect(AbstractEffect):
 
     @dataclass
     class Options(AbstractEffectOptions):
+
         custom = True
         active_effects: List[str]
         active_effects_constraint = MultiselectConstraint(
             display_name="Active uploaded effects",
-            items=lambda: list(custom_effects_with_settings.keys()),
+            items=load_effects,
             strict=True,
         )
 

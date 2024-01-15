@@ -92,7 +92,6 @@ const App: React.FC = () => {
 
   const handleUploadFileClick = () => setAddCustomEffectDialogOpen(true)
 
-  const handleUploadDialogOnSave = () => undefined;
 
   React.useEffect(() => {
     const fn = async () => {
@@ -285,7 +284,7 @@ const getCustomSliderForm = (fieldName: string, displayName: string, decreaseFun
 }
 
 
-function CustomSnackbar(snackState: {
+export function CustomSnackbar(snackState: {
   open: boolean; Transition: React.ComponentType<
     TransitionProps & {
       children: React.ReactElement<any, any>;

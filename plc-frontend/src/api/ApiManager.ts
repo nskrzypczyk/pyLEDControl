@@ -65,8 +65,8 @@ export const getOptionDefinition = async (effect: string): Promise<IEffectOption
 
 export const addEffect = async (file: File, effectName: string) => {
     // validation
-    if (!file || !effectName) {
-        return
+    if (!file || !effectName || effectName.length === 0) {
+        throw new Error("Please provide the necessary data to add an effect!")
     }
 
     const formData = new FormData()
@@ -79,7 +79,26 @@ export const addEffect = async (file: File, effectName: string) => {
     })
 
     handleErrors(res)
-    return await res.json()
+    return res.json()
+}
+
+export const addEffectWithURL = async (url: string, effectName: string) => {
+    // validation
+    if(!url || url.length===0 || !effectName || effectName.length===0){
+        throw new Error("Please provide the necessary data to add an effect URL!")
+    }
+    
+    const formData = new FormData()
+    formData.append("url", url)
+    formData.append("effect_name", effectName)
+
+    const res = await fetch(`${HOST}/upload/add/url`, {
+        method: "POST",
+        body: formData
+    })
+
+    handleErrors(res)
+    return res.json()
 }
 
 export const deleteEffect = async (effectName: string) => {
@@ -87,5 +106,13 @@ export const deleteEffect = async (effectName: string) => {
         method: "DELETE"
     })
     handleErrors(res)
-    return await res.json()
+    return res.json()
+}
+
+export const getUploadedEffects = async() => {
+    const res = await fetch(`${HOST}/upload/get/all`, {
+        method: "GET"
+    })
+    handleErrors(res)
+    return res.json()
 }
