@@ -3,4 +3,4 @@ RGBMatrixEmulator==0.8.3
 spotipy
 flask-cors==3.0.10
 imageio==2.33.1
-Pillow
+Pillow==9.2.0

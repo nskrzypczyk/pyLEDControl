@@ -54,6 +54,10 @@ To build the frontend run `npm run build`. After this, copy the `build` director
 
 Feel free to participate in this project! Check out the corresponding [GitHub board](https://github.com/users/nskrzypczyk/projects/1) in which current problems as well as the project's progress are documented. If you find issues, whether it be code, setup et cetera, do not hesitate to create a new board entry :) 
 
+## Troubleshooting
+- ImportError: libopenjp2.so.7: cannot open shared object file: No such file or directory
+  - `sudo apt install libopenjp2-7`
+
 ## TODO
 
 - [X] Creating base project / repo
