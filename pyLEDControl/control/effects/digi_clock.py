@@ -44,10 +44,6 @@ class DigiClock(AbstractEffect):
             y += dy
 
             # Bounce off edges
-            log.debug(f"text_height:{text_height}")
-            log.debug(f"text_width:{text_width}")
-            log.debug(f"y:{y}")
-            log.debug(f"x:{x}")
             if (x < 0) or (x + text_width > 64):
                 dx = -dx
             if (y <= 9) or (

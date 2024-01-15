@@ -1,14 +1,18 @@
-import { AddCircle, Check, Checklist, CompareArrows, Navigation, RemoveCircle } from '@mui/icons-material';
-import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, Grow, MenuItem, Slide, Slider, Snackbar, Stack, Toolbar, Typography } from '@mui/material';
+import { ThemeProvider } from '@emotion/react';
+import { AddCircle, Check, Checklist, CompareArrows, FileUpload, Navigation, RemoveCircle } from '@mui/icons-material';
+import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, Grow, IconButton, Slide, Slider, Snackbar, Stack, Toolbar, Typography, createTheme } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import React, { useState } from 'react';
 import './App.css';
 import { getOptionDefinition, getStatus, setEffect } from './api/ApiManager';
+import AddCustomEffectDialog from './components/AddCustomEffect.dialog';
 import { IStatus } from './domainData/DomainData';
 
 const App: React.FC = () => {
-  const [effectOptionDefinition, setEffectOptionDefinition] = useState<any>();
-  const [formData, setFormData] = useState<any>({});
+  const [effectOptionDefinition, setEffectOptionDefinition] = useState<any>()
+  const [mainFormData, setMainFormData] = useState<any>({})
+  const [uploadFileName, setUploadFileName] = useState<File>()
+  const [addCustomEffectDialogOpen, setAddCustomEffectDialogOpen] = React.useState<boolean>(false)
   const [snackState, setSnackState] = React.useState<{
     open: boolean;
     Transition: React.ComponentType<
@@ -28,35 +32,35 @@ const App: React.FC = () => {
 
   const handleClickUpdate = async () => {
     try {
-      const outData = formData
+      const outData = mainFormData
       // filter out unneeded fields
-      Object.keys(outData).forEach((key:any)=>{
-        if(!effectOptionDefinition.hasOwnProperty(key)){
+      Object.keys(outData).forEach((key: any) => {
+        if (!effectOptionDefinition.hasOwnProperty(key)) {
           delete outData[key]
         }
       })
-      for(const key of Object.keys(effectOptionDefinition)){
-        if(!outData.hasOwnProperty(key)){
-          setSnackState({ ...snackState, open: true, message: `Effect options for ${formData.effect} is missing the field ${key}`, severity: "error" })
+      for (const key of Object.keys(effectOptionDefinition)) {
+        if (!outData.hasOwnProperty(key)) {
+          setSnackState({ ...snackState, open: true, message: `Effect options for ${mainFormData.effect} is missing the field ${key}`, severity: "error" })
           return
         }
       }
-      await setEffect(formData);
+      await setEffect(mainFormData);
     } catch (error: any) {
       setSnackState({ ...snackState, open: true, message: error.message, severity: "error" })
     }
   }
 
   const handleSliderChange = (event: Event, newValue: number | number[], fieldName: string) => {
-    setFormData({ ...formData, [fieldName]: newValue as number });
+    setMainFormData({ ...mainFormData, [fieldName]: newValue as number });
   };
 
   const handleSingleSelectClick = (fieldName: string, chipName: string) => {
-    setFormData({ ...formData, [fieldName]: chipName })
+    setMainFormData({ ...mainFormData, [fieldName]: chipName })
   }
 
   const handleMultiSelectChange = (fieldName: string, chipName: string): void => {
-    const currentList: string[] = formData[fieldName] || []
+    const currentList: string[] = mainFormData[fieldName] || []
     if (currentList.includes(chipName)) {
       if (currentList.length === 1) {
         setSnackState({ ...snackState, open: true, message: "At least 1 effect must be set!", severity: "warning" })
@@ -68,29 +72,32 @@ const App: React.FC = () => {
       currentList.push(chipName)
     }
 
-    setFormData({ ...formData, [fieldName]: currentList })
+    setMainFormData({ ...mainFormData, [fieldName]: currentList })
   }
 
   const handleClickIncreaseSlider = (fieldName: string) => {
-    let newVal = formData[fieldName] + 10
+    let newVal = mainFormData[fieldName] + 10
     if (newVal > effectOptionDefinition[fieldName].constraint.upper_bound) {
       newVal = effectOptionDefinition[fieldName].constraint.upper_bound
     }
-    setFormData({ ...formData, [fieldName]: newVal })
+    setMainFormData({ ...mainFormData, [fieldName]: newVal })
   }
   const handleClickDecreaseSlider = (fieldName: string) => {
-    let newVal = formData[fieldName] - 10
+    let newVal = mainFormData[fieldName] - 10
     if (newVal < effectOptionDefinition[fieldName].constraint.lower_bound) {
       newVal = effectOptionDefinition[fieldName].constraint.lower_bound
     }
-    setFormData({ ...formData, [fieldName]: newVal })
+    setMainFormData({ ...mainFormData, [fieldName]: newVal })
   }
+
+  const handleUploadFileClick = () => setAddCustomEffectDialogOpen(true)
+
 
   React.useEffect(() => {
     const fn = async () => {
       try {
         const res: IStatus = await getStatus()
-        setFormData(res)
+        setMainFormData(res)
       } catch (error) {
         setSnackState({ ...snackState, open: true, message: String(error), severity: "error" })
       }
@@ -101,8 +108,8 @@ const App: React.FC = () => {
   React.useEffect(() => {
     const fn = async () => {
       try {
-        if (formData.effect != undefined) {
-          const res = await getOptionDefinition(formData.effect)
+        if (mainFormData.effect != undefined) {
+          const res = await getOptionDefinition(mainFormData.effect)
           setEffectOptionDefinition(res)
         }
       } catch (error) {
@@ -110,18 +117,33 @@ const App: React.FC = () => {
       }
     }
     fn()
-  }, [formData.effect])
+  }, [mainFormData.effect])
+
+  const theme = createTheme({
+    typography: {
+      allVariants: {
+        fontFamily: "monospace"
+      }
+    },
+  });
+
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <div className='main'>
         <AppBar position='static' color="primary" sx={{ borderRadius: "12px", marginBottom: "12px", marginTop: "12px", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)" }}>
           <Toolbar>
-            <MenuItem>
-              <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-                pyLEDControl
-              </Typography>
-            </MenuItem>
+            <Typography variant="h4" sx={{ flexGrow: 2 }}>
+              pyLEDControl
+            </Typography>
+            <IconButton
+              size="large"
+              edge="end"
+              onClick={handleUploadFileClick}
+            >
+              <FileUpload sx={{ mr: 1 }} style={{ color: "#fff" }} />
+              <Typography variant="button" sx={{ flexGrow: 2 }} color="white">Upload</Typography>
+            </IconButton>
           </Toolbar>
         </AppBar>
         <Grid container direction="row" justifyContent="center" alignItems="stretch" columns={{ xs: 1, sm: 2, md: 2 }} spacing={{ xs: 2, md: 2 }}>
@@ -131,11 +153,11 @@ const App: React.FC = () => {
               const type = field["constraint"]["type"]
               switch (type) {
                 case "IntervalConstraint":
-                  return makeTransition(key, getCustomSliderForm(key, field.constraint.display_name, handleClickDecreaseSlider, formData[key] as number, handleSliderChange, handleClickIncreaseSlider))
+                  return makeTransition(key, getCustomSliderForm(key, field.constraint.display_name, handleClickDecreaseSlider, mainFormData[key] as number, handleSliderChange, handleClickIncreaseSlider))
                 case "MultiselectConstraint":
-                  return makeTransition(key, getMultiselectForm(key, field.constraint.display_name, field.constraint.items, formData[key] || [], handleMultiSelectChange))
+                  return makeTransition(key, getMultiselectForm(key, field.constraint.display_name, field.constraint.items, mainFormData[key] || [], handleMultiSelectChange))
                 case "SingleselectConstraint":
-                  return makeTransition(key, getSingleSelectForm(key, field.constraint.display_name, field.constraint.items, formData[key] || 0, handleSingleSelectClick))
+                  return makeTransition(key, getSingleSelectForm(key, field.constraint.display_name, field.constraint.items, mainFormData[key] || 0, handleSingleSelectClick))
                 default:
                   break
               }
@@ -152,22 +174,13 @@ const App: React.FC = () => {
             </Fab>
           </Grid>
         </Grid>
-        <Snackbar
-          open={snackState.open}
-          onClick={() => setSnackState({ ...snackState, open: false })}
-          onClose={() => setSnackState({ ...snackState, open: false })}
-          TransitionComponent={snackState.Transition}
-          message={snackState.message}
-          key={snackState.Transition.name}
-          autoHideDuration={6000}
-          anchorOrigin={{ vertical: 'top', horizontal: "center" }}
-        >
-          <Alert severity={snackState.severity}>
-            {snackState.message}
-          </Alert>
-        </Snackbar>
+        {CustomSnackbar(snackState, setSnackState)}
+        <AddCustomEffectDialog
+          handleFileName={setUploadFileName}
+          isOpen={addCustomEffectDialogOpen}
+          handleClose={() => setAddCustomEffectDialogOpen(false)} />
       </div>
-    </ >
+    </ThemeProvider>
   );
 }
 
@@ -181,32 +194,32 @@ const makeTransition = (key: string, component: JSX.Element) => {
 
 const getMultiselectForm = (fieldName: string, displayName: string, optionList: string[], selectedElements: string[] | undefined, handleSelectionChange: any) => {
   return (
-      <Grid key={fieldName} className='panel' item xs={1} justifyContent="center">
-        <Box sx={{ borderRadius: "12px", backgroundColor: "white", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)", padding: "10px" }}>
-          <Grid container columns={8} direction="row" alignItems="center">
-            <Grid container item xs={1}>
-              <Checklist />
-            </Grid>
-            <Grid item xs="auto">
-              <Typography variant='h5'>
-                {displayName}
-              </Typography>
-            </Grid>
+    <Grid key={fieldName} className='panel' item xs={1} justifyContent="center">
+      <Box sx={{ borderRadius: "12px", backgroundColor: "white", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)", padding: "10px" }}>
+        <Grid container columns={8} direction="row" alignItems="center">
+          <Grid container item xs={1}>
+            <Checklist />
           </Grid>
-          <Divider sx={{ mt: 1.5, mb: 1.5 }} />
-          <Grid container item spacing={1}>
-            {optionList.map((e) => (
-              <Grid key={e + "_grid_" + fieldName} item>
-                <Chip
-                  key={e + "_chip_" + fieldName}
-                  variant={selectedElements?.includes(e) ? "filled" : "outlined"} label={e}
-                  onClick={() => handleSelectionChange(fieldName, e)}
-                  color={selectedElements?.includes(e) ? "primary" : undefined} />
-              </Grid>
-            ))}
+          <Grid item xs="auto">
+            <Typography variant='h5' color="black">
+              {displayName}
+            </Typography>
           </Grid>
-        </Box>
-      </Grid>
+        </Grid>
+        <Divider sx={{ mt: 1.5, mb: 1.5 }} />
+        <Grid container item spacing={1}>
+          {optionList.map((e) => (
+            <Grid key={e + "_grid_" + fieldName} item>
+              <Chip
+                key={e + "_chip_" + fieldName}
+                variant={selectedElements?.includes(e) ? "filled" : "outlined"} label={e}
+                onClick={() => handleSelectionChange(fieldName, e)}
+                color={selectedElements?.includes(e) ? "primary" : undefined} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </Grid>
   )
 }
 
@@ -218,7 +231,7 @@ const getSingleSelectForm = (fieldName: string, displayName: string, optionList:
           <Check />
         </Grid>
         <Grid item xs="auto">
-          <Typography variant='h5'>
+          <Typography variant='h5' color="black">
             {displayName}
           </Typography>
         </Grid>
@@ -246,7 +259,7 @@ const getCustomSliderForm = (fieldName: string, displayName: string, decreaseFun
           <CompareArrows />
         </Grid>
         <Grid item xs="auto">
-          <Typography variant='h5'>
+          <Typography variant='h5' color="black">
             {displayName}
           </Typography>
         </Grid>
@@ -262,12 +275,42 @@ const getCustomSliderForm = (fieldName: string, displayName: string, decreaseFun
         </Button>
       </Stack>
       <Stack direction={'row'} spacing={1} alignItems="center" justifyContent={'center'}>
-        <Typography variant="h6">
+        <Typography variant="h6" color="black">
           {value} %
         </Typography>
       </Stack>
     </Box>
   </Grid>;
+}
+
+
+export function CustomSnackbar(snackState: {
+  open: boolean; Transition: React.ComponentType<
+    TransitionProps & {
+      children: React.ReactElement<any, any>;
+    }
+  >; message: string; severity: AlertColor;
+}, setSnackState: React.Dispatch<React.SetStateAction<{
+  open: boolean; Transition: React.ComponentType<
+    TransitionProps & {
+      children: React.ReactElement<any, any>;
+    }
+  >; message: string; severity: AlertColor;
+}>>) {
+  return <Snackbar
+    open={snackState.open}
+    onClick={() => setSnackState({ ...snackState, open: false })}
+    onClose={() => setSnackState({ ...snackState, open: false })}
+    TransitionComponent={snackState.Transition}
+    message={snackState.message}
+    key={snackState.Transition.name}
+    autoHideDuration={6000}
+    anchorOrigin={{ vertical: 'top', horizontal: "center" }}
+  >
+    <Alert severity={snackState.severity}>
+      {snackState.message}
+    </Alert>
+  </Snackbar>;
 }
 
 export default App;

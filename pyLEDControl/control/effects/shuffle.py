@@ -17,10 +17,11 @@ class Shuffle(AbstractEffect):
     class Options(AbstractEffectOptions):
         active_effects: List[str]
 
-        active_effects_constraint = MultiselectConstraint("Active effects",
-                                                          list(
-                                                              set(get_effect_list()) - {"AbstractEffect", "Shuffle", "OFF"}),
-                                                          True)
+        active_effects_constraint = MultiselectConstraint(
+            display_name="Active effects",
+            items=list(set(get_effect_list()) - {"AbstractEffect", "Shuffle", "OFF"}),
+            strict=True,
+        )
 
     def run(matrix: type, options: Options, conn_p: Connection, *args, **kwargs):
         log = Log(__class__.__name__)
@@ -32,9 +33,9 @@ class Shuffle(AbstractEffect):
                 counter = 0
             _conn, conn_c = Pipe(True)
 
-            # active_effects can run on the fly via pipes so we need to check. 
+            # active_effects can run on the fly via pipes so we need to check.
             # introducing another variable for this matter is not necessary.
-            if counter >= len(options.active_effects): 
+            if counter >= len(options.active_effects):
                 exit_sub(tt, log, _conn)
                 return Shuffle.run(matrix, options, conn_p)
             tt = Process(

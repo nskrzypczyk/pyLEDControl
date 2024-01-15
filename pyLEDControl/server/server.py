@@ -5,6 +5,7 @@ import settings
 from misc.logging import Log
 from multiprocessing import Process, Queue
 from flask_cors import CORS
+from server.routes.effect_upload_routes import upload_bp, load_existing_file_paths
 
 
 class Server(Process):
@@ -18,8 +19,11 @@ class Server(Process):
 
     def run_server(self):
         self.log.debug("Setting up flask server")
-        app: Flask = Flask("pyLedControlServer")
+        app: Flask = Flask("pyLEDControlServer")
         CORS(app)
+
+        app.register_blueprint(blueprint=upload_bp, url_prefix="/upload")
+        load_existing_file_paths()
 
         @app.get("/")
         def index():
@@ -28,23 +32,20 @@ class Server(Process):
         @app.get("/effect/available")
         def get_all_effects():
             return jsonify(list(get_effects().keys()))
-        
+
         @app.get("/effect/<effect>/options")
-        def get_effect_option_parameters(effect:str):
+        def get_effect_option_parameters(effect: str):
             return jsonify(to_json_td(get_effects()[effect].Options))
 
         @app.get("/effect/current")
         def get_status():
-            return jsonify(
-                self.current_options_instance.to_dict()
-            )
+            return jsonify(self.current_options_instance.to_dict())
 
         @app.post("/effect/<effect>")
-        def change_effect(effect:str):
-            """ 
-            TODO: Modify endpoint: 
-            - Backend: Options class should contain neccessary information like brightness etc.
-            - Frontend: Build payload 
+        def change_effect(effect: str):
+            """
+            TODO: Modify endpoint:
+            - Verify payload via constraints which are defined in options subclass
             """
             try:
                 formdata = request.get_json(force=True)
@@ -73,6 +74,7 @@ class Server(Process):
         effect_dict = get_effects()
         effect_class = effect_dict[self.current_effect]
         self.current_options_instance = effect_class.Options(
-            brightness=self.current_brightness, effect=effect_dict[self.current_effect])
-        self.queue.put((effect_class,self.current_options_instance))
+            brightness=self.current_brightness, effect=effect_dict[self.current_effect]
+        )
+        self.queue.put((effect_class, self.current_options_instance))
         self.run_server()
