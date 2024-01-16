@@ -150,6 +150,8 @@ def add_effect_url():
 
 
 def open_conf_file(effect_name, read=False):
+    if not os.path.exists(CONF_DIR):
+        os.makedirs(CONF_DIR)
     return open(
         os.path.join(CONF_DIR, str(effect_name) + YAML_EXTENSION), "r" if read else "w"
     )
