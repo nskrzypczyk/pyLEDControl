@@ -41,30 +41,32 @@ class UploadedEffect(AbstractEffect):
         )
 
     @staticmethod
+    def run_gif(matrix_class, options: Options, conn_p:Connection, image_path:str):
+        matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
+        log.info("Running gif "+image_path)
+        frames = convert_gif_to_frames(image_path)
+        framerate = 0.08
+
+        def print_gif():
+            for frame in frames:
+                matrix.SetImage(ImageEnhance.Brightness(frame.convert("RGB")).enhance(options.get_brightness()))
+                time.sleep(framerate)
+        while not __class__.is_terminated(conn_p):
+            print_gif()
+        matrix.Clear()
+
+    @staticmethod
+    def run_jpeg_png(matrix_class, options: Options, conn_p:Connection, image_path:str):
+        matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
+        log.info("Running png/jpg "+image_path)
+        matrix.SetImageFromFile(image_path, 0,0,options.get_brightness(), True)
+        while not __class__.is_terminated(conn_p):
+            pass
+        matrix.Clear()
+
+
+    @staticmethod
     def run(matrix_class: AbstractMatrix, options: Options, conn_p: Connection, *args, **kwargs):
-        def run_gif(matrix_class, options: UploadedEffect.Options, conn_p:Connection, image_path:str):
-            matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
-            log.info("Running gif "+image_path)
-            frames = convert_gif_to_frames(image_path)
-            framerate = 0.08
-
-            def print_gif():
-                for frame in frames:
-                    matrix.SetImage(ImageEnhance.Brightness(frame.convert("RGB")).enhance(options.get_brightness()))
-                    time.sleep(framerate)
-            while not __class__.is_terminated(conn_p):
-                print_gif()
-            matrix.Clear()
-
-        def run_jpeg_png(matrix_class, options: UploadedEffect.Options, conn_p:Connection, image_path:str):
-            matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
-            log.info("Running png/jpg "+image_path)
-            matrix.SetImageFromFile(image_path, 0,0,options.get_brightness(), True)
-            while not __class__.is_terminated(conn_p):
-                time.sleep(0.1)
-            matrix.Clear()
-    
-
         current_proc = None
         counter = 0
         while not __class__.is_terminated(conn_p):
@@ -75,18 +77,15 @@ class UploadedEffect(AbstractEffect):
                 ]
             except Exception:
                 conf_files = []
-            if counter == len(options.active_effects):
-                log.info("Resetting counter")
-                counter = 0
-            _conn, _conn_c = Pipe(True)
 
             if counter >= len(options.active_effects):
                 exit_sub(current_proc, log, _conn)
                 return UploadedEffect.run(matrix_class, options, conn_p)
             
+            _conn, _conn_c = Pipe(True)
 
             current_proc = Process(
-                target=run_gif if conf_files[counter].get("source").endswith(".gif") else run_jpeg_png,
+                target=UploadedEffect.run_gif if conf_files[counter].get("source").endswith(".gif") else UploadedEffect.run_jpeg_png,
                 args=[matrix_class, options, _conn_c, conf_files[counter].get("source")]
             )
 
