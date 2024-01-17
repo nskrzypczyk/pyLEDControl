@@ -46,7 +46,7 @@ class UploadedEffect(AbstractEffect):
             matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
             log.info("Running gif "+image_path)
             frames = convert_gif_to_frames(image_path)
-            framerate = 1/23
+            framerate = 0.08
 
             def print_gif():
                 for frame in frames:
