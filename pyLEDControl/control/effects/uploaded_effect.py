@@ -3,8 +3,6 @@ from dataclasses import dataclass
 from multiprocessing import Pipe, Process
 from multiprocessing.connection import Connection
 from typing import List
-
-import imageio
 import settings
 from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
@@ -12,10 +10,7 @@ from control.effects.abstract_effect import AbstractEffect
 from control.effects.shuffle import exit_sub
 from misc.domain_data import MultiselectConstraint
 from misc.logging import Log
-from PIL import Image, ImageEnhance
-from server.routes.effect_upload_routes import (load_yaml_file_as_dict,
-                                                open_conf_file)
-from settings import MATRIX_DIMENSIONS
+from server.routes.effect_upload_routes import load_yaml_file_as_dict
 
 log = Log("UploadedEffect")
 
@@ -43,17 +38,9 @@ class UploadedEffect(AbstractEffect):
     @staticmethod
     def run_gif(matrix_class, options: Options, conn_p:Connection, image_path:str):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
-        log.info("Running gif "+image_path)
-        frames = convert_gif_to_frames(image_path)
-        framerate = 0.08
-
-        def print_gif():
-            for frame in frames:
-                matrix.SetImage(ImageEnhance.Brightness(frame.convert("RGB")).enhance(options.get_brightness()))
-                time.sleep(framerate)
+        print_gif: callable = matrix.SetFramesInLoop(image_path, options, 0.08)
         while not __class__.is_terminated(conn_p):
             print_gif()
-        matrix.Clear()
 
     @staticmethod
     def run_jpeg_png(matrix_class, options: Options, conn_p:Connection, image_path:str):
@@ -98,10 +85,7 @@ class UploadedEffect(AbstractEffect):
             exit_sub(current_proc, log, _conn)
         exit_sub(current_proc, log, _conn)
 
-def convert_gif_to_frames(gif_path):
-    log.info("Converting media")
-    with imageio.get_reader(gif_path) as reader:
-        return [Image.fromarray(frame).resize((settings.MATRIX_DIMENSIONS.HEIGHT.value, settings.MATRIX_DIMENSIONS.WIDTH.value), Image.ADAPTIVE) for frame in reader]
+
 
 # TODO: Extract to helper / misc module
 def exit_sub(tt, log, conn):

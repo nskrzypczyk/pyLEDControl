@@ -5,11 +5,13 @@ from __future__ import annotations
 import abc
 from io import BytesIO
 from pathlib import Path
-from typing import Union
+import time
+from typing import List, Union
 from PIL import Image, ImageEnhance
 import requests
 import settings
 from settings import MATRIX_DIMENSIONS
+import imageio
 
 
 class AbstractFont(abc.ABC):
@@ -135,3 +137,18 @@ class AbstractMatrix(abc.ABC):
         img = enhancer.enhance(brightness)
         img.load()
         self.SetImage(img, x, y)
+
+    def SetFramesInLoop(self, image_path:str, options, sleep_time:float):
+        frames = convert_gif_to_frames(image_path)
+        framerate = 0.08
+
+        def print_gif():
+            for frame in frames:
+                self.SetImage(ImageEnhance.Brightness(frame.convert("RGB")).enhance(options.get_brightness()))
+                time.sleep(framerate)
+        return print_gif
+
+def convert_gif_to_frames(gif_path):
+    with imageio.get_reader(gif_path) as reader:
+        frames = [Image.fromarray(frame).resize((settings.MATRIX_DIMENSIONS.HEIGHT.value, settings.MATRIX_DIMENSIONS.WIDTH.value), Image.ADAPTIVE) for frame in reader]
+    return frames or []

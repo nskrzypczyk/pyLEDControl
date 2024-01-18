@@ -19,7 +19,7 @@ class Shuffle(AbstractEffect):
 
         active_effects_constraint = MultiselectConstraint(
             display_name="Active effects",
-            items=list(set(get_effect_list()) - {"AbstractEffect", "Shuffle", "OFF"}),
+            items=list(set(get_effect_list()) - {"AbstractEffect", "Shuffle", "OFF", "UploadedEffect"}),
             strict=True,
         )
 
