@@ -109,7 +109,20 @@ class MultiselectConstraint(AbstractConstraint):
 @dataclass
 class SingleselectConstraint(AbstractConstraint):
     type = "SingleselectConstraint"
-    items: list
+    items: Union[
+        List, Callable
+    ]  
+    _items: Union[List, Callable] = field(init=False, repr=False)
+
+    @property
+    def items(self):
+        if callable(self._items):
+            return self._items()
+        return self._items
+
+    @items.setter
+    def items(self, new) -> None:
+        self._items = new
 
     def get_validator(self):
         def validator(li: list) -> bool:

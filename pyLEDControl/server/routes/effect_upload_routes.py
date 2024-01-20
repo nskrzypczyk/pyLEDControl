@@ -10,7 +10,6 @@ import io
 
 # TODO: Introduce settings for custom effects
 # TODO: Add PUT route for updating an existing custom effect
-
 UPLOAD_DIR: str = "uploads"
 CONF_DIR: str = "uploads_effect_config"
 ALLOWED_EXTENSIONS: set = {"jpg", "jpeg", "png", "gif"}
@@ -33,16 +32,17 @@ def load_existing_file_paths():
             "settings", None
         )
     log.debug([file_paths, custom_effects_with_settings])
+    return custom_effects_with_settings
 
 
 @upload_bp.route("/add", methods=["POST"])
 def add_effect():
     file = request.files.get("file")
-    effect_name = request.form.get("effect_name", default="")
+    effect_name = request.form.get("effect_name", default="").strip()
 
     if file is None or file.filename == "" or effect_name == "":
         return jsonify(error="Effect name and file must not be null!"), 400
-
+    
     if file and is_file_allowed(file.filename):
         filename = secure_filename(file.filename)
         _, file_extension = os.path.splitext(filename)
@@ -82,7 +82,7 @@ def add_effect():
 @upload_bp.route("/add/url", methods=["POST"])
 def add_effect_url():
     effect_url = request.form.get("url", default="")
-    effect_name = request.form.get("effect_name", default="")
+    effect_name = request.form.get("effect_name", default="").strip()
 
     if effect_url == "" or effect_name == "":
         return jsonify(error="Effect name and file must not be null!"), 400

@@ -6,28 +6,39 @@ from typing import List
 
 from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
+from control.effects import get_effect_list, get_effects
 from control.effects.abstract_effect import AbstractEffect
-from misc.logging import Log
+from control.effects.uploaded_effect_single import (UploadedEffectSingle,
+                                                    load_effects)
 from misc.domain_data import MultiselectConstraint
-from control.effects import get_effects, get_effect_list
+from misc.logging import Log
+from server.routes.effect_upload_routes import load_existing_file_paths
+
+uploaded_effects_list = []
+base_effects_list = list(set(get_effect_list()) - {"AbstractEffect", "Shuffle", "OFF", "UploadedEffect", "UploadedEffectSingle"})
+def load_uploaded_effects():
+    uploaded_effects_list = load_effects()
+    return uploaded_effects_list
 
 
 class Shuffle(AbstractEffect):
     @dataclass
     class Options(AbstractEffectOptions):
+        global base_effects_list, uploaded_effects_list
         active_effects: List[str]
-
         active_effects_constraint = MultiselectConstraint(
             display_name="Active effects",
-            items=list(set(get_effect_list()) - {"AbstractEffect", "Shuffle", "OFF", "UploadedEffect"}),
+            items=lambda: base_effects_list + load_uploaded_effects(),
             strict=True,
         )
 
-    def run(matrix: type, options: Options, conn_p: Connection, *args, **kwargs):
+    def run(matrix_class: type, options: Options, conn_p: Connection, *args, **kwargs):
+        global base_effects_list, uploaded_effects_list
         log = Log(__class__.__name__)
         tt = None
         counter = 0
         while not __class__.is_terminated(conn_p):
+            uploaded_effects_list = list(load_existing_file_paths().keys())
             if counter == len(options.active_effects):
                 log.debug("Resetting counter")
                 counter = 0
@@ -36,24 +47,32 @@ class Shuffle(AbstractEffect):
             # active_effects can run on the fly via pipes so we need to check.
             # introducing another variable for this matter is not necessary.
             if counter >= len(options.active_effects):
-                exit_sub(tt, log, _conn)
-                return Shuffle.run(matrix, options, conn_p)
-            tt = Process(
-                target=get_effects()[options.active_effects[counter]].run,
-                args=[matrix, options, conn_c],
-            )
-
+                exit_sub_proc(tt, log, _conn)
+                return Shuffle.run(matrix_class, options, conn_p)
+            active_effect = options.active_effects[counter]
             counter += 1
-            log.debug("Starting thread")
-            tt.start()
-
+            if active_effect in base_effects_list:
+                tt = Process(
+                    target=get_effects()[active_effect].run,
+                    args=[matrix_class, options, conn_c],
+                )
+                tt.start()
+            elif active_effect in load_effects():
+                options.active_effect = active_effect
+                tt = Process(
+                    target=UploadedEffectSingle.run,
+                    args=[matrix_class, options, conn_c],
+                )
+                tt.start()
+            else:
+                continue
             log.debug("Sleeping")
             time.sleep(7)
-            exit_sub(tt, log, _conn)
-        exit_sub(tt, log, _conn)
+            exit_sub_proc(tt, log, _conn)
+        exit_sub_proc(tt, log, _conn)
 
 
-def exit_sub(tt, log, conn):
+def exit_sub_proc(tt, log, conn):
     if tt is not None and tt.is_alive():
         log.debug("Killing child process")
         conn.send(True)

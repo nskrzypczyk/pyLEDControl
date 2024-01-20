@@ -7,7 +7,6 @@ import settings
 from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
-from control.effects.shuffle import exit_sub
 from misc.domain_data import MultiselectConstraint
 from misc.logging import Log
 from server.routes.effect_upload_routes import load_yaml_file_as_dict
@@ -57,7 +56,6 @@ class UploadedEffect(AbstractEffect):
         current_proc = None
         counter = 0
         while not __class__.is_terminated(conn_p):
-            log.info(options.active_effects)
             try:
                 conf_files = [
                     load_yaml_file_as_dict(name, read=True) for name in options.active_effects
@@ -66,7 +64,7 @@ class UploadedEffect(AbstractEffect):
                 conf_files = []
 
             if counter >= len(options.active_effects):
-                exit_sub(current_proc, log, _conn)
+                exit_sub_proc(current_proc, log, _conn)
                 return UploadedEffect.run(matrix_class, options, conn_p)
             
             _conn, _conn_c = Pipe(True)
@@ -82,13 +80,13 @@ class UploadedEffect(AbstractEffect):
 
             log.info("Sleeping")
             time.sleep(7)
-            exit_sub(current_proc, log, _conn)
-        exit_sub(current_proc, log, _conn)
+            exit_sub_proc(current_proc, log, _conn)
+        exit_sub_proc(current_proc, log, _conn)
 
 
 
 # TODO: Extract to helper / misc module
-def exit_sub(tt, log, conn):
+def exit_sub_proc(tt, log, conn):
     if tt is not None and tt.is_alive():
         log.debug("Killing child process")
         conn.send(True)
