@@ -4,7 +4,9 @@
 from __future__ import annotations
 import abc
 from io import BytesIO
+import os
 from pathlib import Path
+import pickle
 import time
 from typing import List, Union
 from PIL import Image, ImageEnhance
@@ -40,9 +42,10 @@ class AbstractColor(abc.ABC):
         raise NotImplementedError(f"Method 'to_hex' not implemented!")
 
 
-class AbstractGraphics(abc.ABC):    
+class AbstractGraphics(abc.ABC):
     class Color(AbstractColor):
         pass
+
     @abc.abstractmethod
     def DrawText(
         self,
@@ -108,8 +111,7 @@ class AbstractMatrix(abc.ABC):
 
     @abc.abstractmethod
     def CreateFrameCanvas(self):
-        raise NotImplementedError(
-            f"Method 'CreateFrameCanvas' not implemented!")
+        raise NotImplementedError(f"Method 'CreateFrameCanvas' not implemented!")
 
     def SetImageFromURL(self, url: str, brightness: int):
         image_resp = requests.get(url)
@@ -129,26 +131,53 @@ class AbstractMatrix(abc.ABC):
         img.load()
         self.SetImage(img)
 
-    def SetImageFromFile(self, path: Union[str, Path], x: int, y: int, brightness:int, resize = False):
+    def SetImageFromFile(
+        self, path: Union[str, Path], x: int, y: int, brightness: int, resize=False
+    ):
         img = Image.open(path).convert("RGB")
         if resize:
-            img = img.resize((MATRIX_DIMENSIONS.HEIGHT.value, MATRIX_DIMENSIONS.WIDTH.value), Image.LANCZOS)
+            img = img.resize(
+                (MATRIX_DIMENSIONS.HEIGHT.value, MATRIX_DIMENSIONS.WIDTH.value),
+                Image.LANCZOS,
+            )
         enhancer = ImageEnhance.Brightness(img)
         img = enhancer.enhance(brightness)
         img.load()
         self.SetImage(img, x, y)
 
-    def SetFramesInLoop(self, image_path:str, options, sleep_time:float):
-        frames = convert_gif_to_frames(image_path)
+    def SetFramesInLoop(self, image_path: str, options, sleep_time: float):
+        pkl_path = image_path.replace(".gif", ".pkl")
+        if os.path.exists(pkl_path):
+            with open(pkl_path, "rb") as file:
+                frames = pickle.load(file)
+        else:
+            frames = convert_gif_to_frames(image_path, pkl_path)
         framerate = 0.08
 
         def print_gif():
             for frame in frames:
-                self.SetImage(ImageEnhance.Brightness(frame.convert("RGB")).enhance(options.get_brightness()))
+                self.SetImage(
+                    ImageEnhance.Brightness(frame.convert("RGB")).enhance(
+                        options.get_brightness()
+                    )
+                )
                 time.sleep(framerate)
+
         return print_gif
 
-def convert_gif_to_frames(gif_path):
+
+def convert_gif_to_frames(gif_path, pkl_path):
     with imageio.get_reader(gif_path) as reader:
-        frames = [Image.fromarray(frame).resize((settings.MATRIX_DIMENSIONS.HEIGHT.value, settings.MATRIX_DIMENSIONS.WIDTH.value), Image.ADAPTIVE) for frame in reader]
+        frames = [
+            Image.fromarray(frame).resize(
+                (
+                    settings.MATRIX_DIMENSIONS.HEIGHT.value,
+                    settings.MATRIX_DIMENSIONS.WIDTH.value,
+                ),
+                Image.ADAPTIVE,
+            )
+            for frame in reader
+        ]
+    with open(pkl_path, "wb") as file:
+        pickle.dump(frames, file)
     return frames or []

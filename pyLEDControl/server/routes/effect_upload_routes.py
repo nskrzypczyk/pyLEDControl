@@ -180,6 +180,10 @@ def delete_effect(effect_name):
             # Remove the files
             os.remove(src_path)
             os.remove(conf_path)
+            # Remove any pickled gif frames
+            pkl_path = src_path.replace(".gif", ".pkl")
+            if os.path.exists(pkl_path):
+                os.remove(pkl_path)
 
             load_existing_file_paths()
             return jsonify(f"Effect {effect_name} deleted successfully"), 200
