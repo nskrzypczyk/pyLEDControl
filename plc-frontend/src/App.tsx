@@ -166,7 +166,7 @@ const App: React.FC = () => {
             : undefined
           }
         </Grid>
-        <Grid container columns={1} sx={{ position: "fixed", bottom: 15, width: "100%" }} justifyContent="center">
+        <Grid container columns={1} sx={{ position: "sticky", bottom: 15, width: "100%", marginTop: "50px" }} justifyContent="center">
           <Grid item>
             <Fab variant="extended" color="primary" aria-label="add" onClick={handleClickUpdate}>
               <Navigation sx={{ mr: 1 }} />
