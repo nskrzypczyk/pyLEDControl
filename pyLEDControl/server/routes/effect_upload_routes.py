@@ -48,7 +48,8 @@ def add_effect():
         _, file_extension = os.path.splitext(filename)
         file_path = os.path.join(UPLOAD_DIR, effect_name + file_extension)
 
-        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        os.makedirs(UPLOAD_DIR, mode=0o777, exist_ok=True)
+        os.chmod(UPLOAD_DIR, 0o777)
 
         if os.path.exists(file_path):
             return jsonify(error="Effect with this name already exists!"), 400
@@ -118,7 +119,8 @@ def add_effect_url():
         _, file_extension = os.path.splitext(filename)
         file_path = os.path.join(UPLOAD_DIR, effect_name + file_extension)
 
-        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        os.makedirs(UPLOAD_DIR, mode=0o777, exist_ok=True)
+        os.chmod(UPLOAD_DIR, 0o777)
 
         if os.path.exists(file_path):
             return jsonify(error="Effect with this name already exists!"), 400
@@ -151,7 +153,8 @@ def add_effect_url():
 
 def open_conf_file(effect_name, read=False):
     if not os.path.exists(CONF_DIR):
-        os.makedirs(CONF_DIR)
+        os.makedirs(CONF_DIR, mode=0o777, exist_ok=True)
+        os.chmod(CONF_DIR, 0o777)
     return open(
         os.path.join(CONF_DIR, str(effect_name) + YAML_EXTENSION), "r" if read else "w"
     )
