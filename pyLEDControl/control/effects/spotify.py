@@ -65,6 +65,6 @@ class Spotify(AbstractEffect):
                 else:
                     counter = 0
             except Exception as e:
-                log.error(e)
+                log.error(e, exc_info=e)
             time.sleep(refresh_rate)
             counter += 1
