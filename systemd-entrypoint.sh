@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # -*- coding: utf-8 -*-
+
+shopt -s expand_aliases
+source ~/.bashrc
 script_dir="$(cd "$(dirname "$0")" && pwd -P)"
 cd $script_dir/pyLEDControl
 echo "ENTRYPOINT: Starting backend"
