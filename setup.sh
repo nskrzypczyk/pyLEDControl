@@ -1,6 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # -*- coding: utf-8 -*-
 
+shopt -s expand_aliases
+source ~/.bashrc
+sudo chmod 666 ./*
+echo $(python --version)
 PROJECT_NAME="pyLEDControl"
 
 script_path="$(readlink -f "${BASH_SOURCE[0]}")"
@@ -21,8 +25,9 @@ git clone https://github.com/hzeller/rpi-rgb-led-matrix.git || echo "Repo alread
 cd rpi-rgb-led-matrix
 
 echo "Building rgb matrix bindings"
-make build-python PYTHON=$(command -v python3)
+sudo make build-python PYTHON=$(command -v python3)
 sudo make install-python PYTHON=$(command -v python3)
+sudo chmod 666 ./*
 
 echo "Creating autostart entry"
 if [ -e "/etc/systemd/system/$PROJECT_NAME.service" ]; then
@@ -54,7 +59,7 @@ else
     # You can add error handling or exit the script here if needed.
 fi
 
-echo "Preparing frontend dependencies"
-cd $basedir/plc-frontend
-npm i
-sudo npm i -g serve
+#echo "Preparing frontend dependencies"
+#cd $basedir/plc-frontend
+#npm i
+#sudo npm i -g serve
