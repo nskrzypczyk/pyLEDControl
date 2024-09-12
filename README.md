@@ -24,10 +24,18 @@ I needed a clock for my office room, so here I am.
 ## Prerequisites
 
 - Raspi running **Raspbian** and ...
-  - **Python3** (<=3.9.2), used for backend & matrix control
-  - **Nodejs**, used for building the React frontend
+  - **Python3 and pip** (<=3.9.2), used for backend & matrix control
+  - **Nodejs and npm**, used for building the React frontend
   - **gcc**, used for building the official and custom C-bindings involved in this project
   - **make**
+  - **cython3**
+
+In my case, the following packages were necessary as well. They can be installed via `apt`:
+  - `libopenjp2-7`
+  - `libtiff5-dev`
+  - `libsdl2-dev`
+  - `libtinfo-dev`
+  - `libopenblas-dev`
 
 ## First time setup
 ### Development Setup (Tested only on Linux systems)
