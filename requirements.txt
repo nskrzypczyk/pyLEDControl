@@ -5,3 +5,6 @@ flask-cors==3.0.10
 imageio==2.33.1
 Pillow==9.2.0
 PyYAML==6.0
+werkzeug==2.2.2
+typing_extensions
+numpy==1.26.0
