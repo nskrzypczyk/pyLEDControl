@@ -133,7 +133,7 @@ const App: React.FC = () => {
       <div className='main'>
         <AppBar position='static' color="primary" sx={{ borderRadius: "12px", marginBottom: "12px", marginTop: "12px", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)" }}>
           <Toolbar>
-            <Typography variant="h4" sx={{ flexGrow: 2 }}>
+            <Typography variant="h5" sx={{ flexGrow: 2 }}>
               pyLEDControl
             </Typography>
             <IconButton
