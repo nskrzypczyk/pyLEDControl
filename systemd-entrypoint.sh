@@ -6,7 +6,7 @@ source ~/.bashrc
 script_dir="$(cd "$(dirname "$0")" && pwd -P)"
 cd $script_dir/pyLEDControl
 echo "ENTRYPOINT: Starting backend"
-sudo ./run.py &
+sudo nice -n -20 ./run.py &
 echo "ENTRYPOINT: Starting frontend"
 # sudo serve -s $script_dir/plc-frontend/build -l 80
 cd $script_dir/plc-frontend
