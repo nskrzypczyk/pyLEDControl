@@ -22,7 +22,7 @@ class Spotify(AbstractEffect):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
-        font.LoadFont("../../rpi-rgb-led-matrix/fonts/6x9.bdf")
+        font.LoadFont("/usr/local/share/rgbfonts/6x9.bdf")
         refresh_rate = 5
         counter = 0
 

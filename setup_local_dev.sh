@@ -7,22 +7,19 @@ script_path="$(readlink -f "${BASH_SOURCE[0]}")"
 script_dir="${script_path%/*}"
 basedir=$(pwd)
 
-if [ $EUID != 0 ]; then
-    sudo "$0" "$@"
-    exit $?
-fi
-
 echo "Installing python requirements"
-pip install -r requirements.txt
-cd ..
+pip3 install -r requirements.txt
 
 echo "Installing rgb matrix bindings"
 git clone https://github.com/hzeller/rpi-rgb-led-matrix.git || echo "Repo already exists. Continuing..."
-cd rpi-rgb-led-matrix
 
-echo "Building rgb matrix bindings"
+cd rpi-rgb-led-matrix
+git checkout -f f55736f7595bc028451658996eedea9742688bbc
 make build-python PYTHON=$(command -v python3)
 make install-python PYTHON=$(command -v python3)
+
+echo "Creating symbolic link for fonts"
+sudo ln -s $(pwd)/fonts /usr/local/share/rgbfonts || echo "Fonts already linked. Continuing..."
 
 echo "Building C-Libraries"
 cd "$script_dir/pyLEDControl/c_libs"

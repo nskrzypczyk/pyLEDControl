@@ -16,7 +16,7 @@ class DigiClock(AbstractEffect):
         matrix: AbstractMatrix = matrix_class_name(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
-        font.LoadFont("../../rpi-rgb-led-matrix/fonts/7x13.bdf")
+        font.LoadFont("/usr/local/share/rgbfonts/7x13.bdf")
         refresh_rate = 1 / 24
         x = 5
         y = 10
