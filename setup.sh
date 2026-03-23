@@ -23,11 +23,15 @@ cd ..
 echo "Installing rgb matrix bindings"
 git clone https://github.com/hzeller/rpi-rgb-led-matrix.git || echo "Repo already exists. Continuing..."
 cd rpi-rgb-led-matrix
+git checkout -f f55736f7595bc028451658996eedea9742688bbc
 
 echo "Building rgb matrix bindings"
 sudo make build-python PYTHON=$(command -v python3)
 sudo make install-python PYTHON=$(command -v python3)
 sudo chmod 666 ./*
+
+echo "Creating symbolic link for fonts"
+sudo ln -s $(pwd)/fonts /usr/local/share/rgbfonts || echo "Fonts already linked. Continuing..."
 
 echo "Creating autostart entry"
 if [ -e "/etc/systemd/system/$PROJECT_NAME.service" ]; then
