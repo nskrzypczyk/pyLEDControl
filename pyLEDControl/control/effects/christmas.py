@@ -29,7 +29,7 @@ class Christmas(AbstractEffect):
         matrix: AbstractMatrix = matrix_class_name(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
-        font.LoadFont("../../rpi-rgb-led-matrix/fonts/7x13.bdf")
+        font.LoadFont("/usr/local/share/rgbfonts/7x13.bdf")
         refresh_rate = 0.8 # seconds
         while not Christmas.is_terminated(conn):
             matrix.SetImageFromFile("display/christmas-tree.png",0,0,options.get_brightness())

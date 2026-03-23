@@ -14,7 +14,7 @@ class Weather(AbstractEffect):
         matrix: AbstractMatrix = matrix_class(options=settings.rgb_options())
         canvas: AbstractMatrix = matrix.CreateFrameCanvas()
         font = matrix.graphics.Font()
-        font.LoadFont("../../rpi-rgb-led-matrix/fonts/4x6.bdf")
+        font.LoadFont("/usr/local/share/rgbfonts/4x6.bdf")
         refresh_rate = 5  # in seconds
         binding = WeatherBinding()
         forecast = binding.get()
