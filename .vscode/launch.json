@@ -28,5 +28,12 @@
       "type": "node-terminal",
       "cwd": "${workspaceFolder}/plc-frontend"
     },
+    {
+      "command": "serve -s build -l 80",
+      "name": "Serve frontend build",
+      "request": "launch",
+      "type": "node-terminal",
+      "cwd": "${workspaceFolder}/plc-frontend"
+    },
   ]
 }
