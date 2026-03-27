@@ -7,6 +7,7 @@ import settings
 import numpy as np
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
+from PIL import Image
 
 '''
 This effect simulates the "digital rain" from the Matrix movies. 
@@ -15,10 +16,8 @@ This was primarily implemented as a demonstration of how to integrate C code for
 '''
 
 def _print_field(field, matrix: AbstractMatrix, canvas: AbstractMatrix, br: int):
-    for x in range(settings.MATRIX_DIMENSIONS.HEIGHT.value):
-        for y in range(settings.MATRIX_DIMENSIONS.HEIGHT.value):
-           r,g,b = field[y][x] * br
-           canvas.SetPixel(x, y, r, g, b)
+    img = Image.fromarray(field, 'RGB')
+    canvas.SetImage(img)
     canvas = matrix.SwapOnVSync(canvas)
 
 
