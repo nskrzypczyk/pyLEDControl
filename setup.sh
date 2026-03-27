@@ -18,7 +18,6 @@ fi
 
 echo "Installing python requirements"
 pip install -r requirements.txt
-cd ..
 
 echo "Installing rgb matrix bindings"
 git clone https://github.com/hzeller/rpi-rgb-led-matrix.git || echo "Repo already exists. Continuing..."
