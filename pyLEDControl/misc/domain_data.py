@@ -3,6 +3,7 @@ import dataclasses
 from dataclasses import dataclass, field
 from enum import IntEnum
 from typing import Any, Callable, List, Union, Callable
+from datetime import datetime, time
 
 
 """
@@ -128,7 +129,17 @@ class SingleselectDataComponent(AbstractDataComponent):
         def validator(li: list) -> bool:
             for x in li:
                 if x not in self.items:
-                    raise ValueError(f"Value {x} is not part of the multiselect list!")
+                    raise ValueError(f"Value {x} is not part of the singleselect list!")
             return True
 
         return validator
+
+@dataclass
+class TimerDataComponent(AbstractDataComponent):
+    """Container for timer purposes"""
+
+    type = "TimerDataComponent"
+    start: time = time(8,0)
+    end: time = time(0,30)
+    days: List[str] = field(default_factory=lambda: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"])
+    enabled: bool = False
