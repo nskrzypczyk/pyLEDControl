@@ -10,7 +10,7 @@ export const getMultiselectForm = (fieldName: string, displayName: string, optio
             <Checklist />
           </Grid>
           <Grid item xs="auto">
-            <Typography variant='h5' color="black">
+            <Typography variant='h6' color="black">
               {displayName}
             </Typography>
           </Grid>

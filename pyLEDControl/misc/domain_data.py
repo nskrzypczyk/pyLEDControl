@@ -16,7 +16,7 @@ class ExecutionMode(IntEnum):
 
 
 @dataclass
-class AbstractConstraint(abc.ABC):
+class AbstractDataComponent(abc.ABC):
     display_name: str
 
     @abc.abstractmethod
@@ -44,10 +44,10 @@ class AbstractConstraint(abc.ABC):
 
 
 @dataclass
-class IntervalConstraint(AbstractConstraint):
-    """Constraint to define upper and lower bounds for numbers like int and float."""
+class IntervalDataComponent(AbstractDataComponent):
+    """Container to define upper and lower bounds for numbers like int and float."""
 
-    type = "IntervalConstraint"
+    type = "IntervalDataComponent"
     lower_bound: Union[int, float]
     lower_bound_inclusive: bool
     upper_bound: Union[int, float]
@@ -71,10 +71,10 @@ class IntervalConstraint(AbstractConstraint):
 
 
 @dataclass
-class MultiselectConstraint(AbstractConstraint):
-    """Constraint for multi-selection purposes"""
+class MultiselectDataComponent(AbstractDataComponent):
+    """Container for multi-selection purposes"""
 
-    type = "MultiselectConstraint"
+    type = "MultiselectDataComponent"
     strict: bool  # defines whether or not a exception shall be thrown if the incoming list contains a value which is not in the original list
     items: Union[
         List, Callable
@@ -107,8 +107,8 @@ class MultiselectConstraint(AbstractConstraint):
 
 
 @dataclass
-class SingleselectConstraint(AbstractConstraint):
-    type = "SingleselectConstraint"
+class SingleselectDataComponent(AbstractDataComponent):
+    type = "SingleselectDataComponent"
     items: Union[
         List, Callable
     ]  

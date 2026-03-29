@@ -8,20 +8,20 @@ export interface IEffectOptionsDefinition {
 
 export interface IEffectPropertyDefinition{
     type:string,
-    constraint?:IConstraint
+    dataComponent?:IDataComponent
 }
 
-type TIntervalConstraintDefBounds = {
+type TIntervalDataComponentDefBounds = {
     inclusive: boolean
     value: number
 }
 
-export interface IIntervalConstraint{
-    lower_bound:TIntervalConstraintDefBounds,
-    upper_bound:TIntervalConstraintDefBounds
+export interface IIntervalDataComponent{
+    lower_bound:TIntervalDataComponentDefBounds,
+    upper_bound:TIntervalDataComponentDefBounds
 }
 
-export interface IConstraint{
+export interface IDataComponent{
     type:string 
 }
 

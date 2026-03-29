@@ -45,7 +45,7 @@ class Server(Process):
         def change_effect(effect: str):
             """
             TODO: Modify endpoint:
-            - Verify payload via constraints which are defined in options subclass
+            - Verify payload via data components which are defined in options subclass
             """
             try:
                 formdata = request.get_json(force=True)

@@ -10,7 +10,7 @@ from control.effects import get_effect_list, get_effects
 from control.effects.abstract_effect import AbstractEffect
 from control.effects.uploaded_effect_single import (UploadedEffectSingle,
                                                     load_effects)
-from misc.domain_data import MultiselectConstraint
+from misc.domain_data import MultiselectDataComponent
 from misc.logging import Log
 from server.routes.effect_upload_routes import load_existing_file_paths
 
@@ -26,7 +26,7 @@ class MultiMode(AbstractEffect):
     class Options(AbstractEffectOptions):
         global base_effects_list, uploaded_effects_list
         active_effects: List[str]
-        active_effects_constraint = MultiselectConstraint(
+        active_effects_dc = MultiselectDataComponent(
             display_name="Active effects",
             items=lambda: base_effects_list + load_uploaded_effects(),
             strict=True,

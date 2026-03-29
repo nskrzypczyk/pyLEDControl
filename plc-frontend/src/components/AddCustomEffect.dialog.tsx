@@ -7,7 +7,6 @@ import { addEffect, addEffectWithURL, deleteEffect, getUploadedEffects } from ".
 
 export interface PropsAddCustomEffectDialog {
     handleClose: () => void;
-    handleFileName: (file: File) => void;
     isOpen: boolean;
 }
 
@@ -38,6 +37,7 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Read
     // States
     const [tabValue, setTabValue] = useState<number>(0)
     const [selectedFile, setSelectedFile] = useState<File>()
+    const [uploadFileName, setUploadFileName] = useState<File>()
     const [availableEffects, setAvailableEffects] = useState<string[]>([])
     const [snackState, setSnackState] = React.useState<{
         open: boolean;
@@ -85,7 +85,7 @@ const AddCustomEffectDialog: React.FC<PropsAddCustomEffectDialog> = (props: Read
         if (!e.target.files) {
             return
         }
-        props.handleFileName(e.target.files[0])
+        setUploadFileName(e.target.files[0])
         setSelectedFile(e.target.files[0])
     }
 
