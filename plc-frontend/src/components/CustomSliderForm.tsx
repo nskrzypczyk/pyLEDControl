@@ -1,7 +1,14 @@
 import { CompareArrows, RemoveCircle, AddCircle } from "@mui/icons-material";
 import { Grid, Box, Typography, Divider, Stack, Button, Slider } from "@mui/material";
 
-export const getCustomSliderForm = (fieldName: string, displayName: string, decreaseFunc: (fieldName: string) => void, value: number, handleSliderChange: (event: Event, newValue: number | number[], fieldName: string) => void, increaseFunc: (fieldName: string) => void) => {
+export const getCustomSliderForm = (
+  fieldName: string,
+  displayName: string,
+  decreaseFunc: (fieldName: string) => void,
+  value: number,
+  handleSliderChange: (event: Event, newValue: number | number[], fieldName: string) => void,
+  increaseFunc: (fieldName: string) => void
+) => {
   return <Grid key={fieldName} className='panel' item xs={1}>
     <Box sx={{ borderRadius: "12px", padding: "10px", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)" }}>
       <Grid container columns={3} direction="row" alignItems="center">

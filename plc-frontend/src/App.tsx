@@ -10,6 +10,7 @@ import { IStatus } from './domainData/DomainData';
 import { getMultiselectForm } from './components/MultiSelectForm';
 import { getSingleSelectForm } from './components/SingleSelectForm';
 import { getCustomSliderForm } from './components/CustomSliderForm';
+import { getTimerForm } from './components/TimerForm';
 
 const App: React.FC = () => {
   const [effectOptionDefinition, setEffectOptionDefinition] = useState<any>()
@@ -160,6 +161,8 @@ const App: React.FC = () => {
                   return makeTransition(key, getMultiselectForm(key, field.dataComponent.display_name, field.dataComponent.items, mainFormData[key] || [], handleMultiSelectChange))
                 case "SingleselectDataComponent":
                   return makeTransition(key, getSingleSelectForm(key, field.dataComponent.display_name, field.dataComponent.items, mainFormData[key] || 0, handleSingleSelectClick))
+                case "TimerDataComponent":
+                  return makeTransition(key, getTimerForm(key, field.dataComponent.display_name, mainFormData[key]?.start || "07:45", mainFormData[key]?.end || "00:30", mainFormData[key]?.days || [], handleMultiSelectChange))
                 default:
                   break
               }

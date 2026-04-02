@@ -143,3 +143,6 @@ class TimerDataComponent(AbstractDataComponent):
     end: time = time(0,30)
     days: List[str] = field(default_factory=lambda: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"])
     enabled: bool = False
+
+    def get_validator(self) -> Callable:
+        raise NotImplementedError

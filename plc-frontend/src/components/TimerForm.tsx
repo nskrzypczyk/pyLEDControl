@@ -3,20 +3,19 @@ import { Grid, Box, Typography, Divider, Chip, TextField } from "@mui/material"
 import { useState } from "react";
 import { start } from "repl"
 
-export const getTimerForm = (fieldName: string, displayName: string, optionList: string[], selectedElements: string[] | undefined, handleSelectionChange: any) => {
+export const getTimerForm = (
+    fieldName: string, 
+    displayName: string, 
+    start: string,
+    setStart: (value: string) => void,
+    end: string,
+    setEnd: (value: string) => void,
+    selectedDays: string[],
+    handleSelectionChangeDays: any,
+    enabled: boolean,
+    setEnabled: (enabled: boolean) => void
+) => {
     const weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-    const [enabled, setEnabled] = useState(false);
-    const [start, setStart] = useState("08:00");
-    const [end, setEnd] = useState("00:30");
-    const [days, setdays] = useState<string[]>([]);
-
-    const toggleDay = (day: string) => {
-        setdays((prev) =>
-            prev.includes(day)
-                ? prev.filter((d) => d !== day)
-                : [...prev, day]
-        );
-    };
 
     return (
         <Grid key={fieldName} className='panel' item xs={1} justifyContent="center">
@@ -67,9 +66,9 @@ export const getTimerForm = (fieldName: string, displayName: string, optionList:
                                         label={day}
                                         clickable
                                         color={
-                                            days.includes(day) ? "primary" : "default"
+                                            selectedDays.includes(day) ? "primary" : "default"
                                         }
-                                        onClick={() => toggleDay(day)}
+                                        onClick={() => handleSelectionChangeDays(fieldName, day)}
                                     />
                                 </Grid>
                             ))}

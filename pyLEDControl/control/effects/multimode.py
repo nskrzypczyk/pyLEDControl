@@ -10,7 +10,7 @@ from control.effects import get_effect_list, get_effects
 from control.effects.abstract_effect import AbstractEffect
 from control.effects.uploaded_effect_single import (UploadedEffectSingle,
                                                     load_effects)
-from misc.domain_data import MultiselectDataComponent
+from misc.domain_data import MultiselectDataComponent, TimerDataComponent
 from misc.logging import Log
 from server.routes.effect_upload_routes import load_existing_file_paths
 
@@ -30,6 +30,9 @@ class MultiMode(AbstractEffect):
             display_name="Active effects",
             items=lambda: base_effects_list + load_uploaded_effects(),
             strict=True,
+        )
+        timer_dc = TimerDataComponent(
+            display_name="Timer settings"
         )
 
     def run(matrix_class: type, options: Options, conn_p: Connection, *args, **kwargs):
