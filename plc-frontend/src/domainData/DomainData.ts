@@ -31,6 +31,13 @@ export interface IStatus extends Record<string, any> {
     [key: string]: any;
 }
 
+export type TimerDataComponent = {
+    start: string,
+    end: string,
+    selectedDays: string[],
+    enabled: boolean
+}
+
 /*-------------------------------------*/
 
 export interface IEffectOptionsRawDefinition{

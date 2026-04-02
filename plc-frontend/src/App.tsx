@@ -1,16 +1,15 @@
 import { ThemeProvider } from '@emotion/react';
-import { AddCircle, Check, Checklist, CompareArrows, FileUpload, Navigation, RemoveCircle } from '@mui/icons-material';
-import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, Grow, IconButton, Slide, Slider, Snackbar, Stack, Toolbar, Typography, createTheme } from '@mui/material';
+import { FileUpload, Navigation } from '@mui/icons-material';
+import { Alert, AlertColor, AppBar, Fab, Grid, Grow, IconButton, Slide, Snackbar, Toolbar, Typography, createTheme } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import React, { useState } from 'react';
-import './App.css';
 import { getOptionDefinition, getStatus, setEffect } from './api/ApiManager';
 import AddCustomEffectDialog from './components/AddCustomEffect.dialog';
-import { IStatus } from './domainData/DomainData';
+import { getCustomSliderForm } from './components/CustomSliderForm';
 import { getMultiselectForm } from './components/MultiSelectForm';
 import { getSingleSelectForm } from './components/SingleSelectForm';
-import { getCustomSliderForm } from './components/CustomSliderForm';
 import { getTimerForm } from './components/TimerForm';
+import { IStatus, TimerDataComponent } from './domainData/DomainData';
 
 const App: React.FC = () => {
   const [effectOptionDefinition, setEffectOptionDefinition] = useState<any>()
@@ -162,7 +161,7 @@ const App: React.FC = () => {
                 case "SingleselectDataComponent":
                   return makeTransition(key, getSingleSelectForm(key, field.dataComponent.display_name, field.dataComponent.items, mainFormData[key] || 0, handleSingleSelectClick))
                 case "TimerDataComponent":
-                  return makeTransition(key, getTimerForm(key, field.dataComponent.display_name, mainFormData[key]?.start || "07:45", mainFormData[key]?.end || "00:30", mainFormData[key]?.days || [], handleMultiSelectChange))
+                  return makeTransition(key, getTimerForm(key, field.dataComponent.display_name, {} as TimerDataComponent, (newVal) => setMainFormData({ ...mainFormData, [key]: newVal })))
                 default:
                   break
               }

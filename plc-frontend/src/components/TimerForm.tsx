@@ -2,18 +2,13 @@ import { Checklist } from "@mui/icons-material"
 import { Grid, Box, Typography, Divider, Chip, TextField } from "@mui/material"
 import { useState } from "react";
 import { start } from "repl"
+import { TimerDataComponent } from "../domainData/DomainData";
 
 export const getTimerForm = (
-    fieldName: string, 
-    displayName: string, 
-    start: string,
-    setStart: (value: string) => void,
-    end: string,
-    setEnd: (value: string) => void,
-    selectedDays: string[],
-    handleSelectionChangeDays: any,
-    enabled: boolean,
-    setEnabled: (enabled: boolean) => void
+    fieldName: string,
+    value: TimerDataComponent,
+    displayName: string,
+    setValue: (value: TimerDataComponent) => void,
 ) => {
     const weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
@@ -38,7 +33,7 @@ export const getTimerForm = (
                             label="Ein"
                             type="time"
                             value={start}
-                            onChange={(e) => setStart(e.target.value)}
+                            onChange={(e) => setValue({ ...value, start: e.target.value })}
                             fullWidth
                             InputLabelProps={{ shrink: true }}
                         />
@@ -47,8 +42,8 @@ export const getTimerForm = (
                         <TextField
                             label="Aus"
                             type="time"
-                            value={end}
-                            onChange={(e) => setEnd(e.target.value)}
+                            value={value.end}
+                            onChange={(e) => setValue({ ...value, end: e.target.value })}
                             fullWidth
                             InputLabelProps={{ shrink: true }}
                         />
@@ -66,9 +61,9 @@ export const getTimerForm = (
                                         label={day}
                                         clickable
                                         color={
-                                            selectedDays.includes(day) ? "primary" : "default"
+                                            value.selectedDays.includes(day) ? "primary" : "default"
                                         }
-                                        onClick={() => handleSelectionChangeDays(fieldName, day)}
+                                        onClick={handleDayChange(day)}
                                     />
                                 </Grid>
                             ))}
@@ -78,11 +73,20 @@ export const getTimerForm = (
                     {/* Vorschau */}
                     <Grid item xs={12}>
                         <Typography variant="body2">
-                            Aktiv zwischen {start} – {end}
+                            Acitve between {value.start} – {value.end}
                         </Typography>
                     </Grid>
                 </Grid>
             </Box>
         </Grid>
     )
+
+    function handleDayChange(day: string): import("react").MouseEventHandler<HTMLDivElement> | undefined {
+        return () => setValue({
+            ...value,
+            selectedDays: value.selectedDays.includes(day)
+                ? value.selectedDays.filter((d) => d !== day)
+                : [...value.selectedDays, day],
+        });
+    }
 }
