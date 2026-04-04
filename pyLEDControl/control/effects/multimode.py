@@ -31,9 +31,6 @@ class MultiMode(AbstractEffect):
             items=lambda: base_effects_list + load_uploaded_effects(),
             strict=True,
         )
-        timer_dc = TimerDataComponent(
-            display_name="Timer settings"
-        )
 
     def run(matrix_class: type, options: Options, conn_p: Connection, *args, **kwargs):
         global base_effects_list, uploaded_effects_list
