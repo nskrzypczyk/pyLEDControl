@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import abc
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, asdict
 from typing_extensions import deprecated
-from misc.domain_data import IntervalDataComponent, SingleselectDataComponent
+from misc.domain_data import AbstractDataComponent, IntervalDataComponent, SingleselectDataComponent, TimerDataComponent
 from control.effects import get_effect_list
-
-# TODO: REFACTORING / INVESTIGATION: replace regular variables with new classes like e.g. "MultiselectOption" which contains attributes like "display_name" (for frontend), "constraint" etc. That will simplify parsing in the frontend.
+from misc.utils import to_json_td
 
 @dataclass
 class AbstractEffectOptions(abc.ABC):
@@ -20,9 +19,11 @@ class AbstractEffectOptions(abc.ABC):
     brightness: int
     effect: type
 
-    brightness_dc = IntervalDataComponent(
-        "Brightness", 0, True, 100, True)
+    timer_dc: TimerDataComponent
+    brightness_dc = IntervalDataComponent("Brightness", 0, True, 100, True)
     effect_dc = SingleselectDataComponent("Effect", get_effect_list())
+
+
     @classmethod
     def init_with_dict(cls, arg_dict):
         field_set = {f.name for f in fields(cls) if f.init}
@@ -66,7 +67,10 @@ class AbstractEffectOptions(abc.ABC):
                 field_name = field.name
                 field_value = getattr(self, field_name)
                 if not isinstance(field_value, type):
-                    field_values[field_name] = field_value
+                    if issubclass(type(field_value), AbstractDataComponent):
+                        field_values[field_name] = field_value.to_dict()
+                    else:
+                        field_values[field_name] = field_value
                 else:
                     field_values[field_name] = self.__dict__[
                         field_name].__name__

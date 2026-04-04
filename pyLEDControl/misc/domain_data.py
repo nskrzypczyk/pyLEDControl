@@ -1,6 +1,7 @@
 import abc
 import dataclasses
 from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json
 from enum import IntEnum
 from typing import Any, Callable, List, Union, Callable
 from datetime import datetime, time
@@ -16,6 +17,7 @@ class ExecutionMode(IntEnum):
     EMULATED = 1
 
 
+@dataclass_json
 @dataclass
 class AbstractDataComponent(abc.ABC):
     display_name: str
@@ -44,6 +46,7 @@ class AbstractDataComponent(abc.ABC):
         return self.definition_mapper(fields)
 
 
+@dataclass_json
 @dataclass
 class IntervalDataComponent(AbstractDataComponent):
     """Container to define upper and lower bounds for numbers like int and float."""
@@ -71,6 +74,7 @@ class IntervalDataComponent(AbstractDataComponent):
         return validator
 
 
+@dataclass_json
 @dataclass
 class MultiselectDataComponent(AbstractDataComponent):
     """Container for multi-selection purposes"""
@@ -107,12 +111,13 @@ class MultiselectDataComponent(AbstractDataComponent):
         return validator
 
 
+@dataclass_json
 @dataclass
 class SingleselectDataComponent(AbstractDataComponent):
     type = "SingleselectDataComponent"
     items: Union[
         List, Callable
-    ]  
+    ]
     _items: Union[List, Callable] = field(init=False, repr=False)
 
     @property
@@ -122,27 +127,40 @@ class SingleselectDataComponent(AbstractDataComponent):
         return self._items
 
     @items.setter
-    def items(self, new) -> None:
-        self._items = new
+    def items(self, newVal) -> None:
+        self._items = newVal
 
     def get_validator(self):
         def validator(li: list) -> bool:
             for x in li:
                 if x not in self.items:
-                    raise ValueError(f"Value {x} is not part of the singleselect list!")
+                    raise ValueError(
+                        f"Value {x} is not part of the singleselect list!")
             return True
 
         return validator
 
+
+@dataclass_json
 @dataclass
 class TimerDataComponent(AbstractDataComponent):
     """Container for timer purposes"""
 
-    type = "TimerDataComponent"
-    start: time = time(8,0)
-    end: time = time(0,30)
-    days: List[str] = field(default_factory=lambda: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"])
+    display_name: str ="Timer"
+    type:str = "TimerDataComponent"
+    start: int = 26820  # 7:45 AM
+    end:int = 1800 # 0:30 PM
+    days: Union[
+        List, Callable
+    ] = field(default_factory=lambda: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"])
     enabled: bool = False
 
     def get_validator(self) -> Callable:
-        raise NotImplementedError
+        def validator(days: list) -> bool:
+            for x in days:
+                if x not in self.days:
+                    raise ValueError(
+                        f"Value {x} is not allowed!")
+            return True
+
+        return validator
