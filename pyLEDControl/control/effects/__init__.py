@@ -5,6 +5,7 @@ import pkgutil
 
 effect_dict = {}
 
+
 def extract_class_names(module_path):
     class_names = []
 
@@ -39,8 +40,10 @@ def scan_module_directory(module_directory):
                     classes) > 0 else None
     return module_classes
 
+
 def get_effect_list():
-    return list(filter(lambda x: x is not None, scan_module_directory(os.getcwd()+"/control/effects").values()))
+    return sorted(list(filter(lambda x: x is not None, scan_module_directory(os.getcwd()+"/control/effects").values())), key=str.casefold)
+
 
 def get_effects():
     global effect_dict
@@ -49,13 +52,16 @@ def get_effects():
         package_name = 'control.effects'
         abstract_class_module_name = package_name + ".abstract_effect"
         package = importlib.import_module(package_name)
-        packages = pkgutil.walk_packages(package.__path__, prefix=package_name + '.')
+        packages = pkgutil.walk_packages(
+            package.__path__, prefix=package_name + '.')
         for importer, modname, ispkg in packages:
             module = importlib.import_module(modname)
-            if modname==abstract_class_module_name:
+            if modname == abstract_class_module_name:
                 AbstractEffect = getattr(module, "AbstractEffect")
             for name, obj in module.__dict__.items():
                 if isinstance(obj, type) and issubclass(obj, AbstractEffect) and obj is not AbstractEffect:
                     effect_dict[name] = obj
-    return effect_dict
+    return dict(sorted(effect_dict.items(), key=lambda x: str(x[0]).casefold()))
+
+
 get_effects()
