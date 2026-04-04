@@ -1,7 +1,5 @@
-import { Checklist } from "@mui/icons-material"
-import { Grid, Box, Typography, Divider, Chip, TextField } from "@mui/material"
-import { useState } from "react";
-import { start } from "repl"
+import { Checklist } from "@mui/icons-material";
+import { Box, Chip, Divider, Grid, TextField, Typography } from "@mui/material";
 import { TimerDataComponent } from "../domainData/DomainData";
 
 export const getTimerForm = (
@@ -32,7 +30,7 @@ export const getTimerForm = (
                         <TextField
                             label="Ein"
                             type="time"
-                            value={start}
+                            value={value.start}
                             onChange={(e) => setValue({ ...value, start: e.target.value })}
                             fullWidth
                             InputLabelProps={{ shrink: true }}
