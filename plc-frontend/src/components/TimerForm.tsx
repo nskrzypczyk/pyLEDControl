@@ -8,7 +8,15 @@ export const getTimerForm = (
     value: TimerDataComponent,
     setValue: (value: TimerDataComponent) => void,
 ) => {
-    const weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+    const weekdays = {
+        "Mo": 0,
+        "Tu": 1,
+        "We": 2,
+        "Th": 3,
+        "Fr": 4,
+        "Sa": 5,
+        "Su": 6
+    };
 
     return (
         <Grid key={fieldName} className='panel' item xs={1} justifyContent="center">
@@ -53,15 +61,15 @@ export const getTimerForm = (
                             Tage
                         </Typography>
                         <Grid container spacing={1}>
-                            {weekdays.map((day) => (
-                                <Grid item key={day}>
+                            {Object.entries(weekdays).map(([day, dayNo]) => (
+                                <Grid item key={dayNo}>
                                     <Chip
                                         label={day}
                                         clickable
                                         color={
-                                            value.days.includes(day) ? "primary" : "default"
+                                            value.days.includes(dayNo) ? "primary" : "default"
                                         }
-                                        onClick={handleDayChange(day)}
+                                        onClick={handleDayChange(dayNo)}
                                     />
                                 </Grid>
                             ))}
@@ -73,7 +81,7 @@ export const getTimerForm = (
         </Grid>
     )
 
-    function handleDayChange(day: string): import("react").MouseEventHandler<HTMLDivElement> | undefined {
+    function handleDayChange(day: number): import("react").MouseEventHandler<HTMLDivElement> | undefined {
         return () => setValue({
             ...value,
             days: value.days.includes(day)

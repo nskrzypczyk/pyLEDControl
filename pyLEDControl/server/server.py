@@ -18,7 +18,7 @@ class Server(Process):
         # Matrix state attributes
         self.current_effect = "DigiClock" # Default effect (for startup)
         self.current_brightness = 100     # Default brightness (for startup)
-        self.current_timer = TimerDataComponent(days=["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"], enabled=True)
+        self.current_timer = TimerDataComponent(days=[0,1,2,3,4,5,6], enabled=True)
 
     def run_server(self):
         self.log.debug("Setting up flask server")

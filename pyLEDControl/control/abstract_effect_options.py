@@ -21,7 +21,7 @@ class AbstractEffectOptions(abc.ABC):
     timer: TimerDataComponent
 
     # Option definitions
-    timer_dc = TimerDataComponent(days=["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"], enabled=True)
+    timer_dc = TimerDataComponent(days=[0,1,2,3,4,5,6], enabled=True)
     brightness_dc = IntervalDataComponent("Brightness", 0, True, 100, True)
     effect_dc = SingleselectDataComponent("Effect", get_effect_list())
 
