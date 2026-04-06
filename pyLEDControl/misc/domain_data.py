@@ -152,7 +152,7 @@ class TimerDataComponent(AbstractDataComponent):
     end:int = 1800 # 0:30 PM
     days: Union[
         List, Callable
-    ] = field(default_factory=lambda: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"])
+    ] = field(default_factory=lambda: [0,1,2,3,4,5,6])
     enabled: bool = False
 
     @property
