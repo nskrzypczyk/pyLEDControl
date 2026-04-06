@@ -32,9 +32,9 @@ export interface IStatus extends Record<string, any> {
 }
 
 export type TimerDataComponent = {
-    start: string,
-    end: string,
-    selectedDays: string[],
+    start: number,
+    end: number,
+    days: string[],
     enabled: boolean
 }
 

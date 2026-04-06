@@ -161,7 +161,7 @@ const App: React.FC = () => {
                 case "SingleselectDataComponent":
                   return makeTransition(key, getSingleSelectForm(key, field.dataComponent.display_name, field.dataComponent.items, mainFormData[key] || 0, handleSingleSelectClick))
                 case "TimerDataComponent":
-                  return makeTransition(key, getTimerForm(key, field.dataComponent.display_name, {} as any, (newVal) => setMainFormData({ ...mainFormData, [key]: newVal })))
+                  return makeTransition(key, getTimerForm(key, field.dataComponent.display_name, mainFormData[key] as any, (newVal) => setMainFormData({ ...mainFormData, [key]: newVal })))
                 default: 
                   break
               }

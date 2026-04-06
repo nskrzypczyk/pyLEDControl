@@ -4,8 +4,8 @@ import { TimerDataComponent } from "../domainData/DomainData";
 
 export const getTimerForm = (
     fieldName: string,
-    value: TimerDataComponent,
     displayName: string,
+    value: TimerDataComponent,
     setValue: (value: TimerDataComponent) => void,
 ) => {
     const weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
@@ -30,8 +30,8 @@ export const getTimerForm = (
                         <TextField
                             label="Ein"
                             type="time"
-                            value={value.start}
-                            onChange={(e) => setValue({ ...value, start: e.target.value })}
+                            value={secondsToHHMM(value.start)}
+                            onChange={(e) => setValue({ ...value, start: hhmmToSeconds(e.target.value) })}
                             fullWidth
                             InputLabelProps={{ shrink: true }}
                         />
@@ -40,8 +40,8 @@ export const getTimerForm = (
                         <TextField
                             label="Aus"
                             type="time"
-                            value={value.end}
-                            onChange={(e) => setValue({ ...value, end: e.target.value })}
+                            value={secondsToHHMM(value.end)}
+                            onChange={(e) => setValue({ ...value, end: hhmmToSeconds(e.target.value) })}
                             fullWidth
                             InputLabelProps={{ shrink: true }}
                         />
@@ -59,7 +59,7 @@ export const getTimerForm = (
                                         label={day}
                                         clickable
                                         color={
-                                            value.selectedDays.includes(day) ? "primary" : "default"
+                                            value.days.includes(day) ? "primary" : "default"
                                         }
                                         onClick={handleDayChange(day)}
                                     />
@@ -71,7 +71,7 @@ export const getTimerForm = (
                     {/* Vorschau */}
                     <Grid item xs={12}>
                         <Typography variant="body2">
-                            Acitve between {value.start} – {value.end}
+                            Acitve between {secondsToHHMM(value.start)} – {secondsToHHMM(value.end)}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -82,9 +82,21 @@ export const getTimerForm = (
     function handleDayChange(day: string): import("react").MouseEventHandler<HTMLDivElement> | undefined {
         return () => setValue({
             ...value,
-            selectedDays: value.selectedDays.includes(day)
-                ? value.selectedDays.filter((d) => d !== day)
-                : [...value.selectedDays, day],
+            days: value.days.includes(day)
+                ? value.days.filter((d) => d !== day)
+                : [...value.days, day],
         });
+    }
+
+    function secondsToHHMM(seconds: number): string {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    }
+
+    function hhmmToSeconds(hhmm: string): number {
+        const [hours, minutes] = hhmm.split(':').map(Number);
+        return hours * 3600 + minutes * 60;
     }
 }
