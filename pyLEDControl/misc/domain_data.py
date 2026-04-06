@@ -155,6 +155,16 @@ class TimerDataComponent(AbstractDataComponent):
     ] = field(default_factory=lambda: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"])
     enabled: bool = False
 
+    @property
+    def days(self):
+        if callable(self._days):
+            return self._days()
+        return self._days
+
+    @days.setter
+    def days(self, newVal) -> None:
+        self._days = newVal
+
     def get_validator(self) -> Callable:
         def validator(days: list) -> bool:
             for x in days:

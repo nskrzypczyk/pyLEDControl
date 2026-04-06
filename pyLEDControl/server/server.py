@@ -81,7 +81,7 @@ class Server(Process):
         self.current_options_instance = effect_class.Options(
             brightness=self.current_brightness, 
             effect=effect_dict[self.current_effect],
-            timer_dc=self.current_timer
+            timer = self.current_timer
         )
         self.queue.put((effect_class, self.current_options_instance))
         self.run_server()

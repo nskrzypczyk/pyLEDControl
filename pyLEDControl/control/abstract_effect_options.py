@@ -18,8 +18,10 @@ class AbstractEffectOptions(abc.ABC):
     br_file_path = "brightness.txt"
     brightness: int
     effect: type
+    timer: TimerDataComponent
 
-    timer_dc: TimerDataComponent
+    # Option definitions
+    timer_dc = TimerDataComponent(days=["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"], enabled=True)
     brightness_dc = IntervalDataComponent("Brightness", 0, True, 100, True)
     effect_dc = SingleselectDataComponent("Effect", get_effect_list())
 
@@ -67,10 +69,8 @@ class AbstractEffectOptions(abc.ABC):
                 field_name = field.name
                 field_value = getattr(self, field_name)
                 if not isinstance(field_value, type):
-                    if issubclass(type(field_value), AbstractDataComponent):
-                        field_values[field_name] = field_value.to_dict()
-                    else:
-                        field_values[field_name] = field_value
+                
+                    field_values[field_name] = field_value
                 else:
                     field_values[field_name] = self.__dict__[
                         field_name].__name__
