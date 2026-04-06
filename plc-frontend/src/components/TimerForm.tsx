@@ -68,12 +68,6 @@ export const getTimerForm = (
                         </Grid>
                     </Grid>
 
-                    {/* Vorschau */}
-                    <Grid item xs={12}>
-                        <Typography variant="body2">
-                            Acitve between {secondsToHHMM(value.start)} – {secondsToHHMM(value.end)}
-                        </Typography>
-                    </Grid>
                 </Grid>
             </Box>
         </Grid>
