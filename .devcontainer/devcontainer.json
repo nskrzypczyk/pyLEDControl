@@ -9,6 +9,9 @@
         },
         "ghcr.io/devcontainers/features/git:1": {}
     },
+    "containerEnv": {
+        "TZ": "Europe/Berlin"
+    },
     "customizations": {
         "vscode": {
             "extensions": [
