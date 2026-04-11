@@ -9,6 +9,7 @@ from control.adapter.abstract_matrix import AbstractMatrix
 from control.adapter.real_matrix import RealMatrix
 from control.effects.abstract_effect import AbstractEffect
 from misc.logging import Log
+from control.timer import use_timer
 
 class SharedOptionsManager(BaseManager):
     pass
@@ -34,13 +35,39 @@ class MatrixProcess:
         self.log: Log = Log("MatrixProcesss")
 
     def loop(self, matrix, queue: Queue):
+        options_mgr: SharedOptionsManager
         proc: Process = None
         current_options: AbstractEffectOptions = None
         while 1:
             try:
                 if queue.empty():
                     self.log.info("Queue is empty")
-                else:
+                    should_run = use_timer(current_options.timer)
+                    if proc and not should_run: # running process and execution time is over => terminate
+                        self.log.info("End of schedule reached. Terminating current effect...")
+                        conn_p.send(True)
+                        proc.join() 
+                        proc = None
+                    elif not proc and should_run:
+                        self.log.info("Start of timer reached. Matrix process will be initiated")
+                        # TODO: make code clean
+                        conn_p, conn_c = Pipe(True)
+                        OptionProxy = build_proxy_class(options.__class__)
+                        SharedOptionsManager.register(
+                            options.__class__.__name__, options.__class__.init_with_instance, OptionProxy)
+                        options_mgr = SharedOptionsManager()
+                        options_mgr.start()
+                        shared_options = options_mgr.Options(options)
+                        # create and start new effect process
+                        proc = Process(
+                            target=effect_class.run, args=[
+                                matrix, shared_options, conn_c
+                            ]
+                        )
+                        proc.start()
+
+
+                else: # New effect in queue
                     queue_data = queue.get(block=False) # get effect and corresponding options from queue
                     effect_class: AbstractEffect = queue_data[0]
                     options: AbstractEffectOptions = queue_data[1]
@@ -72,7 +99,7 @@ class MatrixProcess:
                         shared_options.update_instance(options) # send new options via shared object to current effect
                         options_mgr.connect()
                         current_options = options
-                time.sleep(1)
+                time.sleep(2)
             except KeyboardInterrupt:
                 self.log.debug("Terminating")
 
