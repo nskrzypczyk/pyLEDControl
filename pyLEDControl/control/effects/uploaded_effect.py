@@ -7,7 +7,7 @@ import settings
 from control.abstract_effect_options import AbstractEffectOptions
 from control.adapter.abstract_matrix import AbstractMatrix
 from control.effects.abstract_effect import AbstractEffect
-from misc.domain_data import MultiselectConstraint
+from misc.domain_data import MultiselectDataComponent
 from misc.logging import Log
 from server.routes.effect_upload_routes import load_yaml_file_as_dict
 
@@ -28,7 +28,7 @@ class UploadedEffect(AbstractEffect):
 
         custom = True
         active_effects: List[str]
-        active_effects_constraint = MultiselectConstraint(
+        active_effects_dc = MultiselectDataComponent(
             display_name="Active uploaded effects",
             items=load_effects,
             strict=True,

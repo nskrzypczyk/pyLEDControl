@@ -2,27 +2,30 @@
 # -*- coding: utf-8 -*-
 
 import abc
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, asdict
 from typing_extensions import deprecated
-from misc.domain_data import IntervalConstraint, SingleselectConstraint
+from misc.domain_data import AbstractDataComponent, IntervalDataComponent, SingleselectDataComponent, TimerDataComponent
 from control.effects import get_effect_list
-
-# TODO: REFACTORING / INVESTIGATION: replace regular variables with new classes like e.g. "MultiselectOption" which contains attributes like "display_name" (for frontend), "constraint" etc. That will simplify parsing in the frontend.
+from misc.utils import to_json_td
 
 @dataclass
 class AbstractEffectOptions(abc.ABC):
     """ Definition of effect related options.
-        - Naming convention for constraints:
-            - {attribute_name}_constraint
+        - Naming convention for data components:
+            - {attribute_name}_dc
         - Currently only one optional constraint per attribute!
     """
     br_file_path = "brightness.txt"
     brightness: int
     effect: type
+    timer: TimerDataComponent
 
-    brightness_constraint = IntervalConstraint(
-        "Brightness", 0, True, 100, True)
-    effect_constraint = SingleselectConstraint("Effect", get_effect_list())
+    # Option definitions
+    timer_dc = TimerDataComponent(days=[0,1,2,3,4,5,6], enabled=True)
+    brightness_dc = IntervalDataComponent("Brightness", 0, True, 100, True)
+    effect_dc = SingleselectDataComponent("Effect", get_effect_list())
+
+
     @classmethod
     def init_with_dict(cls, arg_dict):
         field_set = {f.name for f in fields(cls) if f.init}
@@ -66,6 +69,7 @@ class AbstractEffectOptions(abc.ABC):
                 field_name = field.name
                 field_value = getattr(self, field_name)
                 if not isinstance(field_value, type):
+                
                     field_values[field_name] = field_value
                 else:
                     field_values[field_name] = self.__dict__[

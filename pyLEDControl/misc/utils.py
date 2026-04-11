@@ -6,7 +6,7 @@ from collections import deque
 from dataclasses import Field
 from typing import List, Union
 
-from misc.domain_data import AbstractConstraint
+from misc.domain_data import AbstractDataComponent
 
 
 def rotate(input_list: list, index: int) -> list:
@@ -18,14 +18,15 @@ def rotate(input_list: list, index: int) -> list:
 def chunk_list(lst, size) -> List[List]:
     return [lst[i:i + size] for i in range(0, len(lst), size)]
 
-
-def __check_constraints(cls: type, att_name: str) -> Union[dict, None]:
-    constraint_attriubute: AbstractConstraint = cls.__base__.__dict__.get(f"{att_name}_constraint")
-    if constraint_attriubute is None:
-        constraint_attriubute = cls.__dict__.get(f"{att_name}_constraint")
-    if constraint_attriubute is None:
+# Safely gets the data component attribute definition.
+def __check_data_component_attributes(cls: type, att_name: str) -> Union[dict, None]:
+    attribute_name = f"{att_name}_dc"
+    component_attribute: AbstractDataComponent = cls.__base__.__dict__.get(attribute_name)
+    if component_attribute is None:
+        component_attribute = cls.__dict__.get(attribute_name)
+    if component_attribute is None:
         return None
-    return constraint_attriubute.get_definition()
+    return component_attribute.get_definition()
 
 
 def to_json_td(cls: type) -> dict:
@@ -33,9 +34,9 @@ def to_json_td(cls: type) -> dict:
     att_field: Field
     for att_name, att_field in cls.__dict__["__dataclass_fields__"].items():
         type_def[str(att_name)] = __att_to_json(att_field.type)
-        constraint_def = __check_constraints(cls, att_name)
-        if constraint_def is not None:
-            type_def[str(att_name)]["constraint"] = constraint_def
+        data_component_def = __check_data_component_attributes(cls, att_name)
+        if data_component_def is not None:
+            type_def[str(att_name)]["dataComponent"] = data_component_def
     return type_def
 
 

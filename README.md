@@ -81,7 +81,7 @@ Feel free to participate in this project! Check out the corresponding [GitHub bo
 - [X] Wire everything up using a Raspi 3
 - [X] Build a case out of a cardboard box?
 - [X] Build spotify integration + effect
-- [X] Shuffle Mode
+- [X] MultiMode
 - [X] DEMO (Simple [Rainbow] Waves for testing purposes)
 - [ ] Document achievements
 - [ ] Profit

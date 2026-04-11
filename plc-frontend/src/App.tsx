@@ -1,17 +1,19 @@
 import { ThemeProvider } from '@emotion/react';
-import { AddCircle, Check, Checklist, CompareArrows, FileUpload, Navigation, RemoveCircle } from '@mui/icons-material';
-import { Alert, AlertColor, AppBar, Box, Button, Chip, Divider, Fab, Grid, Grow, IconButton, Slide, Slider, Snackbar, Stack, Toolbar, Typography, createTheme } from '@mui/material';
+import { FileUpload, Navigation } from '@mui/icons-material';
+import { Alert, AlertColor, AppBar, Fab, Grid, Grow, IconButton, Slide, Snackbar, Toolbar, Typography, createTheme } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import React, { useState } from 'react';
-import './App.css';
 import { getOptionDefinition, getStatus, setEffect } from './api/ApiManager';
 import AddCustomEffectDialog from './components/AddCustomEffect.dialog';
-import { IStatus } from './domainData/DomainData';
+import { getCustomSliderForm } from './components/CustomSliderForm';
+import { getMultiselectForm } from './components/MultiSelectForm';
+import { getSingleSelectForm } from './components/SingleSelectForm';
+import { getTimerForm } from './components/TimerForm';
+import { IStatus, TimerDataComponent } from './domainData/DomainData';
 
 const App: React.FC = () => {
   const [effectOptionDefinition, setEffectOptionDefinition] = useState<any>()
   const [mainFormData, setMainFormData] = useState<any>({})
-  const [uploadFileName, setUploadFileName] = useState<File>()
   const [addCustomEffectDialogOpen, setAddCustomEffectDialogOpen] = React.useState<boolean>(false)
   const [snackState, setSnackState] = React.useState<{
     open: boolean;
@@ -77,15 +79,15 @@ const App: React.FC = () => {
 
   const handleClickIncreaseSlider = (fieldName: string) => {
     let newVal = mainFormData[fieldName] + 10
-    if (newVal > effectOptionDefinition[fieldName].constraint.upper_bound) {
-      newVal = effectOptionDefinition[fieldName].constraint.upper_bound
+    if (newVal > effectOptionDefinition[fieldName].dataComponent.upper_bound) {
+      newVal = effectOptionDefinition[fieldName].dataComponent.upper_bound
     }
     setMainFormData({ ...mainFormData, [fieldName]: newVal })
   }
   const handleClickDecreaseSlider = (fieldName: string) => {
     let newVal = mainFormData[fieldName] - 10
-    if (newVal < effectOptionDefinition[fieldName].constraint.lower_bound) {
-      newVal = effectOptionDefinition[fieldName].constraint.lower_bound
+    if (newVal < effectOptionDefinition[fieldName].dataComponent.lower_bound) {
+      newVal = effectOptionDefinition[fieldName].dataComponent.lower_bound
     }
     setMainFormData({ ...mainFormData, [fieldName]: newVal })
   }
@@ -150,15 +152,17 @@ const App: React.FC = () => {
           {effectOptionDefinition ?
             Object.keys(effectOptionDefinition).map((key) => {
               const field = effectOptionDefinition[key]
-              const type = field["constraint"]["type"]
+              const type = field["dataComponent"]["type"]
               switch (type) {
-                case "IntervalConstraint":
-                  return makeTransition(key, getCustomSliderForm(key, field.constraint.display_name, handleClickDecreaseSlider, mainFormData[key] as number, handleSliderChange, handleClickIncreaseSlider))
-                case "MultiselectConstraint":
-                  return makeTransition(key, getMultiselectForm(key, field.constraint.display_name, field.constraint.items, mainFormData[key] || [], handleMultiSelectChange))
-                case "SingleselectConstraint":
-                  return makeTransition(key, getSingleSelectForm(key, field.constraint.display_name, field.constraint.items, mainFormData[key] || 0, handleSingleSelectClick))
-                default:
+                case "IntervalDataComponent":
+                  return makeTransition(key, getCustomSliderForm(key, field.dataComponent.display_name, handleClickDecreaseSlider, mainFormData[key] as number, handleSliderChange, handleClickIncreaseSlider))
+                case "MultiselectDataComponent":
+                  return makeTransition(key, getMultiselectForm(key, field.dataComponent.display_name, field.dataComponent.items, mainFormData[key] || [], handleMultiSelectChange))
+                case "SingleselectDataComponent":
+                  return makeTransition(key, getSingleSelectForm(key, field.dataComponent.display_name, field.dataComponent.items, mainFormData[key] || 0, handleSingleSelectClick))
+                case "TimerDataComponent":
+                  return makeTransition(key, getTimerForm(key, field.dataComponent.display_name, mainFormData[key] as any, (newVal) => setMainFormData({ ...mainFormData, [key]: newVal })))
+                default: 
                   break
               }
               return <></>
@@ -176,7 +180,6 @@ const App: React.FC = () => {
         </Grid>
         {CustomSnackbar(snackState, setSnackState)}
         <AddCustomEffectDialog
-          handleFileName={setUploadFileName}
           isOpen={addCustomEffectDialogOpen}
           handleClose={() => setAddCustomEffectDialogOpen(false)} />
       </div>
@@ -191,98 +194,6 @@ const makeTransition = (key: string, component: JSX.Element) => {
     </Grow>
   )
 }
-
-const getMultiselectForm = (fieldName: string, displayName: string, optionList: string[], selectedElements: string[] | undefined, handleSelectionChange: any) => {
-  return (
-    <Grid key={fieldName} className='panel' item xs={1} justifyContent="center">
-      <Box sx={{ borderRadius: "12px", backgroundColor: "white", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)", padding: "10px" }}>
-        <Grid container columns={8} direction="row" alignItems="center">
-          <Grid container item xs={1}>
-            <Checklist />
-          </Grid>
-          <Grid item xs="auto">
-            <Typography variant='h5' color="black">
-              {displayName}
-            </Typography>
-          </Grid>
-        </Grid>
-        <Divider sx={{ mt: 1.5, mb: 1.5 }} />
-        <Grid container item spacing={1}>
-          {optionList.map((e) => (
-            <Grid key={e + "_grid_" + fieldName} item>
-              <Chip
-                key={e + "_chip_" + fieldName}
-                variant={selectedElements?.includes(e) ? "filled" : "outlined"} label={e}
-                onClick={() => handleSelectionChange(fieldName, e)}
-                color={selectedElements?.includes(e) ? "primary" : undefined} />
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-    </Grid>
-  )
-}
-
-const getSingleSelectForm = (fieldName: string, displayName: string, optionList: string[], selectedElement: string | undefined, handleChipChange: (fieldName: string, chipName: string) => void) => {
-  return <Grid key={fieldName} className='panel' item xs={1} justifyContent="center">
-    <Box sx={{ borderRadius: "12px", backgroundColor: "white", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)", padding: "10px" }}>
-      <Grid container columns={8} direction="row" alignItems="center">
-        <Grid container item xs={1}>
-          <Check />
-        </Grid>
-        <Grid item xs="auto">
-          <Typography variant='h5' color="black">
-            {displayName}
-          </Typography>
-        </Grid>
-      </Grid>
-      <Divider sx={{ mt: 1.5, mb: 1.5 }} />
-      <Grid container item spacing={1}>
-        {optionList.map((e) => (
-          <Grid key={e + "_grid"} item>
-            <Chip
-              key={e + "_chip"}
-              variant={selectedElement === e ? "filled" : "outlined"} label={e} onClick={() => handleChipChange(fieldName, e)}
-              color={selectedElement === e ? "primary" : undefined} />
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
-  </Grid>;
-}
-
-const getCustomSliderForm = (fieldName: string, displayName: string, decreaseFunc: (fieldName: string) => void, value: number, handleSliderChange: (event: Event, newValue: number | number[], fieldName: string) => void, increaseFunc: (fieldName: string) => void) => {
-  return <Grid key={fieldName} className='panel' item xs={1}>
-    <Box sx={{ borderRadius: "12px", padding: "10px", boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.6)" }}>
-      <Grid container columns={3} direction="row" alignItems="center">
-        <Grid container item xs={1}>
-          <CompareArrows />
-        </Grid>
-        <Grid item xs="auto">
-          <Typography variant='h5' color="black">
-            {displayName}
-          </Typography>
-        </Grid>
-      </Grid>
-      <Divider sx={{ mt: 1.5, mb: 1.5 }} />
-      <Stack spacing={1} direction="row" sx={{ mb: 1 }} alignItems="center">
-        <Button onClick={() => decreaseFunc(fieldName)}>
-          <RemoveCircle />
-        </Button>
-        <Slider aria-label="Volume" value={value} onChange={(event, value) => handleSliderChange(event, value, fieldName)} />
-        <Button onClick={() => increaseFunc(fieldName)}>
-          <AddCircle />
-        </Button>
-      </Stack>
-      <Stack direction={'row'} spacing={1} alignItems="center" justifyContent={'center'}>
-        <Typography variant="h6" color="black">
-          {value} %
-        </Typography>
-      </Stack>
-    </Box>
-  </Grid>;
-}
-
 
 export function CustomSnackbar(snackState: {
   open: boolean; Transition: React.ComponentType<

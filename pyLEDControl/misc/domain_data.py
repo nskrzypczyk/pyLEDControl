@@ -1,8 +1,10 @@
 import abc
 import dataclasses
 from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json
 from enum import IntEnum
 from typing import Any, Callable, List, Union, Callable
+from datetime import datetime, time
 
 
 """
@@ -15,8 +17,9 @@ class ExecutionMode(IntEnum):
     EMULATED = 1
 
 
+@dataclass_json
 @dataclass
-class AbstractConstraint(abc.ABC):
+class AbstractDataComponent(abc.ABC):
     display_name: str
 
     @abc.abstractmethod
@@ -43,11 +46,12 @@ class AbstractConstraint(abc.ABC):
         return self.definition_mapper(fields)
 
 
+@dataclass_json
 @dataclass
-class IntervalConstraint(AbstractConstraint):
-    """Constraint to define upper and lower bounds for numbers like int and float."""
+class IntervalDataComponent(AbstractDataComponent):
+    """Container to define upper and lower bounds for numbers like int and float."""
 
-    type = "IntervalConstraint"
+    type = "IntervalDataComponent"
     lower_bound: Union[int, float]
     lower_bound_inclusive: bool
     upper_bound: Union[int, float]
@@ -70,11 +74,12 @@ class IntervalConstraint(AbstractConstraint):
         return validator
 
 
+@dataclass_json
 @dataclass
-class MultiselectConstraint(AbstractConstraint):
-    """Constraint for multi-selection purposes"""
+class MultiselectDataComponent(AbstractDataComponent):
+    """Container for multi-selection purposes"""
 
-    type = "MultiselectConstraint"
+    type = "MultiselectDataComponent"
     strict: bool  # defines whether or not a exception shall be thrown if the incoming list contains a value which is not in the original list
     items: Union[
         List, Callable
@@ -106,12 +111,13 @@ class MultiselectConstraint(AbstractConstraint):
         return validator
 
 
+@dataclass_json
 @dataclass
-class SingleselectConstraint(AbstractConstraint):
-    type = "SingleselectConstraint"
+class SingleselectDataComponent(AbstractDataComponent):
+    type = "SingleselectDataComponent"
     items: Union[
         List, Callable
-    ]  
+    ]
     _items: Union[List, Callable] = field(init=False, repr=False)
 
     @property
@@ -121,14 +127,50 @@ class SingleselectConstraint(AbstractConstraint):
         return self._items
 
     @items.setter
-    def items(self, new) -> None:
-        self._items = new
+    def items(self, newVal) -> None:
+        self._items = newVal
 
     def get_validator(self):
         def validator(li: list) -> bool:
             for x in li:
                 if x not in self.items:
-                    raise ValueError(f"Value {x} is not part of the multiselect list!")
+                    raise ValueError(
+                        f"Value {x} is not part of the singleselect list!")
+            return True
+
+        return validator
+
+
+@dataclass_json
+@dataclass
+class TimerDataComponent(AbstractDataComponent):
+    """Container for timer purposes"""
+
+    display_name: str ="Timer"
+    type:str = "TimerDataComponent"
+    start: int = 26820  # 7:45 AM
+    end:int = 1800 # 0:30 PM
+    days: Union[
+        List, Callable
+    ] = field(default_factory=lambda: [0,1,2,3,4,5,6])
+    enabled: bool = False
+
+    @property
+    def days(self):
+        if callable(self._days):
+            return self._days()
+        return self._days
+
+    @days.setter
+    def days(self, newVal) -> None:
+        self._days = newVal
+
+    def get_validator(self) -> Callable:
+        def validator(days: list) -> bool:
+            for x in days:
+                if x not in self.days:
+                    raise ValueError(
+                        f"Value {x} is not allowed!")
             return True
 
         return validator

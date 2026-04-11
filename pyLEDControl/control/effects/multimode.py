@@ -10,23 +10,23 @@ from control.effects import get_effect_list, get_effects
 from control.effects.abstract_effect import AbstractEffect
 from control.effects.uploaded_effect_single import (UploadedEffectSingle,
                                                     load_effects)
-from misc.domain_data import MultiselectConstraint
+from misc.domain_data import MultiselectDataComponent, TimerDataComponent
 from misc.logging import Log
 from server.routes.effect_upload_routes import load_existing_file_paths
 
 uploaded_effects_list = []
-base_effects_list = list(set(get_effect_list()) - {"AbstractEffect", "Shuffle", "OFF", "UploadedEffect", "UploadedEffectSingle"})
+base_effects_list = list(set(get_effect_list()) - {"AbstractEffect", "MultiMode", "OFF", "UploadedEffect", "UploadedEffectSingle"})
 def load_uploaded_effects():
     uploaded_effects_list = load_effects()
     return uploaded_effects_list
 
 
-class Shuffle(AbstractEffect):
+class MultiMode(AbstractEffect):
     @dataclass
     class Options(AbstractEffectOptions):
         global base_effects_list, uploaded_effects_list
         active_effects: List[str]
-        active_effects_constraint = MultiselectConstraint(
+        active_effects_dc = MultiselectDataComponent(
             display_name="Active effects",
             items=lambda: base_effects_list + load_uploaded_effects(),
             strict=True,
@@ -48,7 +48,7 @@ class Shuffle(AbstractEffect):
             # introducing another variable for this matter is not necessary.
             if counter >= len(options.active_effects):
                 exit_sub_proc(tt, log, _conn)
-                return Shuffle.run(matrix_class, options, conn_p)
+                return MultiMode.run(matrix_class, options, conn_p)
             active_effect = options.active_effects[counter]
             counter += 1
             if active_effect in base_effects_list:
