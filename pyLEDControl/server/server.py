@@ -57,19 +57,22 @@ class Server(Process):
                 brightness = formdata["brightness"]
                 if brightness > 100 or brightness < 0:
                     return jsonify("brightness must be a interval value in [0;100]")
-                timer = formdata["timer"]
 
                 raw_options_data = formdata
                 effect_class = get_effects()[effect]
-                options_instance = effect_class.Options(**raw_options_data)
-
+                
+                options_instance = effect_class.Options.init_with_dict(raw_options_data) 
+                options_instance.effect = effect_class # TODO brightness/effect geht, aber timer nicht. Kurzgesagt: DTO Mapper benötigt 
+                options_instance.timer = TimerDataComponent(**formdata["timer"])
+                
                 self.queue.put((effect_class, options_instance))
-                self.current_effect = effect
+                self.current_effect = effect_class
                 self.current_brightness = brightness
                 self.current_options_instance = options_instance
                 return jsonify({"status": "success"})
             except Exception as e:
-                return jsonify(e)
+                self.log.error(e)
+                return jsonify(str(e))
 
         self.log.debug("Starting flask server")
         app.run(host="0.0.0.0", port=settings.SERVER_PORT)
