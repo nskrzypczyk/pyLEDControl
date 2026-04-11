@@ -1,5 +1,5 @@
 import { Checklist } from "@mui/icons-material";
-import { Box, Chip, Divider, Grid, TextField, Typography } from "@mui/material";
+import { Box, Chip, Divider, FormControlLabel, Grid, Switch, TextField, Typography } from "@mui/material";
 import { TimerDataComponent } from "../domainData/DomainData";
 
 export const getTimerForm = (
@@ -32,11 +32,11 @@ export const getTimerForm = (
                     </Grid>
                 </Grid>
                 <Divider sx={{ mt: 1, mb: 1 }} />
-                <Grid container spacing={2}>
+                <Grid container columns={24} spacing={2} alignItems={"center"}>
                     {/* Zeiten */}
-                    <Grid item xs={6}>
+                    <Grid item xs={10}>
                         <TextField
-                            label="Ein"
+                            label="On"
                             type="time"
                             value={secondsToHHMM(value.start)}
                             onChange={(e) => setValue({ ...value, start: hhmmToSeconds(e.target.value) })}
@@ -44,9 +44,9 @@ export const getTimerForm = (
                             InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={10}>
                         <TextField
-                            label="Aus"
+                            label="Off"
                             type="time"
                             value={secondsToHHMM(value.end)}
                             onChange={(e) => setValue({ ...value, end: hhmmToSeconds(e.target.value) })}
@@ -54,11 +54,16 @@ export const getTimerForm = (
                             InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
+                    <Grid item xs={2}>
+                        <FormControlLabel control={<Switch checked={value.enabled} onChange={(e) => setValue({ ...value, enabled: e.target.checked })} />}
+                            label="Enabled"
+                        />
+                    </Grid>
 
                     {/* Tage */}
                     <Grid item xs={12}>
                         <Typography variant="body2" sx={{ mb: 1 }}>
-                            Tage
+                            Days
                         </Typography>
                         <Grid container spacing={1}>
                             {Object.entries(weekdays).map(([day, dayNo]) => (
