@@ -4,10 +4,10 @@ import statistics
 import requests
 import os
 from typing import Dict, List, TypedDict
-
 from misc.logging import Log
 from misc.utils import chunk_list
 import settings
+from diskcache import Cache
 
 log = Log("WeatherBinding")
 
@@ -65,6 +65,8 @@ def _prepare_output(fc: WeatherForecast) -> WeatherForecast:
 
 
 class WeatherBinding:
+    CACHE_TTL = 10_800 # 3h TTL
+    cache = Cache("./weather.cache")
     def __init__(self):
         self.lat: float = settings.WEATHER_LAT
         self.long: float = settings.WEATHER_LONG
@@ -72,11 +74,16 @@ class WeatherBinding:
     def get(self) -> WeatherForecast:
         url = f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.long}&hourly=temperature_2m,precipitation_probability,rain,showers,snowfall,cloudcover&timeformat=unixtime&timezone=auto"
 
+        cached_data: WeatherForecast = self.cache.get(self.lat)
+        if cached_data is None:
+            log.info("Cache is empty. Gathering new weather data...")
+            return cached_data
+
+        # Cache miss => get new weather data
         response = requests.get(url)
         data: dict = response.json()["hourly"]
+        forecast: WeatherForecast = {k: [] for k in WeatherForecast.__annotations__.keys()}
 
-        forecast: WeatherForecast = {k: []
-                                     for k in WeatherForecast.__annotations__.keys()}
         li: list
         for k, li in data.items():
             chunked = chunk_list(li, 24)
@@ -90,4 +97,6 @@ class WeatherBinding:
                 [forecast[k+"_max"].append(max(ch)) for ch in chunked]
             else:
                 [forecast[k].append(statistics.mean(ch)) for ch in chunked]
-        return _prepare_output(forecast)
+        forecast = _prepare_output(forecast)
+        self.cache.set(self.lat, forecast, expire=self.CACHE_TTL)
+        return forecast
