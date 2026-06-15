@@ -4,6 +4,7 @@ certifi==2024.8.30
 charset-normalizer==3.3.2
 click==8.1.7
 dataclasses-json==0.6.7
+diskcache==5.6.3
 Flask==2.2.3
 Flask-Cors==3.0.10
 idna==3.8
