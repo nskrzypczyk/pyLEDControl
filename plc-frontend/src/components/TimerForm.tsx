@@ -30,6 +30,11 @@ export const getTimerForm = (
                             {displayName}
                         </Typography>
                     </Grid>
+                    <Grid item sx={{ ml: "auto" }}>
+                        <FormControlLabel control={<Switch checked={value.enabled} onChange={(e) => setValue({ ...value, enabled: e.target.checked })} />}
+                            label="Enabled"
+                        />
+                    </Grid>
                 </Grid>
                 <Divider sx={{ mt: 1, mb: 1 }} />
                 <Grid container columns={24} spacing={2} alignItems={"center"}>
@@ -52,11 +57,6 @@ export const getTimerForm = (
                             onChange={(e) => setValue({ ...value, end: hhmmToSeconds(e.target.value) })}
                             fullWidth
                             InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <FormControlLabel control={<Switch checked={value.enabled} onChange={(e) => setValue({ ...value, enabled: e.target.checked })} />}
-                            label="Enabled"
                         />
                     </Grid>
 
