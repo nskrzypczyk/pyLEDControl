@@ -75,11 +75,12 @@ class WeatherBinding:
         url = f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.long}&hourly=temperature_2m,precipitation_probability,rain,showers,snowfall,cloudcover&timeformat=unixtime&timezone=auto"
 
         cached_data: WeatherForecast = self.cache.get(self.lat)
-        if cached_data is None:
-            log.info("Cache is empty. Gathering new weather data...")
+        if cached_data is not None:
+            log.info("Gathering weather data from cache")
             return cached_data
 
         # Cache miss => get new weather data
+        log.info("Cache is empty. Gathering new weather data...")
         response = requests.get(url)
         data: dict = response.json()["hourly"]
         forecast: WeatherForecast = {k: [] for k in WeatherForecast.__annotations__.keys()}
