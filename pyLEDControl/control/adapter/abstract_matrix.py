@@ -113,6 +113,13 @@ class AbstractMatrix(abc.ABC):
     def CreateFrameCanvas(self):
         raise NotImplementedError(f"Method 'CreateFrameCanvas' not implemented!")
 
+    def SetImageFromArray(self, field):
+        """
+        field is a 3d numpy array with np.unit8 to represent a rgb image
+        """
+        img = Image.fromarray(field, 'RGB')
+        self.SetImage(img)
+
     def SetImageFromURL(self, url: str, brightness: int):
         image_resp = requests.get(url)
         img = (

@@ -15,11 +15,6 @@ The main logic is implemented in C for performance reasons, while the Python cod
 This was primarily implemented as a demonstration of how to integrate C code for performance-critical effects.
 '''
 
-def _print_field(field, matrix: AbstractMatrix, canvas: AbstractMatrix, br: int):
-    img = Image.fromarray(field, 'RGB')
-    canvas.SetImage(img)
-    canvas = matrix.SwapOnVSync(canvas)
-
 
 class DigitalRain(AbstractEffect):
 
@@ -51,5 +46,5 @@ class DigitalRain(AbstractEffect):
                 br = options.get_brightness()
                 counter = 0
             clib.step(field_ptr)
-            _print_field(field, matrix, canvas, br)
+            matrix.SetImageFromArray(field)
             counter += 1
