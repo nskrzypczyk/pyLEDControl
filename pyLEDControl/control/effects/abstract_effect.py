@@ -6,7 +6,9 @@ from dataclasses import dataclass
 from typing import Union
 
 from control.abstract_effect_options import AbstractEffectOptions
-
+import settings
+from control.adapter.abstract_matrix import AbstractMatrix
+import numpy as np
 
 class AbstractEffect(ABC):
 
@@ -45,3 +47,13 @@ class AbstractEffect(ABC):
                 return pipe_data
         else:
             return None
+
+    @staticmethod
+    def create_context(matrix_cls):
+        matrix: AbstractMatrix = matrix_cls(options=settings.rgb_options())
+        canvas: AbstractMatrix = matrix.CreateFrameCanvas()
+        font = matrix.graphics.Font()
+        rows = settings.rgb_options().rows
+        cols = settings.rgb_options().cols
+        field = np.zeros((rows, cols, 3), dtype=np.uint8)
+        return matrix, canvas, font, field, rows, cols
