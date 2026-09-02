@@ -3,12 +3,14 @@
 
 from abc import ABC
 from dataclasses import dataclass
+from types import FunctionType
 from typing import Union
 
 from control.abstract_effect_options import AbstractEffectOptions
 import settings
 from control.adapter.abstract_matrix import AbstractMatrix
 import numpy as np
+
 
 class AbstractEffect(ABC):
 
@@ -22,6 +24,11 @@ class AbstractEffect(ABC):
         pass
 
     @staticmethod
+    def loop(conn, actions: FunctionType, *args, **kwargs):
+        while not AbstractEffect.is_terminated(conn):
+            actions(*args, **kwargs)
+
+    @staticmethod
     def is_terminated(conn) -> bool:
         """
         Uses a multiprocessing pipe connection to receive a stop signal
@@ -29,7 +36,7 @@ class AbstractEffect(ABC):
         """
         if conn.poll():
             pipe_data = conn.recv()
-            if isinstance(pipe_data,bool):
+            if isinstance(pipe_data, bool):
                 return pipe_data
             else:
                 return False
