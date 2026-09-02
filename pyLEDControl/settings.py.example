@@ -25,6 +25,8 @@ class SPOTIFY(Enum):
     AUTH_URL = "https://accounts.spotify.com/api/token"
     CACHE_PATH = f"../.cache-{USERNAME}"
 
+class STOCKS(Enum):
+    SYMBOLS:list = []
 
 def rgb_options():
     if MODE == ExecutionMode.EMULATED:
