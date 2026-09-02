@@ -83,8 +83,46 @@ class AbstractGraphics(abc.ABC):
         raise NotImplementedError(f"Method 'DrawCircle' not implemented!")
 
 
+class ExtendedGraphics():
+    """
+        Additional custom rendering functions which are not part of the official API
+    """
+
+    def DrawTextAligned(
+        self,
+        matrix: AbstractMatrix,
+        canvas: AbstractMatrix,
+        font: AbstractFont,
+        y: int,
+        color: AbstractColor,
+        text: str,
+        x_offset: int = 0,
+        align="left"
+    ):
+        """
+        Draws a text line with horizontal alignment
+        Args: 
+            align: 'left', 'right' or 'center'
+        """
+        matrix_width = settings.MATRIX_DIMENSIONS.WIDTH.value
+        char_for_width = ord("X")
+        max_chars_per_line = matrix_width // font.CharacterWidth(
+            char_for_width)
+
+        if align == 'right':
+            x = (max_chars_per_line - len(text)) * \
+                font.CharacterWidth(char_for_width)
+        elif align == 'center':
+            x = ((max_chars_per_line - len(text)) // 2) * \
+                font.CharacterWidth(char_for_width)
+        else:  # align = 'left'
+            x = 0
+        matrix.graphics.DrawText(canvas, font, x+x_offset, y, color, text)
+
+
 class AbstractMatrix(abc.ABC):
     graphics: AbstractGraphics
+    graphics_extended = ExtendedGraphics()
     """
     Method names are derived from the Canvas class of the RGBMatrixEmulator module
     """
@@ -111,7 +149,15 @@ class AbstractMatrix(abc.ABC):
 
     @abc.abstractmethod
     def CreateFrameCanvas(self):
-        raise NotImplementedError(f"Method 'CreateFrameCanvas' not implemented!")
+        raise NotImplementedError(
+            f"Method 'CreateFrameCanvas' not implemented!")
+
+    def SetImageFromArray(self, field):
+        """
+        field is a 3d numpy array with np.unit8 to represent a rgb image
+        """
+        img = Image.fromarray(field, 'RGB')
+        self.SetImage(img)
 
     def SetImageFromURL(self, url: str, brightness: int):
         image_resp = requests.get(url)
