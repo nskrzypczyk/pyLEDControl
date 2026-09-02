@@ -168,3 +168,5 @@ rpi-rgb-led-matrix/
 
 # Weather cache
 pyLEDControl/weather.cache/cache.*
+*cache.db
+cache.*
